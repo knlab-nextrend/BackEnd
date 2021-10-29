@@ -21,7 +21,7 @@ app.use('/nextrend', nextrend);
 app.use('/solr',solr);
 app.use('/els',els);
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server On : http://localhost:${PORT}/`);
 })
