@@ -63,13 +63,15 @@ const procGet = (req,res) => {
         query=query+'&rows='+paramsDict["listSize"];
     }
 
+    // 띄어쓰기--> %20
     query = encodeURI(query);
-    console.log(query);
     solrDB.search(query, function(err, obj){
         if(err){
             console.log(err);
         }else{
-            res.send(obj);
+            obj.response.dcCount = obj.response.numFound;
+            delete obj.response.numFound;
+            res.send(obj.response);
         }
     });
 }

@@ -1,19 +1,29 @@
 const elsDB = require("../../models/els/index");
 
-const captionSearch = async (req, res) => {
+const serviceSearch = async (req, res) => {
     let body = {};
 
     const value = await elsDB.search({
         index: 'politica_service',
         body: {
             query: {
-            match: { caption: 'to' }
+            match_all: {}
             }
         }
     });
-    res.send(value);
+
+    let result = {
+        "dcCount":value.body.hits.total.value
+    };
+    let documents = [];
+    value.body.hits.hits.forEach((document)=>{
+        documents.push(document._source);
+    });
+
+    result["docs"]=documents;
+    res.send(result);
 }
 
 module.exports = {
-    Search:captionSearch
+    Search:serviceSearch
 }
