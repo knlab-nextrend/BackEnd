@@ -1,8 +1,10 @@
 const elsDB = require("../../models/els/index");
 
 const captionSearch = async (req, res) => {
+    let body = {};
+
     const value = await elsDB.search({
-        index: 'caption',
+        index: 'politica_service',
         body: {
             query: {
             match: { caption: 'to' }
