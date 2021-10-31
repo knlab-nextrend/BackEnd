@@ -6,9 +6,9 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(path.join(__dirname, '..','..', 'configs', 'db.json'))[dbtype][env];
 
 const solrDB = solr.createClient(
-    config.host,
-    config.port,
-    config.core
+    host=config.host,
+    port=config.port,
+    core=config.core
 );
 
 /*

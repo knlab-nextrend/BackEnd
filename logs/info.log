@@ -497,3 +497,8 @@
 {"message":"\u001b[0mGET /nextrend/user/get \u001b[36m304\u001b[0m 6.344 ms - -\u001b[0m\n","level":"info"}
 {"message":"\u001b[0mGET /nextrend/user/get \u001b[36m304\u001b[0m 1.472 ms - -\u001b[0m\n","level":"info"}
 {"message":"\u001b[0mGET /nextrend/user/get \u001b[36m304\u001b[0m 2.866 ms - -\u001b[0m\n","level":"info"}
+{"level":"info","message":"\u001b[0mGET / \u001b[33m404\u001b[0m 1.586 ms - 139\u001b[0m\n"}
+{"level":"info","message":"\u001b[0mGET / \u001b[33m404\u001b[0m 0.825 ms - 139\u001b[0m\n"}
+{"level":"info","message":"\u001b[0mGET /nextrend/categorys \u001b[32m200\u001b[0m 9.949 ms - 5914\u001b[0m\n"}
+{"level":"info","message":"\u001b[0mGET /solr/docs/get \u001b[32m200\u001b[0m 27.925 ms - 2360\u001b[0m\n"}
+{"level":"info","message":"\u001b[0mGET /favicon.ico \u001b[33m404\u001b[0m 1.310 ms - 150\u001b[0m\n"}
