@@ -13,4 +13,11 @@ const crawlSearch = async (req,res) => {
     }
 }
 
-module.exports = crawlSearch;
+const crawlInsert = async (req,res) => {
+    captionCtrl.Insert(req,res);
+}
+
+module.exports = {
+    Search:crawlSearch,
+    Insert:crawlInsert
+};

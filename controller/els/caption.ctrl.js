@@ -24,6 +24,20 @@ const serviceSearch = async (req, res) => {
     res.send(result);
 }
 
+const serviceInsert = async (req,res) => {
+    const value = await elsDB.post({
+        index: 'politica_service',
+        body: {
+            query: {
+                lang: 'painless',
+                source: 'ctx._source.times++',
+            }
+        }
+    })
+    console.dir(value);
+}
+
 module.exports = {
-    Search:serviceSearch
+    Search:serviceSearch,
+    Insert:serviceInsert
 }
