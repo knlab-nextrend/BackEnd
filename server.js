@@ -9,8 +9,9 @@ const morgan = require('morgan');
 app.use(express.json());
 
 const nextrend = require('./routes/nextrend');
-const solr = require('./routes/solr');
-const els = require('./routes/els');
+//const solr = require('./routes/solr');
+//const els = require('./routes/els');
+const crawl = require('./routes/crawl');
 
 app.use(morgan('dev',{ stream })); // 개발 : dev -> 자세히 : combined
 
@@ -18,8 +19,9 @@ app.use(morgan('dev',{ stream })); // 개발 : dev -> 자세히 : combined
 //app.set('jwt-secret', db.secret);
 
 app.use('/nextrend', nextrend);
-app.use('/solr',solr);
-app.use('/els',els);
+//app.use('/solr',solr);
+//app.use('/els',els);
+app.use('/crawl',crawl);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

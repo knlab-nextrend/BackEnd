@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const procGet = require("../controller/solr/proc.ctrl");
 
-router.get('/list/',procGet.Search);
+const crawlSearch = require("../controller/fusion");
+
+router.get('/list/:id',crawlSearch);
 
 module.exports = router;
