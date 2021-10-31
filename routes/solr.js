@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const docsCtrl = require("../controller/solr/docs.ctrl");
+const procGet = require("../controller/solr/proc.ctrl");
 
-router.get('/docs/get',docsCtrl.Search);
+router.get('/list/',procGet.Search);
 
 module.exports = router;
