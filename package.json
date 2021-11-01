@@ -4,8 +4,8 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.15.0",
+    "basic-ftp": "^4.6.6",
     "express": "^4.17.1",
-    "ftp": "^0.3.10",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.2",
