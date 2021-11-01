@@ -11,7 +11,7 @@ router.post("/user/delete", userCtrl.Delete);
 
 router.get("/login/attempt", loginCtrl.Attempt);
 router.post("/login/hashPw", loginCtrl.HashPW);
-router.post("/login/onLogin",loginCtrl.OnLogin);
+router.post("/login/",loginCtrl.OnLogin);
 
 router.get("/categorys/",categorysCtrl.ToDict);
 
