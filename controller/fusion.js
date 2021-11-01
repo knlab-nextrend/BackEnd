@@ -7,7 +7,7 @@ const crawlSearch = async (req,res) => {
         case 0:
             procGet.Search(req,res);
             break;
-        case 1:
+        case 2:
             captionCtrl.Search(req,res);
             break;
     }

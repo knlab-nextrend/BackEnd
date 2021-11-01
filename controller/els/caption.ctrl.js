@@ -1,4 +1,5 @@
 const elsDB = require("../../models/els/index");
+const { convertCrawlDocTo } = require("../../lib/libs");
 
 const serviceSearch = async (req, res) => {
     let size = req.query.listSize;
@@ -22,7 +23,8 @@ const serviceSearch = async (req, res) => {
     };
     let documents = [];
     value.body.hits.hits.forEach((document)=>{
-        documents.push(document._source);
+        doc = convertCrawlDocTo(document._source,'els');
+        documents.push(doc);
     });
 
     result["docs"]=documents;
