@@ -17,7 +17,7 @@ const loginHashPW = (req, res) => {
     //console.log("salt :: ", salt);
     crypto.pbkdf2(req.body.userPW, salt, 1203947, 64, "sha512", (err, key) => {
       if (err) {
-        res.send(err);
+        res.status(401).send(err);
       } else {
         //console.log("password :: ", key.toString("base64"));
         res.send({ salt: salt, PW: key.toString("base64") });
@@ -27,6 +27,7 @@ const loginHashPW = (req, res) => {
 };
 
 const loginOnLogin = (req, res) => {
+  console.log(req.headers);
   const sql =
     'SELECT ifnull(`userPW`, NULL) AS `userPW`, ifnull(`salt`, NULL) AS `salt`, ifnull(`Category`, NULL) AS `Category` FROM `nt_users_list` RIGHT OUTER JOIN (SELECT "") AS `nt_users_list` ON `userID` = ?';
   const param = [req.body.userID];
@@ -43,15 +44,19 @@ const loginOnLogin = (req, res) => {
           }else{
             if(key.toString("base64") === data[0].userPW){
               //아이디, 비밀번호 일치 시 token과 uid 발급
+
+              // user의 category를 가져와 payload에 포함시킴.
               const user = {
                 userID:req.body.userID,
                 Category:data[0].Category
               }
               const jwtToken = await jwt.sign(user);
+              const refreshToken = await jwt.refresh();
               console.log(jwtToken);
               res.send({
                 uid:data[0].id,
-                token:jwtToken
+                token:jwtToken,
+                refreshToken:refreshToken
               });
             }else{
               //불일치 시 401 에러 전송

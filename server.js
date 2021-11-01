@@ -8,7 +8,9 @@ const cors = require('cors');
 //ToDo : 개발모드, 배포모드에 따라 settings 분기 시키고... 따로 받아주기. (script에서 가능..?)
 //const config = require(path.join(__dirname,'..','..', 'configs', 'settings.json'))[dbtype][env];
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    exposedHeaders: ['authorization'],
+  }));
 
 const nextrend = require('./routes/nextrend');
 //const solr = require('./routes/solr');
@@ -24,7 +26,6 @@ app.use('/nextrend', nextrend);
 //app.use('/solr',solr);
 //app.use('/els',els);
 app.use('/crawl',crawl);
-
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server On : http://localhost:${PORT}/`);

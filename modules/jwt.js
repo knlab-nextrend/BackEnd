@@ -5,46 +5,37 @@ const options = require("../configs/keys").option;
 const {promisify} = require("util");
 const redisClient = require("./redis");
 
-const TOKEN_EXPIRED = -3;
-const TOKEN_INVALID = -2;
-
 const sign = async(user) =>{
     //payload 는 암호화 되지 않기에 password를 담지 않음.
     const payload = {
         userID:user.userID,
         Category:user.Category,
     };
-    const result = {
-        token:jwt.sign(payload,secretKey,options),
-        refreshToken: randToken.uid(256)
-    };
-    return result;
+    return jwt.sign(payload,secretKey,options);
 }
 
 const verify = async (token) => {
     let decoded;
     try{
         decoded = jwt.verify(token,secretKey);
+        return {
+            ok:true,
+            userID:decoded.userID,
+            Category:decoded.Category
+        };
     }catch(err){
-        if(err.message === "jwt expired"){
-            console.log('expired');
-            return TOKEN_EXPIRED;
-        }else if(err.message === 'invalid token'){
-            console.log('invalid');
-            return TOKEN_INVALID;
-        }else{
-            console.log('invalid');
-            return TOKEN_INVALID;
-        }
+        return {
+            ok: false,
+            message: err.message,
+          };
     }
-    return decoded;
 } 
 
 const refresh = () => {
     return jwt.sign({},secretKey,{
         algorithm:options.algorithm,
         expiresIn:'14d'
-    })
+    });
 }
 
 const refreshVerify = async (token, userID) =>{
