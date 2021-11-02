@@ -1,8 +1,6 @@
 const solrDB = require("../../models/solr/index");
-const NasFTP = require("../../models/nas/index");
 
 const procGet = (req,res) => {
-    console.log(NasFTP);
     let query = 'q=';
     let paramsDict = {
         // 상세 params
