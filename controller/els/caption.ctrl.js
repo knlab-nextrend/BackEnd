@@ -1,7 +1,7 @@
 const elsDB = require("../../models/els/index").elsDB;
 const config = require("../../models/els/index").config;
 
-const serviceSearch = async (req, res) => {
+const serviceSearch = async (req) => {
     const size = req.query.listSize;
     const from = req.query.pageNo? ((req.query.pageNo-1)*size):0;
     const query = {
@@ -26,10 +26,10 @@ const serviceSearch = async (req, res) => {
     });
 
     result["docs"]=documents;
-    res.send(result);
+    return result;
 }
 
-const serviceInsert = async (req,res) => {
+const serviceInsert = async (req) => {
     const query = {
         index: 'politica_service',
         refresh:true,
@@ -37,7 +37,7 @@ const serviceInsert = async (req,res) => {
         }
     };
     await elsDB.index(query);
-    
+    //result 값 받아서 return 시켜주기.
 }
 
 module.exports = {

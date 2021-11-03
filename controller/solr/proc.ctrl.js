@@ -1,6 +1,5 @@
 const solrDB = require("../../models/solr/index");
-
-const procGet = (req,res) => {
+const procGet = (req) => new Promise((resolve,reject)=>{
     let query = 'q=';
     let paramsDict = {
         // 상세 params
@@ -47,8 +46,6 @@ const procGet = (req,res) => {
     query=query+' AND updated_at:['+toDate+' TO '+fromDate+']';
     //keyword, date, item_id는 쿼리에 항상 들어감.
 
-
-
     if(paramsDict["lang"]!==undefined){
         query=query+' AND language:'+paramsDict["lang"];
     }
@@ -70,16 +67,15 @@ const procGet = (req,res) => {
     query = encodeURI(query);
     solrDB.search(query, function(err, obj){
         if(err){
-            console.log(err);
+            reject();
         }else{
             obj.response.dcCount = obj.response.numFound;
+            console.log(obj);
             delete obj.response.numFound;
-            res.send(obj.response);
+            resolve(obj.response);
         }
     });
-}
-
-
+})
 
 module.exports = {
     Search:procGet
