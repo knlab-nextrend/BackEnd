@@ -7,11 +7,14 @@ const crawlDetail = async (req,res) => {
     if(itemId===undefined){
         res.status(400).send();
     }else{
-        const statusCode = parseIns(req.params.statusCode);
+        let statusCode = parseInt(req.query.statusCode);
+        let result;
         switch(statusCode){
             case 0:
-                procGet.Detail(req);
+                result = await procGet.Detail(req);
+                break;
         }
+        res.send(result);
     }
     
 
@@ -45,5 +48,6 @@ const crawlInsert = async (req,res) => {
 
 module.exports = {
     Search:crawlSearch,
-    Insert:crawlInsert
+    Insert:crawlInsert,
+    Detail:crawlDetail
 };

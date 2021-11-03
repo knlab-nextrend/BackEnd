@@ -1,8 +1,24 @@
 const { convertCrawlDocTo } = require("../../lib/libs");
 const solrDB = require("../../models/solr/index");
 
-const procDetail = (req) => new Promise(async (resolve,reject)=> {
-    const query = 'q=item_id:'+;
+const procDetail = (req) => new Promise((resolve,reject)=> {
+    let query = 'q=item_id:'+req.params.itemId;
+    query = encodeURI(query);
+    solrDB.search(query, function(err, obj){
+        if(err){
+            reject();
+        }else{
+            const newDocs = [];
+            
+            obj.response.dcCount = obj.response.numFound;
+            obj.response.docs.forEach((document)=>{
+                newDocs.push(convertCrawlDocTo(document,'solr'));
+            })
+            delete obj.response.numFound;
+            obj.response.docs=newDocs;
+            resolve(obj.response);
+        }
+    });
 });
 
 const procSearch = (req) => new Promise(async (resolve,reject)=>{

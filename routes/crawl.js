@@ -4,7 +4,7 @@ const imageUrl = require("../controller/nas/fileList.ctrl");
 const crawlSearch = require("../service/crawlService");
 
 router.get('/list/:statusCode',crawlSearch.Search);
-router.get('/detail/:itemId',crawlSearch.Search);
+router.get('/detail/:itemId',crawlSearch.Detail);
 router.get('/insert/',crawlSearch.Insert);
 router.get('/test/',imageUrl.getImage);
 
