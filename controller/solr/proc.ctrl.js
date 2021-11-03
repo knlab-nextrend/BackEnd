@@ -1,8 +1,11 @@
 const { convertCrawlDocTo } = require("../../lib/libs");
 const solrDB = require("../../models/solr/index");
 
-//왠진 모르겠지만, solr은 promise 콜백함수의 
-const procGet = (req) => new Promise((resolve,reject)=>{
+const procDetail = (req) => new Promise(async (resolve,reject)=> {
+    const query = 'q=item_id:'+;
+});
+
+const procSearch = (req) => new Promise(async (resolve,reject)=>{
     let query = 'q=';
     let paramsDict = {
         // 상세 params
@@ -83,7 +86,8 @@ const procGet = (req) => new Promise((resolve,reject)=>{
 })
 
 module.exports = {
-    Search:procGet
+    Search:procSearch,
+    Detail:procDetail
 };
 
 
