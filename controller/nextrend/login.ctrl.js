@@ -1,5 +1,6 @@
 const db = require("../../configs/db");
 const crypto = require("crypto");
+const jwt = require("../../modules/jwt");
 
 //ToDo : jwt로 access/refresh token 발급하여 보안 강화
 //https://cotak.tistory.com/102
@@ -14,9 +15,9 @@ const loginHashPW = (req, res) => {
   crypto.randomBytes(64, (err, buf) => {
     const salt = buf.toString("base64");
     //console.log("salt :: ", salt);
-    crypto.pbkdf2(req.query.userPW, salt, 1203947, 64, "sha512", (err, key) => {
+    crypto.pbkdf2(req.body.userPW, salt, 1203947, 64, "sha512", (err, key) => {
       if (err) {
-        res.send(err);
+        res.status(401).send(err);
       } else {
         //console.log("password :: ", key.toString("base64"));
         res.send({ salt: salt, PW: key.toString("base64") });
@@ -26,38 +27,47 @@ const loginHashPW = (req, res) => {
 };
 
 const loginOnLogin = (req, res) => {
-  //jwt 토큰 발급
-  //const secret = req.app.get('jwt-secret');
-
   const sql =
     'SELECT ifnull(`userPW`, NULL) AS `userPW`, ifnull(`salt`, NULL) AS `salt`, ifnull(`Category`, NULL) AS `Category` FROM `nt_users_list` RIGHT OUTER JOIN (SELECT "") AS `nt_users_list` ON `userID` = ?';
-  const param = [req.query.userID];
+  const param = [req.body.userID];
   db.query(sql, param, (err, data) => {
     if (!err) {
-      if (data[0].salt !== null) {
-        crypto.pbkdf2(
-          req.query.userPW,
-          data[0].salt,
-          1203947,
-          64,
-          "sha512",
-          (err, key) => {
-            console.log(
-              "비밀번호 일치 여부 :: ",
-              key.toString("base64") === data[0].userPW
-            );
-            // true : 아이디, 비밀번호 일치, false : 아이디 일치, 비밀번호 불일치
-            res.send({
-              result: key.toString("base64") === data[0].userPW,
-              Category: data[0].Category,
-            });
+      if(data[0].userPW === null){
+        res.status(401);
+        res.send();
+      }else{
+        crypto.pbkdf2(req.body.userPW,data[0].salt,1203947,64,"sha512", async (err, key) => {
+          if(err){
+            res.status(401);
+            res.send()
+          }else{
+            if(key.toString("base64") === data[0].userPW){
+              //아이디, 비밀번호 일치 시 token과 uid 발급
+
+              // user의 category를 가져와 payload에 포함시킴.
+              const user = {
+                userID:req.body.userID,
+                Category:data[0].Category
+              }
+              const jwtToken = await jwt.sign(user);
+              const refreshToken = await jwt.refresh();
+              console.log(jwtToken);
+              res.send({
+                uid:data[0].id,
+                token:jwtToken,
+                refreshToken:refreshToken,
+                permission:data[0].Category
+              });
+            }else{
+              //불일치 시 401 에러 전송
+              res.status(401);
+              res.send();
+            }
           }
-        );
-      } else {
-        // null : 아이디 불일치
-        res.send({ result: data[0].salt });
+        });
       }
     } else {
+      res.status(401);
       res.send(err);
     }
   });

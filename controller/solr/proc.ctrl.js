@@ -1,7 +1,27 @@
+const { convertCrawlDocTo } = require("../../lib/libs");
 const solrDB = require("../../models/solr/index");
 
+const procDetail = (req) => new Promise((resolve,reject)=> {
+    let query = 'q=item_id:'+req.params.itemId;
+    query = encodeURI(query);
+    solrDB.search(query, function(err, obj){
+        if(err){
+            reject();
+        }else{
+            const newDocs = [];
+            
+            obj.response.dcCount = obj.response.numFound;
+            obj.response.docs.forEach((document)=>{
+                newDocs.push(convertCrawlDocTo(document,'solr'));
+            })
+            delete obj.response.numFound;
+            obj.response.docs=newDocs;
+            resolve(obj.response);
+        }
+    });
+});
 
-const procGet = (req,res) => {
+const procSearch = (req) => new Promise(async (resolve,reject)=>{
     let query = 'q=';
     let paramsDict = {
         // 상세 params
@@ -27,8 +47,6 @@ const procGet = (req,res) => {
     //item_id 설정..
     if(paramsDict["itemId"]!==undefined){
         query=query+' AND item_id:'+paramsDict["itemId"];
-    }else{
-        query=query+' AND item_id:*';
     }
     //Date 설정.
     let fromDate;
@@ -46,9 +64,7 @@ const procGet = (req,res) => {
         toDate = toDate.toISOString();
     }
     query=query+' AND updated_at:['+toDate+' TO '+fromDate+']';
-    //keyword, date, item_id는 쿼리에 항상 들어감.
-
-
+    //keyword, date는 쿼리에 항상 들어감.
 
     if(paramsDict["lang"]!==undefined){
         query=query+' AND language:'+paramsDict["lang"];
@@ -71,19 +87,23 @@ const procGet = (req,res) => {
     query = encodeURI(query);
     solrDB.search(query, function(err, obj){
         if(err){
-            console.log(err);
+            reject();
         }else{
+            const newDocs = [];
             obj.response.dcCount = obj.response.numFound;
+            obj.response.docs.forEach((document)=>{
+                newDocs.push(convertCrawlDocTo(document,'solr'));
+            })
             delete obj.response.numFound;
-            res.send(obj.response);
+            obj.response.docs=newDocs;
+            resolve(obj.response);
         }
     });
-}
-
-
+})
 
 module.exports = {
-    Search:procGet
+    Search:procSearch,
+    Detail:procDetail
 };
 
 
