@@ -1,7 +1,7 @@
 const solrDB = require("../../models/solr/index");
-const { convertCrawlDocTo } = require("../../lib/libs");
 
-const procGet = (req,res) => {
+//왠진 모르겠지만, solr은 promise 콜백함수의 
+const procGet = (req) => new Promise((resolve,reject)=>{
     let query = 'q=';
     let paramsDict = {
         // 상세 params
@@ -44,7 +44,7 @@ const procGet = (req,res) => {
         toDate = toDate.toISOString();
     }
     query=query+' AND updated_at:['+toDate+' TO '+fromDate+']';
-    //keyword, date, item_id는 쿼리에 항상 들어감.
+    //keyword, date는 쿼리에 항상 들어감.
 
     if(paramsDict["lang"]!==undefined){
         query=query+' AND language:'+paramsDict["lang"];
@@ -64,26 +64,17 @@ const procGet = (req,res) => {
     query=query+'&rows='+paramsDict["listSize"];
     
     // 띄어쓰기--> %20
-    
     query = encodeURI(query);
     solrDB.search(query, function(err, obj){
         if(err){
-            //400 코드 반영해서 send
-            res.status(err.statusCode);
-            res.send();
+            reject();
         }else{
-            //결과 수정 조금 해주기.
-            let newDocs = [];
-            obj.response.docs.forEach((document)=>{
-                newDocs.push(convertCrawlDocTo(document,'solr'));
-            })
-            obj.response.docs = newDocs;
             obj.response.dcCount = obj.response.numFound;
             delete obj.response.numFound;
-            res.send(obj.response);
+            resolve(obj.response);
         }
     });
-}
+})
 
 module.exports = {
     Search:procGet

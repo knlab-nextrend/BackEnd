@@ -1,10 +1,10 @@
-const elsDB = require("../../models/els/index");
-const { convertCrawlDocTo } = require("../../lib/libs");
+const elsDB = require("../../models/els/index").elsDB;
+const config = require("../../models/els/index").config;
 
-const serviceSearch = async (req, res) => {
-    let size = req.query.listSize;
-    let from = req.query.pageNo? ((req.query.pageNo-1)*size):0;
-    let query = {
+const serviceSearch = (req) => new Promise(async (resolve,reject) =>{
+    const size = req.query.listSize;
+    const from = req.query.pageNo? ((req.query.pageNo-1)*size):0;
+    const query = {
         from:from,
         size:size,
         index: 'politica_service',
@@ -15,33 +15,28 @@ const serviceSearch = async (req, res) => {
         }
     };
 
-    console.dir(query);
     const value = await elsDB.search(query);
-
-    let result = {
+    const result = {
         "dcCount":value.body.hits.total.value
     };
-    let documents = [];
+    const documents = [];
     value.body.hits.hits.forEach((document)=>{
         doc = convertCrawlDocTo(document._source,'els');
         documents.push(doc);
     });
-
     result["docs"]=documents;
-    res.send(result);
-}
+    resolve(result);
+});
 
-const serviceInsert = async (req,res) => {
-    const value = await elsDB.post({
+const serviceInsert = async (req) => {
+    const query = {
         index: 'politica_service',
+        refresh:true,
         body: {
-            query: {
-                lang: 'painless',
-                source: 'ctx._source.times++',
-            }
         }
-    })
-    console.dir(value);
+    };
+    await elsDB.index(query);
+    //result 값 받아서 return 시켜주기.
 }
 
 module.exports = {
