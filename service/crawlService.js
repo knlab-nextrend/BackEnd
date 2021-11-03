@@ -1,6 +1,6 @@
 const procGet = require("../controller/solr/proc.ctrl");
 const getFileList = require("../controller/nas/fileList.ctrl").getImage;
-const captionCtrl = require("../controller/els/caption.ctrl");
+const elsCtrl = require("../controller/els/elsService.ctrl");
 
 const crawlSearch = async (req,res) => {
     let statusCode = parseInt(req.params.statusCode);
@@ -10,7 +10,7 @@ const crawlSearch = async (req,res) => {
             result = await procGet.Search(req);
             break;
         case 2:
-            result = await captionCtrl.Search(req);
+            result = await elsCtrl.Search(req);
             break;
     }
     if(result){
@@ -21,7 +21,7 @@ const crawlSearch = async (req,res) => {
 }
 
 const crawlInsert = async (req,res) => {
-    captionCtrl.Insert(req);
+    elsCtrl.Insert(req);
 }
 
 module.exports = {

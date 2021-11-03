@@ -1,4 +1,5 @@
 const elsDB = require("../../models/els/index").elsDB;
+const {convertCrawlDocTo} = require("../../lib/libs");
 const config = require("../../models/els/index").config;
 
 const serviceSearch = (req) => new Promise(async (resolve,reject) =>{

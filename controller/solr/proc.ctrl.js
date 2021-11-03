@@ -1,3 +1,4 @@
+const { convertCrawlDocTo } = require("../../lib/libs");
 const solrDB = require("../../models/solr/index");
 
 //왠진 모르겠지만, solr은 promise 콜백함수의 
@@ -69,8 +70,13 @@ const procGet = (req) => new Promise((resolve,reject)=>{
         if(err){
             reject();
         }else{
+            const newDocs = [];
             obj.response.dcCount = obj.response.numFound;
+            obj.response.docs.forEach((document)=>{
+                newDocs.push(convertCrawlDocTo(document,'solr'));
+            })
             delete obj.response.numFound;
+            obj.response.docs=newDocs;
             resolve(obj.response);
         }
     });
