@@ -1,7 +1,7 @@
 const elsDB = require("../../models/els/index").elsDB;
 const config = require("../../models/els/index").config;
 
-const serviceSearch = async (req) => {
+const serviceSearch = (req) => new Promise(async (resolve,reject) =>{
     const size = req.query.listSize;
     const from = req.query.pageNo? ((req.query.pageNo-1)*size):0;
     const query = {
@@ -16,7 +16,6 @@ const serviceSearch = async (req) => {
     };
 
     const value = await elsDB.search(query);
-
     const result = {
         "dcCount":value.body.hits.total.value
     };
@@ -24,10 +23,9 @@ const serviceSearch = async (req) => {
     value.body.hits.hits.forEach((document)=>{
         documents.push(document._source);
     });
-
     result["docs"]=documents;
-    return result;
-}
+    resolve(result);
+});
 
 const serviceInsert = async (req) => {
     const query = {

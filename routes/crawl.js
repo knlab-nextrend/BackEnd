@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const imageUrl = require("../controller/nas/fileList.ctrl");
-const crawlSearch = require("../service/fusionAPI");
+const crawlSearch = require("../service/crawlService");
 
 router.get('/list/:statusCode',crawlSearch.Search);
 router.get('/insert/',crawlSearch.Insert);

@@ -8,10 +8,9 @@ const crawlSearch = async (req,res) => {
     switch(statusCode){
         case 0:
             result = await procGet.Search(req);
-            console.log(result);
             break;
-        case 1:
-            result = captionCtrl.Search(req);
+        case 2:
+            result = await captionCtrl.Search(req);
             break;
     }
     if(result){

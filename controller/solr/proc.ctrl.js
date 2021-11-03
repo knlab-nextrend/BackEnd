@@ -1,5 +1,7 @@
 const solrDB = require("../../models/solr/index");
-const procGet = (req) => new Promise((resolve,reject)=>{
+
+
+const procGet = (req) => new Promise(async (resolve,reject)=>{
     let query = 'q=';
     let paramsDict = {
         // 상세 params
@@ -25,8 +27,6 @@ const procGet = (req) => new Promise((resolve,reject)=>{
     //item_id 설정..
     if(paramsDict["itemId"]!==undefined){
         query=query+' AND item_id:'+paramsDict["itemId"];
-    }else{
-        query=query+' AND item_id:*';
     }
     //Date 설정.
     let fromDate;
@@ -44,7 +44,7 @@ const procGet = (req) => new Promise((resolve,reject)=>{
         toDate = toDate.toISOString();
     }
     query=query+' AND updated_at:['+toDate+' TO '+fromDate+']';
-    //keyword, date, item_id는 쿼리에 항상 들어감.
+    //keyword, date는 쿼리에 항상 들어감.
 
     if(paramsDict["lang"]!==undefined){
         query=query+' AND language:'+paramsDict["lang"];
@@ -65,12 +65,11 @@ const procGet = (req) => new Promise((resolve,reject)=>{
     
     // 띄어쓰기--> %20
     query = encodeURI(query);
-    solrDB.search(query, function(err, obj){
+    await solrDB.search(query, function(err, obj){
         if(err){
             reject();
         }else{
             obj.response.dcCount = obj.response.numFound;
-            console.log(obj);
             delete obj.response.numFound;
             resolve(obj.response);
         }
