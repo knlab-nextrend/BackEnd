@@ -23,7 +23,12 @@ const procGet = (req,res) => {
     }else{
         query=query+'contents:'+paramsDict["keyword"];
     }
-
+    //item_id 설정..
+    if(paramsDict["itemId"]!==undefined){
+        query=query+' AND item_id:'+paramsDict["itemId"];
+    }else{
+        query=query+' AND item_id:*';
+    }
     //Date 설정.
     let fromDate;
     let toDate;
@@ -40,14 +45,14 @@ const procGet = (req,res) => {
         toDate = toDate.toISOString();
     }
     query=query+' AND updated_at:['+toDate+' TO '+fromDate+']';
-    //keyword, date는 쿼리에 항상 들어감.
+    //keyword, date, item_id는 쿼리에 항상 들어감.
+
+
 
     if(paramsDict["lang"]!==undefined){
         query=query+' AND language:'+paramsDict["lang"];
     }
-    if(paramsDict["itemId"]!==undefined){
-        query=query+' AND item_id:'+paramsDict["itemId"];
-    }
+
     /* subscribed 사용 하기 위해선 db 협의 필요
     if(paramsDict["subscribed"]!==undefined){
         query=query+' AND subscribed:'+paramsDict["subscribed"];
@@ -56,12 +61,11 @@ const procGet = (req,res) => {
 
     //pagination 기능 param은 항상 뒤에 붙음.
     if(paramsDict["pageNo"]!==undefined){
-        query=query+'&start='+paramsDict["pageNo"];
+        let documentIndex = (parseInt(paramsDict["pageNo"])-1)*paramsDict["listSize"];
+        query=query+'&start='+documentIndex.toString();
     }
-    if(paramsDict["listSize"]!==undefined){
-        query=query+'&rows='+paramsDict["listSize"];
-    }
-
+    query=query+'&rows='+paramsDict["listSize"];
+    
     // 띄어쓰기--> %20
     query = encodeURI(query);
     solrDB.search(query, function(err, obj){
@@ -74,6 +78,8 @@ const procGet = (req,res) => {
         }
     });
 }
+
+
 
 module.exports = {
     Search:procGet

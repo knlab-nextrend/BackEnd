@@ -2,8 +2,8 @@ const procGet = require("../controller/solr/proc.ctrl");
 const captionCtrl = require("../controller/els/caption.ctrl");
 
 const crawlSearch = async (req,res) => {
-    let id = parseInt(req.params.id);
-    switch(id){
+    let statusCode = parseInt(req.params.statusCode);
+    switch(statusCode){
         case 0:
             procGet.Search(req,res);
             break;

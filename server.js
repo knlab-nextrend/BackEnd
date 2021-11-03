@@ -3,10 +3,12 @@ const app = express();
 const db = require("./configs/db");
 const {stream} = require('./configs/winston');
 const morgan = require('morgan');
+const cors = require('cors');
 
 //ToDo : 개발모드, 배포모드에 따라 settings 분기 시키고... 따로 받아주기. (script에서 가능..?)
 //const config = require(path.join(__dirname,'..','..', 'configs', 'settings.json'))[dbtype][env];
 app.use(express.json());
+app.use(cors());
 
 const nextrend = require('./routes/nextrend');
 //const solr = require('./routes/solr');

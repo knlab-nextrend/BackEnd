@@ -1,16 +1,21 @@
 const elsDB = require("../../models/els/index");
 
 const serviceSearch = async (req, res) => {
-    let body = {};
-
-    const value = await elsDB.search({
+    let size = req.query.listSize;
+    let from = req.query.pageNo? ((req.query.pageNo-1)*size):0;
+    let query = {
+        from:from,
+        size:size,
         index: 'politica_service',
         body: {
             query: {
             match_all: {}
             }
         }
-    });
+    };
+
+    console.dir(query);
+    const value = await elsDB.search(query);
 
     let result = {
         "dcCount":value.body.hits.total.value
