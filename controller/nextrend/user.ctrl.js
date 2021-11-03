@@ -60,7 +60,6 @@ const userDelete = (req,res) => {
     .catch( err => { throw err })
 }
 
-
 module.exports = {
   Add: userAdd,
   Get: userGet,

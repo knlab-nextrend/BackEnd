@@ -27,7 +27,6 @@ const loginHashPW = (req, res) => {
 };
 
 const loginOnLogin = (req, res) => {
-  console.log(req.headers);
   const sql =
     'SELECT ifnull(`userPW`, NULL) AS `userPW`, ifnull(`salt`, NULL) AS `salt`, ifnull(`Category`, NULL) AS `Category` FROM `nt_users_list` RIGHT OUTER JOIN (SELECT "") AS `nt_users_list` ON `userID` = ?';
   const param = [req.body.userID];
@@ -56,7 +55,8 @@ const loginOnLogin = (req, res) => {
               res.send({
                 uid:data[0].id,
                 token:jwtToken,
-                refreshToken:refreshToken
+                refreshToken:refreshToken,
+                permission:data[0].Category
               });
             }else{
               //불일치 시 401 에러 전송

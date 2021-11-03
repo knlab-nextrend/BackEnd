@@ -1,5 +1,20 @@
 const {sign,verify,refreshVerify} = require("../modules/jwt");
+const getUserByUid = require("./nextrend/userSql.ctrl").getUserByUid;
 const jwt = require("jsonwebtoken");
+
+
+const getUser = async (req,res) => {
+    if(req.headers.authorization){
+        const authToken = req.headers.authorization.split('Bearer ')[1];
+        const userInfo = await verify(authToken);
+        const data = await getUserByUid(userInfo.userID);
+        if(data){
+            res.send(data);
+        }else{
+            res.status(401).send();
+        }
+    }
+}
 
 const refresh = async (req,res) => {
     if(req.headers.authorization && req.headers.refresh){
@@ -26,4 +41,9 @@ const refresh = async (req,res) => {
         //
 
     }
+}
+
+module.exports = {
+    getUser:getUser,
+    refresh:refresh
 }

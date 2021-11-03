@@ -1,4 +1,3 @@
-const randToken = require("rand-token");
 const jwt = require("jsonwebtoken");
 const secretKey = require("../configs/keys").secretKey;
 const options = require("../configs/keys").option;
@@ -15,6 +14,7 @@ const sign = async(user) =>{
 }
 
 const verify = async (token) => {
+    
     let decoded;
     try{
         decoded = jwt.verify(token,secretKey);
@@ -29,7 +29,7 @@ const verify = async (token) => {
             message: err.message,
           };
     }
-} 
+}
 
 const refresh = () => {
     return jwt.sign({},secretKey,{

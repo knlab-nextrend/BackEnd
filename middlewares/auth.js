@@ -1,7 +1,6 @@
 const jwt = require("../modules/jwt");
 
 const authJWT = async (req,res,next) => {
-    console.log(req.headers.authorization);
     if(req.headers.authorization){
         const token = req.headers.authorization.split('Bearer ')[1]; //header에서 token을 가져옴.
         const result = await jwt.verify(token);
