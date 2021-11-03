@@ -1,7 +1,10 @@
 const solrDB = require("../../models/solr/index");
 
+const procDetail = (req) => new Promise(async (resolve,reject)=> {
+    const query = 'q=item_id:'+;
+});
 
-const procGet = (req) => new Promise(async (resolve,reject)=>{
+const procSearch = (req) => new Promise(async (resolve,reject)=>{
     let query = 'q=';
     let paramsDict = {
         // 상세 params
@@ -77,7 +80,8 @@ const procGet = (req) => new Promise(async (resolve,reject)=>{
 })
 
 module.exports = {
-    Search:procGet
+    Search:procSearch,
+    Detail:procDetail
 };
 
 

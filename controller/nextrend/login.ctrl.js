@@ -26,6 +26,7 @@ const loginHashPW = (req, res) => {
 };
 
 const loginOnLogin = (req, res) => {
+  console.log(req);
   //jwt 토큰 발급
   //const secret = req.app.get('jwt-secret');
 
