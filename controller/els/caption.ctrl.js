@@ -1,9 +1,10 @@
-const elsDB = require("../../models/els/index");
+const elsDB = require("../../models/els/index").elsDB;
+const config = require("../../models/els/index").config;
 
 const serviceSearch = async (req, res) => {
-    let size = req.query.listSize;
-    let from = req.query.pageNo? ((req.query.pageNo-1)*size):0;
-    let query = {
+    const size = req.query.listSize;
+    const from = req.query.pageNo? ((req.query.pageNo-1)*size):0;
+    const query = {
         from:from,
         size:size,
         index: 'politica_service',
@@ -14,13 +15,12 @@ const serviceSearch = async (req, res) => {
         }
     };
 
-    console.dir(query);
     const value = await elsDB.search(query);
 
-    let result = {
+    const result = {
         "dcCount":value.body.hits.total.value
     };
-    let documents = [];
+    const documents = [];
     value.body.hits.hits.forEach((document)=>{
         documents.push(document._source);
     });
@@ -30,16 +30,14 @@ const serviceSearch = async (req, res) => {
 }
 
 const serviceInsert = async (req,res) => {
-    const value = await elsDB.post({
+    const query = {
         index: 'politica_service',
+        refresh:true,
         body: {
-            query: {
-                lang: 'painless',
-                source: 'ctx._source.times++',
-            }
         }
-    })
-    console.dir(value);
+    };
+    await elsDB.index(query);
+    
 }
 
 module.exports = {
