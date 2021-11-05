@@ -31,7 +31,7 @@ const crawlSearch = async (req,res) => {
                 result = await procGet.Search(req);
                 break;
             case 2:
-                result = await captionCtrl.Search(req);
+                result = await elsCtrl.Search(req);
                 break;
         }
         if(result){
