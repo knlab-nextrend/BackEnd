@@ -4,6 +4,7 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.15.0",
+    "axios": "^0.24.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "jsftp": "^2.1.3",
