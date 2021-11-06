@@ -30,13 +30,34 @@ const serviceSearch = (req) => new Promise(async (resolve,reject) =>{
 });
 
 const serviceStage = (req) => new Promise(async (resolve,reject) =>{
+    let doc = req.body.docs;
+    doc["stat"] = 2;
+    doc["item_id"] = req.body.itemId;
+    doc["is_crawled"] = true;
+    doc["dc_cover"] = null;
+    doc["dc_hit"] = null;
+    doc["dc_dt_regi"] = "1970-01-01T00:00:00+00:00";
+    doc["dc_country_pub"] = [];
+    doc["dc_country"] = [];
+    doc["dc_code"] = [];
+    doc["dc_link"] = null;
+    doc["dc_smry_kr"] = null;
+    doc["dc_title_kr"] = null;
+    doc["dc_cat"] = null;
+    doc["dc_type"] = null;
+    doc["dc_publisher"] = null;
+
     const query = {
         index: 'politica_service',
         refresh:true,
-        body: req.body
+        body: doc
     };
-    //const value = await elsDB.index(query);
-    resolve(true);
+    const result = await elsDB.index(query);
+    if(result.statusCode==201){
+        resolve(true);
+    }else{
+        resolve(false);
+    }
     //result 값 받아서 return 시켜주기.
 });
 
