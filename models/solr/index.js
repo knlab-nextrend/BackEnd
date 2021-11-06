@@ -24,4 +24,7 @@ const solrDB = solr.createClient(
 @apipublic
 */
 
-module.exports = solrDB;
+module.exports = {
+    solrDB:solrDB,
+    config:config
+};

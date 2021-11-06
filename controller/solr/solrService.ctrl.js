@@ -1,19 +1,53 @@
 const { convertCrawlDocTo } = require("../../lib/libs");
-const solrDB = require("../../models/solr/index");
+const solrDB = require("../../models/solr/index").solrDB;
 
-const procDetail = (req) => new Promise((resolve,reject)=> {
+const solrDelete = (req) => new Promise(async(resolve,reject)=>{
+    const query = 'item_id:'+req.params.itemId;
+    solrDB.deleteByQuery(query,function(err,obj){
+        if(err){
+            resolve(false);
+        }else{
+            solrDB.softCommit();
+            resolve(true);
+        }
+    });
+})
+
+const solrKeep = (req) => new Promise(async (resolve,reject)=>{
+    const itemDetail = await solrDetail(req,true);
+    const id = itemDetail.docs["id"];
+
+    const query = {
+        'id': id,
+        'stat':{'set':1},
+    };
+    
+    solrDB.add(query, function(err, obj) {
+        if (err) {
+            resolve(false);
+        } else {
+            solrDB.softCommit();
+            resolve(true);
+        }
+      });
+});
+
+const solrDetail = (req,returnId=false) => new Promise((resolve,reject)=> {
     let query = 'q=item_id:'+req.params.itemId;
     query = encodeURI(query);
     solrDB.search(query, function(err, obj){
         if(err){
-            reject();
+            console.log(err);
+            resolve(false);
         }else{
             const newDocs = [];
-            
             obj.response.dcCount = obj.response.numFound;
             obj.response.docs.forEach((document)=>{
                 newDocs.push(convertCrawlDocTo(document,'solr'));
             })
+            if(returnId){
+                newDocs["id"]=obj.response.docs[0]["id"];
+            }
             delete obj.response.numFound;
             obj.response.docs=newDocs;
             resolve(obj.response);
@@ -21,7 +55,7 @@ const procDetail = (req) => new Promise((resolve,reject)=> {
     });
 });
 
-const procSearch = (req) => new Promise(async (resolve,reject)=>{
+const solrSearch = (req) => new Promise(async (resolve,reject)=>{
     let query = 'q=';
     let paramsDict = {
         // 상세 params
@@ -87,7 +121,7 @@ const procSearch = (req) => new Promise(async (resolve,reject)=>{
     query = encodeURI(query);
     solrDB.search(query, function(err, obj){
         if(err){
-            reject();
+            resolve(false);
         }else{
             const newDocs = [];
             obj.response.dcCount = obj.response.numFound;
@@ -102,8 +136,10 @@ const procSearch = (req) => new Promise(async (resolve,reject)=>{
 })
 
 module.exports = {
-    Search:procSearch,
-    Detail:procDetail
+    Search:solrSearch,
+    Detail:solrDetail,
+    Keep:solrKeep,
+    Delete:solrDelete
 };
 
 
