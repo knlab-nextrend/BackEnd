@@ -55,8 +55,8 @@ const solrDetail = (req,returnId=false) => new Promise((resolve,reject)=> {
     });
 });
 
-const solrSearch = (req) => new Promise(async (resolve,reject)=>{
-    let query = 'q=';
+const solrSearch = (req,stat) => new Promise(async (resolve,reject)=>{
+    let query = "q=";
     let paramsDict = {
         // 상세 params
         "keyword": req.query.keyword,
@@ -73,6 +73,9 @@ const solrSearch = (req) => new Promise(async (resolve,reject)=>{
 
     //null check and solr query 형태로 변환
     //키워드 없을 시 contents 컬럼 전체
+    
+    
+
     if(paramsDict["keyword"]===undefined){
         query=query+'contents:*';
     }else{
@@ -81,6 +84,13 @@ const solrSearch = (req) => new Promise(async (resolve,reject)=>{
     //item_id 설정..
     if(paramsDict["itemId"]!==undefined){
         query=query+' AND item_id:'+paramsDict["itemId"];
+    }
+
+    //stat이 0일 경우, 1이 아닌 대상을 조회함.
+    if(stat===1){
+        query=query+' AND stat:'+stat;
+    }else{
+        query=query+' AND !stat:1';
     }
     //Date 설정.
     let fromDate;
