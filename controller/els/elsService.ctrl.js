@@ -29,18 +29,18 @@ const serviceSearch = (req) => new Promise(async (resolve,reject) =>{
     resolve(result);
 });
 
-const serviceInsert = async (req) => {
+const serviceStage = (req) => new Promise(async (resolve,reject) =>{
     const query = {
         index: 'politica_service',
         refresh:true,
-        body: {
-        }
+        body: req.body
     };
-    await elsDB.index(query);
+    //const value = await elsDB.index(query);
+    resolve(true);
     //result 값 받아서 return 시켜주기.
-}
+});
 
 module.exports = {
     Search:serviceSearch,
-    Insert:serviceInsert
+    Stage:serviceStage
 }

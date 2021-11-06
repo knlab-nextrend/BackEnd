@@ -100,14 +100,15 @@ const crawlDelete = async(req,res)=>{
     }
 }
 
-const crawlInsert = async (req,res) => {
-    elsCtrl.Insert(req);
+const crawlStage = async (req,res) => {
+    await elsCtrl.Stage(req);
+    res.status(400).send();
 }
 
 module.exports = {
     Search:crawlSearch,
-    Insert:crawlInsert,
     Detail:crawlDetail,
     Keep:crawlKeep,
     Delete:crawlDelete,
+    Stage:crawlStage,
 };
