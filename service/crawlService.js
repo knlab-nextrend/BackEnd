@@ -35,10 +35,13 @@ const crawlDetail = async (req,res) => {
         let result;
         switch(statusCode){
             case 0:
+            case 1:
                 result = await solrCtrl.Detail(req);
                 if(result.docs.length===1){
                     result.docs=result.docs[0];
-                    result.docs["stat"]=0;
+                    if(result.docs["stat"]===undefined){
+                        result.docs["stat"]=0;
+                    }
                 }else{
                     res.status(400).send();
                 }
@@ -62,7 +65,8 @@ const crawlSearch = async (req,res) => {
         let result;
         switch(statusCode){
             case 0:
-                result = await solrCtrl.Search(req);
+            case 1:
+                result = await solrCtrl.Search(req,stat=statusCode);
                 break;
             case 2:
                 result = await elsCtrl.Search(req);
@@ -70,7 +74,9 @@ const crawlSearch = async (req,res) => {
         }
         if(result){
             result.docs.forEach((doc)=>{
-                doc["stat"]=0;
+                if(doc["stat"]===undefined){
+                    doc["stat"]=0;
+                }
             });
             res.send(result);
         }else{
@@ -102,8 +108,26 @@ const crawlDelete = async(req,res)=>{
 }
 
 const crawlStage = async (req,res) => {
-    await elsCtrl.Stage(req);
-    res.status(400).send();
+    const itemId = req.body.itemId;
+    if(itemId===undefined){
+        res.status(400).send();
+    }else{
+        let statusCode = parseInt(req.body.statusCode);
+        let result;
+        switch(statusCode){
+            case 0:
+            case 1:
+                result = await elsCtrl.Stage(req);
+                break;
+        }
+        if(result){
+            //db 한쪽만 죽어있을 경우를 상정해서 나중에 복구하는 코드 만들어 놓기.
+            await solrCtrl.Delete(req);
+            res.status(200).send();
+        }else{
+            res.status(400).send();
+        }
+    }
 }
 
 module.exports = {
