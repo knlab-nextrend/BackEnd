@@ -38,7 +38,9 @@ const crawlDetail = async (req,res) => {
                 result = await solrCtrl.Detail(req);
                 if(result.docs.length===1){
                     result.docs=result.docs[0];
-                    result.docs["stat"]=0;
+                    if(result.docs["stat"]===undefined){
+                        result.docs["stat"]=0;
+                    }
                 }else{
                     res.status(400).send();
                 }
@@ -62,6 +64,7 @@ const crawlSearch = async (req,res) => {
         let result;
         switch(statusCode){
             case 0:
+            case 1:
                 result = await solrCtrl.Search(req);
                 break;
             case 2:
@@ -70,7 +73,9 @@ const crawlSearch = async (req,res) => {
         }
         if(result){
             result.docs.forEach((doc)=>{
-                doc["stat"]=0;
+                if(doc["stat"]===undefined){
+                    doc["stat"]=0;
+                }
             });
             res.send(result);
         }else{
@@ -102,8 +107,12 @@ const crawlDelete = async(req,res)=>{
 }
 
 const crawlStage = async (req,res) => {
-    await elsCtrl.Stage(req);
-    res.status(400).send();
+    const result = await elsCtrl.Stage(req);
+    if(result){
+        res.status(200).send();
+    }else{
+        res.status(400).send();
+    }
 }
 
 module.exports = {
