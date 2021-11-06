@@ -1,4 +1,4 @@
-const procGet = require("../controller/solr/proc.ctrl");
+const solrCtrl = require("../controller/solr/solrService.ctrl");
 const getFileList = require("../controller/nas/fileList.ctrl").getImage;
 const elsCtrl = require("../controller/els/elsService.ctrl");
 
@@ -13,7 +13,8 @@ const crawlKeep = async (req,res) => {
         let result;
         switch(statusCode){
             case 0:
-                result = await procGet.Keep(req);
+            case 1:
+                result = await solrCtrl.Keep(req);
                 break;
         }
         if(result){
@@ -34,7 +35,7 @@ const crawlDetail = async (req,res) => {
         let result;
         switch(statusCode){
             case 0:
-                result = await procGet.Detail(req);
+                result = await solrCtrl.Detail(req);
                 if(result.docs.length===1){
                     result.docs=result.docs[0];
                     result.docs["stat"]=0;
@@ -61,7 +62,7 @@ const crawlSearch = async (req,res) => {
         let result;
         switch(statusCode){
             case 0:
-                result = await procGet.Search(req);
+                result = await solrCtrl.Search(req);
                 break;
             case 2:
                 result = await elsCtrl.Search(req);
@@ -81,7 +82,6 @@ const crawlSearch = async (req,res) => {
 //router.delete('/detail/:itemId',crawlSearch.Delete);
 const crawlDelete = async(req,res)=>{
     const itemId = parseInt(req.params.itemId);
-    //안되면 params 시도 혹은 query 시도.
     if(itemId===undefined){
         res.status(400).send();
     }else{
@@ -89,7 +89,8 @@ const crawlDelete = async(req,res)=>{
         let result;
         switch(statusCode){
             case 0:
-                result = await procGet.Delete(req);
+            case 1:
+                result = await solrCtrl.Delete(req);
                 break;
         }
         if(result){

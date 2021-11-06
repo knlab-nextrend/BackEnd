@@ -1,31 +1,23 @@
 const { convertCrawlDocTo } = require("../../lib/libs");
 const solrDB = require("../../models/solr/index").solrDB;
-const config = require("../../models/solr/index").config;
-const axios = require("axios");
 
-const procDelete = (req) => new Promise((resolve,reject)=>{
-    resolve(true);
-    /*
-    let itemId = req.params.itemId;
-    var query = 'item_id:'+itemId;
-
+const solrDelete = (req) => new Promise(async(resolve,reject)=>{
+    const query = 'item_id:'+req.params.itemId;
     solrDB.deleteByQuery(query,function(err,obj){
         if(err){
             resolve(false);
         }else{
-            resoleve(true);
+            solrDB.softCommit();
+            resolve(true);
         }
-       // Do not forget to commit now
-       // to see the changes
     });
-    */
 })
 
-const procKeep = (req) => new Promise(async (resolve,reject)=>{
-    const itemDetail = await procDetail(req,true);
-    let id = itemDetail.docs["id"];
+const solrKeep = (req) => new Promise(async (resolve,reject)=>{
+    const itemDetail = await solrDetail(req,true);
+    const id = itemDetail.docs["id"];
 
-    let query = {
+    const query = {
         'id': id,
         'stat':{'set':1},
     };
@@ -40,7 +32,7 @@ const procKeep = (req) => new Promise(async (resolve,reject)=>{
       });
 });
 
-const procDetail = (req,returnId=false) => new Promise((resolve,reject)=> {
+const solrDetail = (req,returnId=false) => new Promise((resolve,reject)=> {
     let query = 'q=item_id:'+req.params.itemId;
     query = encodeURI(query);
     solrDB.search(query, function(err, obj){
@@ -63,7 +55,7 @@ const procDetail = (req,returnId=false) => new Promise((resolve,reject)=> {
     });
 });
 
-const procSearch = (req) => new Promise(async (resolve,reject)=>{
+const solrSearch = (req) => new Promise(async (resolve,reject)=>{
     let query = 'q=';
     let paramsDict = {
         // 상세 params
@@ -144,10 +136,10 @@ const procSearch = (req) => new Promise(async (resolve,reject)=>{
 })
 
 module.exports = {
-    Search:procSearch,
-    Detail:procDetail,
-    Keep:procKeep,
-    Delete:procDelete
+    Search:solrSearch,
+    Detail:solrDetail,
+    Keep:solrKeep,
+    Delete:solrDelete
 };
 
 
