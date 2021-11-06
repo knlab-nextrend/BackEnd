@@ -22,56 +22,30 @@ const procDelete = (req) => new Promise((resolve,reject)=>{
 })
 
 const procKeep = (req) => new Promise(async (resolve,reject)=>{
-    resolve(true);
-    /*
-    //http://10.224.143.172:8983/solr/knowledge_combined/update?commit=true --data-binary $'[{"id" : "1", "site_name"  : {"set":"Test new change"} }]'
-    let query = {
-        'item_id': req.params.itemId,
-        'stat':{'set':1},
-        'language':{'set':["ja","en"]}
-    };
+    const itemDetail = await procDetail(req,true);
+    let id = itemDetail.docs["id"];
 
-    const data = JSON.stringify(query);
-    
-    await axios.get("http://"+config.host+":"+config.port+"/solr/"+config.core+"/update?commit=true --data-binary $'["+data+"]'")
-    .then((result)=>{
-        console.log("pass");
-        //console.log(result);
-    }).catch((err)=>{
-        console.log("no");
-
-        //console.log(err);
-    });
-    resolve(true);
-    */
-    
-    /*
-    let itemId = req.body.itemId;
     let query = {
-        'item_id': itemId,
+        'id': id,
         'stat':{'set':1},
-        'language':{'set':["ja","en"]}
     };
     
     solrDB.add(query, function(err, obj) {
         if (err) {
-            console.log(err);
             resolve(false);
         } else {
             solrDB.softCommit();
-            //작성 요
             resolve(true);
         }
       });
-      */
 });
 
-const procDetail = (req) => new Promise((resolve,reject)=> {
+const procDetail = (req,returnId=false) => new Promise((resolve,reject)=> {
     let query = 'q=item_id:'+req.params.itemId;
     query = encodeURI(query);
     solrDB.search(query, function(err, obj){
         if(err){
-            
+            console.log(err);
             resolve(false);
         }else{
             const newDocs = [];
@@ -79,6 +53,9 @@ const procDetail = (req) => new Promise((resolve,reject)=> {
             obj.response.docs.forEach((document)=>{
                 newDocs.push(convertCrawlDocTo(document,'solr'));
             })
+            if(returnId){
+                newDocs["id"]=obj.response.docs[0]["id"];
+            }
             delete obj.response.numFound;
             obj.response.docs=newDocs;
             resolve(obj.response);
