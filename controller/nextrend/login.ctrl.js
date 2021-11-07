@@ -1,11 +1,7 @@
 const db = require("../../configs/db");
 const crypto = require("crypto");
 const jwt = require("../../modules/jwt");
-
-//ToDo : jwt로 access/refresh token 발급하여 보안 강화
-//https://cotak.tistory.com/102
-//https://velopert.com/2448
-//const jwt = require('jsonwebtoken');
+const redisClient = require("../../modules/redis");
 
 const loginAttempt = (req, res) => {
   res.send({ data: "data" });
@@ -51,7 +47,10 @@ const loginOnLogin = (req, res) => {
               }
               const jwtToken = await jwt.sign(user);
               const refreshToken = await jwt.refresh();
-              console.log(jwtToken);
+
+              // 발급한 refreshToken과 userID를 redis에 저장..
+              redisClient.set(user.userID, refreshToken);
+
               res.send({
                 uid:data[0].id,
                 token:jwtToken,

@@ -7,6 +7,8 @@ const tokenCtrl = require("../controller/token");
 const authJWT = require("../middlewares/auth");
 
 router.get("/user/",authJWT,tokenCtrl.getUser);
+router.get("/refresh",tokenCtrl.refresh);
+
 router.post("/user/add", userCtrl.Add);
 router.get("/user/get", authJWT,userCtrl.Get);
 router.post("/user/modify", userCtrl.Modify);

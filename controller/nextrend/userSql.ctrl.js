@@ -10,7 +10,7 @@ const getUserByUid = (uid) => new Promise((resolve, reject)=>{
     const param = [uid];
     db.query(query, param, (err,data) => {
         if(err){
-            reject(false);
+            resolve(false);
         }else{
             const result = data[0];
             resolve(result);
