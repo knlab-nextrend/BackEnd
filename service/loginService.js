@@ -17,7 +17,6 @@ const getHash = async (req,res) => {
 const onLogin = async (req,res) => {
     if(req.body.userID&&req.body.userPW){
         const result = await loginCtrl.OnLogin(req.body.userID,req.body.userPW);
-        console.log(result);
         if(result.message === undefined){
             res.send(result);
         }else{

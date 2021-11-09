@@ -37,7 +37,6 @@ const solrDetail = (req,returnId=false) => new Promise((resolve,reject)=> {
     query = encodeURI(query);
     solrDB.search(query, function(err, obj){
         if(err){
-            console.log(err);
             resolve(false);
         }else{
             obj.response.docs = convertCrawlDocTo(obj.response.docs[0],'solr')

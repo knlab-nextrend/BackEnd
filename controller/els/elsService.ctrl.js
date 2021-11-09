@@ -2,7 +2,32 @@ const elsDB = require("../../models/els/index").elsDB;
 const {convertCrawlDocTo} = require("../../lib/libs");
 const config = require("../../models/els/index").config;
 
-const serviceSearch = (req) => new Promise(async (resolve,reject) =>{
+const elsDetail = (req) => new Promise(async (resolve,reject)=>{
+    const query = {
+        index: 'politica_service',
+        body: {
+            query: {
+                match : {
+                    item_id:req.params.itemId
+                }
+            }
+        }
+    };
+
+    const value = await elsDB.search(query);
+    if(value.statusCode==200){
+        const document = value.body.hits.hits[0];
+        const result={
+            docs:convertCrawlDocTo(document._source,'els')
+        }
+        resolve(result);
+    }else{
+        resolve(false);
+    }
+    
+});
+
+const elsSearch = (req) => new Promise(async (resolve,reject) =>{
     const size = req.query.listSize;
     const from = req.query.pageNo? ((req.query.pageNo-1)*size):0;
     const query = {
@@ -29,7 +54,7 @@ const serviceSearch = (req) => new Promise(async (resolve,reject) =>{
     resolve(result);
 });
 
-const serviceStage = (req) => new Promise(async (resolve,reject) =>{
+const elsStage = (req) => new Promise(async (resolve,reject) =>{
     let doc = req.body.docs;
     doc["stat"] = 2;
     doc["item_id"] = req.body.itemId;
@@ -41,8 +66,8 @@ const serviceStage = (req) => new Promise(async (resolve,reject) =>{
     doc["dc_country"] = [];
     doc["dc_code"] = [];
     doc["dc_link"] = null;
-    doc["dc_smry_kr"] = null;
-    doc["dc_title_kr"] = null;
+    doc["dc_smry_kr"] = req.body.dc_smry_kr || null;
+    doc["dc_title_kr"] = req.body.dc_title_kr || null;
     doc["dc_cat"] = null;
     doc["dc_type"] = null;
     doc["dc_publisher"] = null;
@@ -62,6 +87,7 @@ const serviceStage = (req) => new Promise(async (resolve,reject) =>{
 });
 
 module.exports = {
-    Search:serviceSearch,
-    Stage:serviceStage
+    Search:elsSearch,
+    Stage:elsStage,
+    Detail:elsDetail
 }

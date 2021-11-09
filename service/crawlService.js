@@ -29,7 +29,7 @@ const crawlKeep = async (req,res) => {
 const crawlDetail = async (req,res) => {
     const itemId = parseInt(req.params.itemId);
     if(itemId===undefined){
-        res.status(400).send(); 
+        res.status(400).send({message:"no item_id"}); 
     }else{
         let statusCode = parseInt(req.query.statusCode);
         let result;
@@ -37,20 +37,23 @@ const crawlDetail = async (req,res) => {
             case 0:
             case 1:
                 result = await solrCtrl.Detail(req);
-                if(result.docs.length===1){
-                    result.docs=result.docs[0];
+                if(typeof result.docs==='object'){
                     if(result.docs["stat"]===undefined){
                         result.docs["stat"]=0;
                     }
                 }else{
-                    res.status(400).send();
+                    res.status(400).send({message:"multiple documents exists"});
                 }
+                break;
+            case 2:
+            case 3:
+                result = await elsCtrl.Detail(req);
                 break;
         }
         if(result){
             res.send(result);
         }else{
-            res.status(400).send();
+            res.status(400).send({message:"no result"});
         }
         
     }
@@ -107,8 +110,9 @@ const crawlDelete = async(req,res)=>{
     }
 }
 
+//router.post('/detail/:itemId',authJWT,crawlService.Stage);
 const crawlStage = async (req,res) => {
-    const itemId = req.body.itemId;
+    const itemId = req.params.itemId;
     if(itemId===undefined){
         res.status(400).send();
     }else{
