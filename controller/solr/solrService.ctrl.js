@@ -40,16 +40,9 @@ const solrDetail = (req,returnId=false) => new Promise((resolve,reject)=> {
             console.log(err);
             resolve(false);
         }else{
-            const newDocs = [];
+            obj.response.docs = convertCrawlDocTo(obj.response.docs[0],'solr')
             obj.response.dcCount = obj.response.numFound;
-            obj.response.docs.forEach((document)=>{
-                newDocs.push(convertCrawlDocTo(document,'solr'));
-            })
-            if(returnId){
-                newDocs["id"]=obj.response.docs[0]["id"];
-            }
             delete obj.response.numFound;
-            obj.response.docs=newDocs;
             resolve(obj.response);
         }
     });

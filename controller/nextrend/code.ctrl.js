@@ -1,6 +1,6 @@
 const db = require("../../configs/db");
 
-const categorysToDict = (req, res) => {
+const codesToDict = () => {
     const Lq =  'select * from nt_categorys where length(`CODE`)=2 and type=1 and stat<9; ';
     const Mq =  'select * from nt_categorys where length(`CODE`)=4 and type=1 and stat<9; ';
     const Sq =  'select * from nt_categorys where length(`CODE`)=6 and type=1 and stat<9; ';
@@ -48,13 +48,13 @@ const categorysToDict = (req, res) => {
                     }
                 })
             })
-            return res.send(allCategorys);
+            return allCategorys;
         }else{
-            return err;
+            return false;
         }
     })
   };
 
   module.exports = {
-      ToDict:categorysToDict,
+      ToDict:codesToDict,
   }
