@@ -15,6 +15,11 @@ const authJWT = async (req,res,next) => {
                 message:result.message
             })
         }
+    }else{
+        res.status(401).send({
+            ok:false,
+            message:"There is no access token in header"
+        })
     }
 }
 

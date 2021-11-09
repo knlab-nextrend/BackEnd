@@ -6,11 +6,13 @@ const categoryService = require("../service/categorysService");
 const loginService = require("../service/loginService");
 const authJWT = require("../middlewares/auth");
 
-router.get("/user/",authJWT,tokenCtrl.getUser);
 router.post("/user/add", userService.Add);
 router.get("/user/get", authJWT,userService.List);
 router.post("/user/modify", userService.Modify);
 router.post("/user/delete", userService.Delete);
+
+router.get("/user/",authJWT,tokenCtrl.getUser);
+router.get("/refresh",tokenCtrl.refresh);
 
 router.post("/login/",loginService.Login);
 
