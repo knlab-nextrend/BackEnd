@@ -1,5 +1,6 @@
 const loginCtrl = require("../controller/nextrend/login.ctrl");
 
+// 따로 해쉬 하는 api를 요청하는 필요성..? 없을 듯으로 보임.
 const getHash = (req,res) => {
     if(req.body.userPW){
         const result = loginCtrl.HashPW(req.body.userPW);
@@ -11,7 +12,6 @@ const getHash = (req,res) => {
     }else{
         res.status(400).send({message:"no userPW"})
     }
-    
 }
 
 const onLogin = (req,res) => {
@@ -28,6 +28,5 @@ const onLogin = (req,res) => {
 }
 
 module.exports={
-    Login:onLogin,
-    Hash:getHash
+    Login:onLogin
 }

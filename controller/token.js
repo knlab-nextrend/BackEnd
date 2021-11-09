@@ -1,5 +1,5 @@
 const {sign,verify,refreshVerify} = require("../modules/jwt");
-const getUserByUid = require("./nextrend/userSql.ctrl").getUserByUid;
+const getUserByUid = require("./nextrend/user.ctrl").getUserByUid;
 const jwt = require("jsonwebtoken");
 
 

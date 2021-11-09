@@ -1,68 +1,74 @@
-const sequelize = require("../../models/nextrend/index").sequelize;
-sequelize.sync();
-sequelize.query("SET NAMES utf8;");
+const db = require("../../configs/db");
 
-const {
-  User_list,
-  Sequelize: { Op },
-} = require("../../models/nextrend/index");
+/*
+처음에 했던 await / async 방식은 then과 catch에 걸리는 return 값을 따로 명시해주지 못했지만
+객체로 만드는 방법은 resolve와 reject를 통해 명시가 가능하기에 await로 잡을 수 있음
+*/
 
-const userAdd = (req,res) => {
-    User_list.create({
-        userID : req.body.userID,
-        userPW : req.body.userPW,
-        Company : req.body.Company,
-        Position : req.body.Position,
-        Name : req.body.Name,
-        Email : req.body.Email,
-        Tel : req.body.Tel,
-        Category : req.body.Category,
-        salt : req.body.salt
-    })
-    .then( result => {
-        res.send(result)
-    })
-    .catch( err => {
-        console.log(err)
-        throw err;
-    })
+const getUserByUid = (userID) => new Promise((resolve, reject)=>{
+    const query = "select * from nt_users_list where userID=?";
+    const param = [userID];
+    db.query(query, param, (err,data) => {
+        if(err){
+            reject(false);
+        }else{
+            const result = data[0];
+            resolve(result);
+        }
+    });
+})
+
+const addUser = (Info) => {
+    const query = "INSERT INTO nt_users_list (userID,userPW,Name,Company,Position,Email,Tel,Category,salt) VALUES (?,?,?,?,?,?,?,?,?)";
+    const param = [Info.ID,Info.PW,Info.Name,Info.Company,Info.Position,Info.Email,Info.Tel,Info.Category,Info.salt];
+    db.query(query, param, (err,data) => {
+        if(err){
+            return false;
+        }else{
+            return true;
+        }
+    });
 }
 
-const userGet = (req,res) => {
-    User_list.findAll()
-     .then( result => { return res.send(result) })
-     .catch( err => { throw err; })
+const listAllUser = () => {
+    const query = "select * from nt_users_list";
+    db.query(query, param, (err,data) => {
+        if(err){
+            return false;
+        }else{
+            return data;
+        }
+    });
 }
 
-const userModify = (req,res) => {
-    User_list.update({ 
-        userID : req.body.modify.newuserID,
-        userPW : req.body.modify.newuserPW,
-        Company : req.body.modify.newCompany,
-        Position : req.body.modify.newPosition,
-        Name : req.body.modify.newName,
-        Email : req.body.modify.newEmail,
-        Tel : req.body.modify.newTel,
-        Category : req.body.modify.newCategory,        
-        salt : req.body.modify.newsalt 
-    }, {
-        where : { id : req.body.modify.id }
-    })
-    .then( result => { res.send(result) })
-    .catch( err => { throw err })
+const modifyUser = (Info,uid) => {
+    const query = "UPDATE nt_users_list SET userID = ?, userPW = ?, Name = ?, Company = ?, Position = ?, Email = ?, Tel = ?, Category = ?, salt = ? WHERE id = ?";
+    const param = [Info.ID,Info.PW,Info.Name,Info.Company,Info.Position,Info.Email,Info.Tel,Info.Category,Info.salt,uid];
+    db.query(query, param, (err,data) => {
+        if(err){
+            return false;
+        }else{
+            return true;
+        }
+    });
 }
 
-const userDelete = (req,res) => {
-    User_list.destroy({
-        where : { id : req.body.delete.id }
-    })
-    .then( res.sendStatus(200) )
-    .catch( err => { throw err })
+const deleteUser = (uid) => {
+    const query = "delete from nt_users_list where id = ?";
+    const param = [uid];
+    db.query(query, param, (err,data) => {
+        if(err){
+            return false;
+        }else{
+            return true;
+        }
+    });
 }
 
 module.exports = {
-  Add: userAdd,
-  Get: userGet,
-  Modify: userModify,
-  Delete:userDelete
-};
+    getUserByUid:getUserByUid,
+    Add: addUser,
+    List: listAllUser,
+    Modify: modifyUser,
+    Delete:deleteUser
+}
