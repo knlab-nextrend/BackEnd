@@ -8,14 +8,9 @@ const procDetail = (req) => new Promise((resolve,reject)=> {
         if(err){
             reject();
         }else{
-            const newDocs = [];
-            
+            obj.response.docs = convertCrawlDocTo(obj.response.docs[0],'solr')
             obj.response.dcCount = obj.response.numFound;
-            obj.response.docs.forEach((document)=>{
-                newDocs.push(convertCrawlDocTo(document,'solr'));
-            })
             delete obj.response.numFound;
-            obj.response.docs=newDocs;
             resolve(obj.response);
         }
     });

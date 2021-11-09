@@ -14,7 +14,6 @@ const sign = async(user) =>{
 }
 
 const verify = async (token) => {
-    
     let decoded;
     try{
         decoded = jwt.verify(token,secretKey);
@@ -27,14 +26,14 @@ const verify = async (token) => {
         return {
             ok: false,
             message: err.message,
-          };
+        };
     }
 }
 
 const refresh = () => {
     return jwt.sign({},secretKey,{
         algorithm:options.algorithm,
-        expiresIn:'14d'
+        expiresIn:'60s'
     });
 }
 
