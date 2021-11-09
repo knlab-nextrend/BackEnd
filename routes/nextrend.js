@@ -12,13 +12,13 @@ router.post("/user/modify", userService.Modify);
 router.post("/user/delete", userService.Delete);
 
 router.get("/user/",authJWT,tokenCtrl.getUser);
-router.get("/refresh",tokenCtrl.refresh);
+router.get("/refresh/",tokenCtrl.refresh);
 
 router.post("/login/",loginService.Login);
 
 router.get("/categorys/",categoryService.getCode);
-router.get("/continents/:conti",categoryService.getConti);
-router.get("/countrys/",categoryService.getCountry);
+router.get("/continents/",categoryService.getConti);
+router.get("/countrys/:conti",categoryService.getCountry);
 
 
 module.exports = router;

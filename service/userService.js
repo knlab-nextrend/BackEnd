@@ -16,16 +16,16 @@ const infoProcess = (body) => {
     return userInfo;
 }
 
-const userAdd = (req,res) => {
+const userAdd = async (req,res) => {
     if(req.body.userID&&req.body.userPW){
         let userInfo = infoProcess(req.body);
 
         //pw 및 salt는 해쉬를 거친 후 저장.
-        const saltResult = loginCtrl.HashPW(req.body.userPW);
+        const saltResult = await loginCtrl.HashPW(req.body.userPW);
         userInfo.PW = saltResult.PW;
         userInfo.salt = saltResult.salt;
 
-        const result = userCtrl.Add(userInfo);
+        const result = await userCtrl.Add(userInfo);
         if(result){
             res.send();
         }else{
@@ -36,8 +36,8 @@ const userAdd = (req,res) => {
     }
 }
 
-const userList = (req,res) => {
-    const result = userCtrl.List();
+const userList = async (req,res) => {
+    const result = await userCtrl.List();
     if(result){
         res.send(result);
     }else{
@@ -45,16 +45,16 @@ const userList = (req,res) => {
     }
 }
 
-const userModify = (req,res) => {
+const userModify = async (req,res) => {
     if(req.body.uid){
         let userInfo = infoProcess(req.body);
 
         //pw 및 salt는 해쉬를 거친 후 저장.
-        const saltResult = loginCtrl.HashPW(req.body.userPW);
+        const saltResult = await loginCtrl.HashPW(req.body.userPW);
         userInfo.PW = saltResult.PW;
         userInfo.salt = saltResult.salt;
         
-        const result = userCtrl.Modify(userInfo,req.body.uid);
+        const result = await userCtrl.Modify(userInfo,req.body.uid);
         if(result){
             res.send();
         }else{
@@ -65,9 +65,9 @@ const userModify = (req,res) => {
     }
 }
 
-const userDelete = (req,res) => {
+const userDelete = async (req,res) => {
     if(req.body.uid){
-        const result = userCtrl.Delete(req.body.uid);
+        const result = await userCtrl.Delete(req.body.uid);
         if(result){
             res.send();
         }else{

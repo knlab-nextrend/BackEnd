@@ -18,52 +18,52 @@ const getUserByUid = (userID) => new Promise((resolve, reject)=>{
     });
 })
 
-const addUser = (Info) => {
+const addUser = (Info) => new Promise((resolve, reject)=>{
     const query = "INSERT INTO nt_users_list (userID,userPW,Name,Company,Position,Email,Tel,Category,salt) VALUES (?,?,?,?,?,?,?,?,?)";
     const param = [Info.ID,Info.PW,Info.Name,Info.Company,Info.Position,Info.Email,Info.Tel,Info.Category,Info.salt];
     db.query(query, param, (err,data) => {
         if(err){
-            return false;
+            resolve( false);
         }else{
-            return true;
+            resolve( true);
         }
     });
-}
+});
 
-const listAllUser = () => {
+const listAllUser = () => new Promise((resolve, reject)=>{
     const query = "select * from nt_users_list";
     db.query(query, param, (err,data) => {
         if(err){
-            return false;
+            resolve(false);
         }else{
-            return data;
+            resolve(data);
         }
     });
-}
+});
 
-const modifyUser = (Info,uid) => {
+const modifyUser = (Info,uid) => new Promise((resolve, reject)=>{
     const query = "UPDATE nt_users_list SET userID = ?, userPW = ?, Name = ?, Company = ?, Position = ?, Email = ?, Tel = ?, Category = ?, salt = ? WHERE id = ?";
     const param = [Info.ID,Info.PW,Info.Name,Info.Company,Info.Position,Info.Email,Info.Tel,Info.Category,Info.salt,uid];
     db.query(query, param, (err,data) => {
         if(err){
-            return false;
+            resolve(false);
         }else{
-            return true;
+            resolve(true);
         }
     });
-}
+});
 
-const deleteUser = (uid) => {
+const deleteUser = (uid) => new Promise((resolve, reject)=>{
     const query = "delete from nt_users_list where id = ?";
     const param = [uid];
     db.query(query, param, (err,data) => {
         if(err){
-            return false;
+            resolve(false);
         }else{
-            return true;
+            resolve(true);
         }
     });
-}
+});
 
 module.exports = {
     getUserByUid:getUserByUid,

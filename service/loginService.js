@@ -1,9 +1,9 @@
 const loginCtrl = require("../controller/nextrend/login.ctrl");
 
 // 따로 해쉬 하는 api를 요청하는 필요성..? 없을 듯으로 보임.
-const getHash = (req,res) => {
+const getHash = async (req,res) => {
     if(req.body.userPW){
-        const result = loginCtrl.HashPW(req.body.userPW);
+        const result = await loginCtrl.HashPW(req.body.userPW);
         if(result){
             res.send(result);
         }else{
@@ -14,9 +14,10 @@ const getHash = (req,res) => {
     }
 }
 
-const onLogin = (req,res) => {
+const onLogin = async (req,res) => {
     if(req.body.userID&&req.body.userPW){
-        const result = loginCtrl.onLogin(req.body.userID,req.body.userPW);
+        const result = await loginCtrl.OnLogin(req.body.userID,req.body.userPW);
+        console.log(result);
         if(result.message === undefined){
             res.send(result);
         }else{

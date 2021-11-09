@@ -11,7 +11,7 @@ const codeList = async (req,res) => {
 }
 
 const contiList = async (req,res) => {
-    const data = await nationCtrl.getConti(req.params.conti);
+    const data = await nationCtrl.getConti();
     if(data){
         res.send(data);
     }else{
@@ -20,7 +20,7 @@ const contiList = async (req,res) => {
 }
 
 const countryList = async (req,res) => {
-    const data = await nationCtrl.getCountry();
+    const data = await nationCtrl.getCountry(req.params.conti);
     if(data){
         res.send(data);
     }else{
