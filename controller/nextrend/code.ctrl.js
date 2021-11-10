@@ -1,6 +1,6 @@
-const db = require("../../configs/db");
+const db = require("../../models/nextrend/index");
 
-const categorysToDict = (req, res) => {
+const codesToDict = ()  => new Promise((resolve, reject)=>{
     const Lq =  'select * from nt_categorys where length(`CODE`)=2 and type=1 and stat<9; ';
     const Mq =  'select * from nt_categorys where length(`CODE`)=4 and type=1 and stat<9; ';
     const Sq =  'select * from nt_categorys where length(`CODE`)=6 and type=1 and stat<9; ';
@@ -48,13 +48,13 @@ const categorysToDict = (req, res) => {
                     }
                 })
             })
-            return res.send(allCategorys);
+            resolve(allCategorys);
         }else{
-            return err;
+            resolve(false);
         }
     })
-  };
+  });
 
   module.exports = {
-      ToDict:categorysToDict,
+      ToDict:codesToDict,
   }

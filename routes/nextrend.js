@@ -1,21 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const loginCtrl = require("../controller/nextrend/login.ctrl");
-const userCtrl = require("../controller/nextrend/user.ctrl");
-const categorysCtrl = require("../controller/nextrend/categorys.ctrl");
+const userService = require("../service/userService");
 const tokenCtrl = require("../controller/token");
+const categoryService = require("../service/categorysService");
+const loginService = require("../service/loginService");
 const authJWT = require("../middlewares/auth");
 
+router.post("/user/add", userService.Add);
+router.get("/user/get", authJWT,userService.List);
+router.post("/user/modify", userService.Modify);
+router.post("/user/delete", userService.Delete);
+
 router.get("/user/",authJWT,tokenCtrl.getUser);
-router.post("/user/add", userCtrl.Add);
-router.get("/user/get", authJWT,userCtrl.Get);
-router.post("/user/modify", userCtrl.Modify);
-router.post("/user/delete", userCtrl.Delete);
+router.get("/refresh/",tokenCtrl.refresh);
 
-router.get("/login/attempt", authJWT,loginCtrl.Attempt);
-router.post("/login/hashPw",authJWT, loginCtrl.HashPW);
-router.post("/login/",loginCtrl.OnLogin);
+router.post("/login/",loginService.Login);
 
-router.get("/categorys/",categorysCtrl.ToDict);
+router.get("/categorys/",categoryService.getCode);
+router.get("/continents/",categoryService.getConti);
+router.get("/countrys/:conti",categoryService.getCountry);
+
 
 module.exports = router;
