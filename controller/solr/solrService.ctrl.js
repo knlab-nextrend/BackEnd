@@ -1,8 +1,8 @@
 const { convertCrawlDocTo } = require("../../lib/libs");
 const solrDB = require("../../models/solr/index").solrDB;
 
-const solrDelete = (req) => new Promise(async(resolve,reject)=>{
-    const query = 'item_id:'+req.params.itemId;
+const solrDelete = (itemId) => new Promise(async(resolve,reject)=>{
+    const query = 'item_id:'+itemId;
     solrDB.deleteByQuery(query,function(err,obj){
         if(err){
             resolve(false);
@@ -13,15 +13,13 @@ const solrDelete = (req) => new Promise(async(resolve,reject)=>{
     });
 })
 
-const solrKeep = (req) => new Promise(async (resolve,reject)=>{
-    const itemDetail = await solrDetail(req,true);
-    const id = itemDetail.docs["id"];
-
+const solrKeep = (itemId) => new Promise(async (resolve,reject)=>{
+    const itemDetail = await solrDetail(itemId,true);
+    const id = itemDetail.id;
     const query = {
         'id': id,
         'stat':{'set':1},
     };
-    
     solrDB.add(query, function(err, obj) {
         if (err) {
             resolve(false);
@@ -32,14 +30,15 @@ const solrKeep = (req) => new Promise(async (resolve,reject)=>{
       });
 });
 
-const solrDetail = (req,returnId=false) => new Promise((resolve,reject)=> {
-    let query = 'q=item_id:'+req.params.itemId;
+const solrDetail = (itemId) => new Promise(async (resolve,reject)=> {
+    let query = 'q=item_id:'+itemId;
     query = encodeURI(query);
     solrDB.search(query, function(err, obj){
         if(err){
             resolve(false);
         }else{
-            obj.response.docs = convertCrawlDocTo(obj.response.docs[0],'solr')
+            obj.response.id = obj.response.docs[0]['id'];
+            obj.response.docs = convertCrawlDocTo(obj.response.docs[0],'solr');
             obj.response.dcCount = obj.response.numFound;
             delete obj.response.numFound;
             resolve(obj.response);
@@ -47,20 +46,20 @@ const solrDetail = (req,returnId=false) => new Promise((resolve,reject)=> {
     });
 });
 
-const solrSearch = (req,stat) => new Promise(async (resolve,reject)=>{
+const solrSearch = (condition,stat) => new Promise(async (resolve,reject)=>{
     let query = "q=";
     let paramsDict = {
         // 상세 params
-        "keyword": req.query.keyword,
-        "lang": req.query.lang,
-        "subscribed": req.query.subscribed,
-        "itemId": req.query.itemId,
-        "fromDate":req.query.fromDate,
-        "toDate":req.query.toDate,
+        "keyword": condition.keyword,
+        "lang": condition.lang,
+        "subscribed": condition.subscribed,
+        "itemId": condition.itemId,
+        "fromDate":condition.fromDate,
+        "toDate":condition.toDate,
 
         //기본 params
-        "pageNo":req.query.pageNo,   
-        "listSize": req.query.listSize
+        "pageNo":condition.pageNo,   
+        "listSize": condition.listSize
     }
 
     //null check and solr query 형태로 변환
