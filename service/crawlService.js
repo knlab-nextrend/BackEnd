@@ -169,10 +169,70 @@ const crawlStage = async (req,res) => {
     }
 }
 
+const screenGet = async(req,res) => {
+    //stat 0으로 부여, 기존 정의된 함수 방법을 따르기 위해서임.
+    const condition = req.query;
+    result = await solrCtrl.Search(condition,stat=0,restrict=true);
+    if(result){
+        res.send(result);
+    }else{
+        res.status(400).send({message:"got error during search screening data"})
+    }
+}
+
+const screenStage = async(req,res) => {
+    const stageList = req.body.list;
+    if(stageList===undefined){
+        res.status(400).send({message:"no given stage list"});
+    }else{
+        const errorList = [];
+        stageList.forEach(async (itemId)=>{
+            const doc = await solrCtrl.Detail(itemId);
+            const result = await elsCtrl.Index(doc.docs,2);
+            if(result){
+                //정상적으로 추가했을 때 solr 에서는 삭제 수행.
+                await solrCtrl.Delete(itemId);
+            }else{
+                errorList.push(itemId);
+            }
+        })
+        if(errorList.length){
+            res.status(400).send({message:"cannot stage above list",list:errorList});
+        }else{
+            res.send();
+        }
+    }
+}
+
+const screenDelete = async(req,res) => {
+    const deleteList = req.body.list;
+    if(deleteList===undefined){
+        res.status(400).send({message:"no given delete list"});
+    }else{
+        const errorList = [];
+        deleteList.forEach(async (itemId)=>{
+            const result = await solrCtrl.Delete(itemId);
+            if(result){
+                //정상적인 값일 때, 아무것도 수행하지 않음.
+            }else{
+                errorList.push(itemId);
+            }
+        })
+        if(errorList.length){
+            res.status(400).send({message:"cannot delete above list",list:errorList});
+        }else{
+            res.send();
+        }
+    }
+}
+
 module.exports = {
     Search:crawlSearch,
     Detail:crawlDetail,
     Keep:crawlKeep,
     Delete:crawlDelete,
     Stage:crawlStage,
+    screenGet:screenGet,
+    screenStage:screenStage,
+    screenDelete:screenDelete,
 };

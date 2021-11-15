@@ -41,7 +41,7 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
         }
     };
     const value = await elsDB.search(query);
-    if(value.statusCode==200){
+    if(value.statusCode==200||value.statusCode==201){
         const document = value.body.hits.hits[0];
         const result={
             docs:convertCrawlDocTo(document._source,'els'),
@@ -91,9 +91,9 @@ const elsIndex = (doc,stat,id=false) => new Promise(async (resolve,reject) =>{
     if(id){
         query["id"]=id;
     }
-    console.log(query);
     const result = await elsDB.index(query);
-    if(result.statusCode==200){
+    console.log(result);
+    if(result.statusCode==200||result.statusCode==201){
         resolve(true);
     }else{
         resolve(false);
@@ -118,7 +118,7 @@ const elsKeep = (itemId,stat) => new Promise(async (resolve,reject) =>{
         body: doc
     };
     const result = await elsDB.updateByQuery(query);
-    if(result.statusCode==200){
+    if(result.statusCode==200||result.statusCode==201){
         resolve(true);
     }else{
         console.log(result);
