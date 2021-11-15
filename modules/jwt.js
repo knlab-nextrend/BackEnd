@@ -33,7 +33,7 @@ const verify = async (token) => {
 const refresh = () => {
     return jwt.sign({},secretKey,{
         algorithm:options.algorithm,
-        expiresIn:'1h'
+        expiresIn:'14d'
     });
 }
 

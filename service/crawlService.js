@@ -3,6 +3,7 @@ const getFileList = require("../controller/nas/fileList.ctrl").getImage;
 const elsCtrl = require("../controller/els/elsService.ctrl");
 
 //router.put('/detail/:itemId',crawlSearch.Keep);
+//단일 데이터 기준 
 const crawlKeep = async (req,res) => {
     const itemId = parseInt(req.params.itemId);
     //안되면 params 시도 혹은 query 시도.
@@ -25,6 +26,7 @@ const crawlKeep = async (req,res) => {
         if(result){
             res.send(result);
         }else{
+            console.log(itemId);
             res.status(400).send();
         }
     }
@@ -133,7 +135,8 @@ const crawlStage = async (req,res) => {
         let statusCode = parseInt(req.body.statusCode);
         let result;
         if(req.body.docs){
-            const doc = req.body.docs;
+            let doc = req.body.docs;
+            doc["item_id"]=itemId;
             switch(statusCode){
                 case 0:
                 case 1:
@@ -150,6 +153,7 @@ const crawlStage = async (req,res) => {
                 case 2:
                 case 3:
                     const itemDetail = await elsCtrl.Detail(itemId);
+                    console.log(doc,itemDetail.id);
                     result = await elsCtrl.Index(doc,4,itemDetail.id);
                     if(result){
                         res.send();

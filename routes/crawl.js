@@ -11,4 +11,8 @@ router.delete('/detail/:itemId',authJWT,crawlService.Delete); //스크리닝 단
 router.post('/detail/:itemId',crawlService.Stage); //다음 공정으로 데이터 이관
 router.get('/test/',imageUrl.getImage);
 
+router.get('/screening/'); //스크리닝 데이터 조회
+router.put('/screening/'); //스크리닝 데이터 이관
+router.delete('/screening/'); //스크리닝 데이터 삭제
+
 module.exports = router;
