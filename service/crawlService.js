@@ -22,11 +22,14 @@ const crawlKeep = async (req,res) => {
                 // 일단 직접 지정...
                 result = await elsCtrl.Keep(itemId,3);
                 break;
+            case 4:
+            case 5:
+                result = await elsCtrl.Keep(itemId,5);
+                break;
         }
         if(result){
             res.send(result);
         }else{
-            console.log(itemId);
             res.status(400).send();
         }
     }
@@ -54,6 +57,9 @@ const crawlDetail = async (req,res) => {
                 break;
             case 2:
             case 3:
+            case 4:
+            case 5:
+            case 6:
                 result = await elsCtrl.Detail(itemId);
                 break;
         }
@@ -62,7 +68,6 @@ const crawlDetail = async (req,res) => {
         }else{
             res.status(400).send({message:"no result"});
         }
-        
     }
 }
 
@@ -81,6 +86,10 @@ const crawlSearch = async (req,res) => {
                 break;
             case 2:
             case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
                 const size = req.query.listSize;
                 const from = req.query.pageNo? ((req.query.pageNo-1)*size):0;
                 result = await elsCtrl.Search(size,from,stat=statusCode);
@@ -114,6 +123,11 @@ const crawlDelete = async(req,res)=>{
                 break;
             case 2:
             case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                //els 부터는 삭제가 아닌, status 9 로 부여한 후 관리.
                 result = await elsCtrl.Keep(itemId,9);
                 break;
         }
@@ -129,6 +143,7 @@ const crawlDelete = async(req,res)=>{
 //Stage 의 경우, 내용 수정이 있기 때문에 Modify로 접근하는 것이 맞음.
 const crawlStage = async (req,res) => {
     const itemId = req.params.itemId;
+    let itemDetail;
     if(itemId===undefined){
         res.status(400).send();
     }else{
@@ -152,9 +167,27 @@ const crawlStage = async (req,res) => {
                     break;
                 case 2:
                 case 3:
-                    const itemDetail = await elsCtrl.Detail(itemId);
-                    console.log(doc,itemDetail.id);
+                    itemDetail = await elsCtrl.Detail(itemId);
                     result = await elsCtrl.Index(doc,4,itemDetail.id);
+                    if(result){
+                        res.send();
+                    }else{
+                        res.status(400).send({message:"some trouble in staging"});
+                    }
+                    break;
+                case 4:
+                case 5:
+                    itemDetail = await elsCtrl.Detail(itemId);
+                    result = await elsCtrl.Index(doc,6,itemDetail.id);
+                    if(result){
+                        res.send();
+                    }else{
+                        res.status(400).send({message:"some trouble in staging"});
+                    }
+                    break;
+                case 6:
+                    itemDetail = await elsCtrl.Detail(itemId);
+                    result = await elsCtrl.Index(doc,7,itemDetail.id);
                     if(result){
                         res.send();
                     }else{
@@ -169,6 +202,10 @@ const crawlStage = async (req,res) => {
     }
 }
 
+
+/* 이하 스크리닝 전용 라우터 함수
+Detail 에서는 els 에서만 작업되기에 solr인 스크리닝은 분리.
+ */
 const screenGet = async(req,res) => {
     //stat 0으로 부여, 기존 정의된 함수 방법을 따르기 위해서임.
     const condition = req.query;
@@ -205,7 +242,7 @@ const screenStage = async(req,res) => {
 }
 
 const screenDelete = async(req,res) => {
-    const deleteList = req.body.list;
+    const deleteList = req.query.list;
     if(deleteList===undefined){
         res.status(400).send({message:"no given delete list"});
     }else{

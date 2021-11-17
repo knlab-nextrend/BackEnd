@@ -92,7 +92,6 @@ const elsIndex = (doc,stat,id=false) => new Promise(async (resolve,reject) =>{
         query["id"]=id;
     }
     const result = await elsDB.index(query);
-    console.log(result);
     if(result.statusCode==200||result.statusCode==201){
         resolve(true);
     }else{
