@@ -1,8 +1,22 @@
 const NasFTP = require("../../models/nas/index");
-const NasConn = NasFTP.client;
+const thumbRoute = NasFTP.thumbRoute;
+const webServer = NasFTP.webServer;
 
-const getFileList = (pathList) => new Promise((resolve,reject) => {
-    const fileList = NasConn.client.ls(pathList);
+const getFileList = (path) => new Promise((resolve,reject) => {
+    let fileList=[];
+    NasFTP.client.ls(thumbRoute+path,(err,res)=>{
+        if(err){
+            resolve(false);
+        }else{
+            //이미지 경로 생성
+            res.forEach(file => fileList.push(webServer+thumbRoute+path+file.name));
+        }
+    });
+    if(fileList.length){
+        resolve(fileList);
+    }else{
+        resolve(false);
+    }
 });
 
 module.exports = {
