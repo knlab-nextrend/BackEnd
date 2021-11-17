@@ -1,6 +1,14 @@
 const solrCtrl = require("../controller/solr/solrService.ctrl");
 const getFileList = require("../controller/nas/fileList.ctrl").getImage;
 const elsCtrl = require("../controller/els/elsService.ctrl");
+const imageUrl = require("../controller/nas/fileList.ctrl");
+
+const imageService = async (req,res) => {
+    const path = req.query.path;
+    const result = 
+    console.log(result);
+    res.send(200);
+}
 
 //router.put('/detail/:itemId',crawlSearch.Keep);
 //단일 데이터 기준 
@@ -175,4 +183,5 @@ module.exports = {
     Keep:crawlKeep,
     Delete:crawlDelete,
     Stage:crawlStage,
+    image:imageService,
 };
