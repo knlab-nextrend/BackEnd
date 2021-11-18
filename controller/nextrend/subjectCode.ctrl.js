@@ -53,8 +53,30 @@ const codesToDict = ()  => new Promise((resolve, reject)=>{
             resolve(false);
         }
     })
-  });
+});
 
-  module.exports = {
-      ToDict:codesToDict,
-  }
+const getCodes = (upperCode=null) => new Promise((resolve,reject)=>{
+    let query;
+    let params=[];
+    if(upperCode){
+        const length = upperCode.length;
+        query =  'select * from nt_categorys where (length(`CODE`)=? and type=1 and stat<9 and `code` like ?) or `code` = ? and type=1 and stat<9;';
+        params.push(length+2);
+        params.push(upperCode+'%');
+        params.push(upperCode);
+    }else{
+        query = 'select * from nt_categorys where length(`CODE`)=2 and type=1 and stat<9; ';
+    }
+    db.query(query,params, (err,data) => {
+        if(err){
+            resolve(false);
+        }else{
+            resolve(data);
+        }
+    });
+})
+
+module.exports = {
+    ToDict:codesToDict,
+    getCodes:getCodes,
+}
