@@ -7,7 +7,8 @@ const loginService = require("../service/loginService");
 const authJWT = require("../middlewares/auth");
 
 router.post("/user/add", userService.Add);
-router.get("/user/get", authJWT,userService.List);
+router.get("/user/list", userService.List);
+router.get("/user/get", userService.Get);
 router.post("/user/modify", userService.Modify);
 router.post("/user/delete", userService.Delete);
 

@@ -27,7 +27,13 @@ const nullProcessing = (doc) => {
     doc["dc_publisher"] = keys.includes("dc_publisher")? doc.dc_publisher : null;
     doc["dc_content"] = keys.includes("dc_content")? doc.dc_content : null;
     doc["dc_dt_collect"] =  keys.includes("dc_dt_collect")? doc.dc_dt_collect : "1970-01-01T00:00:00+00:00";
-    doc["dc_dt_write"] =  keys.includes("dc_dt_write")? doc.dc_dt_write : "1970-01-01T00:00:00+00:00";
+    if(keys.includes("dc_dt_write")){
+        if(doc.dc_dt_write===''){
+            doc["dc_dt_write"] = "1970-01-01T00:00:00+00:00";
+        }
+    }else{
+        doc["dc_dt_write"] = "1970-01-01T00:00:00+00:00";
+    }
     return doc;
 }
 
@@ -65,7 +71,7 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
             codes.push(codeInfo[0]);
         }));
         result.docs["dc_code"]=codes;
-        
+
         resolve(result);
     }else{
         resolve(false);
