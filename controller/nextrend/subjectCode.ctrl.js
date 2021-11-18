@@ -76,7 +76,20 @@ const getCodes = (upperCode=null) => new Promise((resolve,reject)=>{
     });
 })
 
+const getInfoById = (code)  => new Promise((resolve,reject)=>{
+    const query = 'select * from nt_categorys where code = ?';
+    const params = [code];
+    db.query(query,params, (err,data) => {
+        if(err){
+            resolve(false);
+        }else{
+            resolve(data);
+        }
+    });
+});
+
 module.exports = {
     ToDict:codesToDict,
     getCodes:getCodes,
+    getInfoById:getInfoById
 }

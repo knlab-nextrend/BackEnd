@@ -1,6 +1,8 @@
 const elsDB = require("../../models/els/index").elsDB;
 const {convertCrawlDocTo} = require("../../lib/libs");
 const config = require("../../models/els/index").config;
+const nationCtrl = require("../nextrend/nation.ctrl");
+const codeCtrl = require("../nextrend/subjectCode.ctrl");
 
 const nullProcessing = (doc) => {
     if(doc===undefined) doc = {};
@@ -47,6 +49,23 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
             docs:convertCrawlDocTo(document._source,'els'),
             id:document._id
         }
+
+        //국가 표시 조정 단계
+        let countrys = [];
+        await Promise.all(result.docs["dc_country"].map(async (countryId) => {
+            const countryInfo = await nationCtrl.getCountryById(countryId);
+            countrys.push(countryInfo[0]);
+        }));
+        result.docs["dc_country"]=countrys;
+
+        //코드 표시 조정 단계
+        let codes = [];
+        await Promise.all(result.docs["dc_code"].map(async (code) => {
+            const codeInfo = await codeCtrl.getInfoById(code);
+            codes.push(codeInfo[0]);
+        }));
+        result.docs["dc_code"]=codes;
+        
         resolve(result);
     }else{
         resolve(false);
@@ -120,7 +139,6 @@ const elsKeep = (itemId,stat) => new Promise(async (resolve,reject) =>{
     if(result.statusCode==200||result.statusCode==201){
         resolve(true);
     }else{
-        console.log(result);
         resolve(false);
     }
 });

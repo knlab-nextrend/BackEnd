@@ -24,7 +24,41 @@ const getContinent = () => new Promise((resolve, reject)=>{
     });
 });
 
+const getCountryById = (id) => new Promise(async (resolve,reject)=>{
+    const query = "select * from nt_countrys where idx = ?";
+    const param = [id];
+    await db.query(query,param, (err,data) => {
+        if(!err){
+            resolve(data);
+        }else{
+            resolve(false);
+        }
+    });
+});
+
+// 좀 애매한 함수... id 여러개에 대한 검색이니까..
+const countryConverter = (countrys) => new Promise(async (resolve,reject)=>{
+    const results = [];
+    countrys.forEach(async(countryId)=>{
+        const query = "select * from nt_countrys where idx = ?";
+        const param = [countryId];
+        await db.query(query,param, (err,data) => {
+            if(!err){
+                results.push(data);
+            }else{
+            }
+        });
+    });
+    if(results.length){
+        resolve(results);
+    }else{
+        resolve(false);
+    }
+});
+
 module.exports = {
     getConti:getContinent,
-    getCountry:getCountry
+    getCountry:getCountry,
+    getCountryById:getCountryById,
+    countryConverter:countryConverter
 }

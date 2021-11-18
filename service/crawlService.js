@@ -2,6 +2,7 @@ const solrCtrl = require("../controller/solr/solrService.ctrl");
 const getFileList = require("../controller/nas/nasService.ctrl").getImage;
 const elsCtrl = require("../controller/els/elsService.ctrl");
 const nasCtrl = require("../controller/nas/nasService.ctrl");
+const nationCtrl = require("../controller/nextrend/nation.ctrl");
 
 const imageService = async (req,res) => {
     const path = req.query.path;
