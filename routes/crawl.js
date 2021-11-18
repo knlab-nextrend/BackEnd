@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const imageUrl = require("../controller/nas/fileList.ctrl");
+const imageUrl = require("../controller/nas/nasService.ctrl");
 const crawlService = require("../service/crawlService");
 const authJWT = require("../middlewares/auth");
 
