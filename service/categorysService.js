@@ -1,8 +1,9 @@
-const codeCtrl = require("../controller/nextrend/code.ctrl");
+const codeCtrl = require("../controller/nextrend/subjectCode.ctrl");
 const nationCtrl = require("../controller/nextrend/nation.ctrl");
 
 const codeList = async (req,res) => {
-    const data = await codeCtrl.ToDict();
+    const code = req.query.upperCode;
+    const data = await codeCtrl.getCodes(code);
     if(data){
         res.send(data);
     }else{
@@ -29,7 +30,7 @@ const countryList = async (req,res) => {
 }
 
 module.exports = {
-    getCode:codeList,
+    getCodes:codeList,
     getConti:contiList,
     getCountry:countryList,
 }

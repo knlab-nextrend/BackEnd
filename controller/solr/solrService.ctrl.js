@@ -46,7 +46,7 @@ const solrDetail = (itemId) => new Promise(async (resolve,reject)=> {
     });
 });
 
-const solrSearch = (condition,stat) => new Promise(async (resolve,reject)=>{
+const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve,reject)=>{
     let query = "q=";
     let paramsDict = {
         // 상세 params
@@ -127,7 +127,7 @@ const solrSearch = (condition,stat) => new Promise(async (resolve,reject)=>{
             const newDocs = [];
             obj.response.dcCount = obj.response.numFound;
             obj.response.docs.forEach((document)=>{
-                newDocs.push(convertCrawlDocTo(document,'solr'));
+                newDocs.push(convertCrawlDocTo(document,'solr',restrict));
             })
             delete obj.response.numFound;
             obj.response.docs=newDocs;
