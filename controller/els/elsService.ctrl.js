@@ -1,6 +1,8 @@
 const elsDB = require("../../models/els/index").elsDB;
 const {convertCrawlDocTo} = require("../../lib/libs");
 const config = require("../../models/els/index").config;
+const nationCtrl = require("../nextrend/nation.ctrl");
+const codeCtrl = require("../nextrend/subjectCode.ctrl");
 
 const nullProcessing = (doc) => {
     if(doc===undefined) doc = {};
@@ -11,20 +13,27 @@ const nullProcessing = (doc) => {
     doc["dc_page"] = keys.includes("dc_page")? doc.dc_page : null;
     doc["dc_dt_regi"] =  keys.includes("dc_dt_regi")? doc.dc_dt_regi : "1970-01-01T00:00:00+00:00";
     doc["dc_country_pub"] = keys.includes("dc_country_pub")? doc.dc_country_pub : [];
-    doc["dc_country"] = keys.includes("dc_country")? doc.dc_country :[];
-    doc["dc_code"] = keys.includes("dc_code")? doc.dc_code :[];
+    doc["dc_country"] = keys.includes("dc_country")? doc.dc_country : [];
+    doc["dc_code"] = keys.includes("dc_code")? doc.dc_code : [];
     doc["dc_keyword"] = keys.includes("dc_keyword")? doc.dc_keyword :[];
     doc["dc_link"] = keys.includes("dc_link")? doc.dc_link : null;
     doc["dc_smry_kr"] = keys.includes("dc_smry_kr")? doc.dc_smry_kr : null;
     doc["dc_title_kr"] = keys.includes("dc_title_kr")? doc.dc_title_kr : null;
     doc["dc_title_or"] = keys.includes("dc_title_or")? doc.dc_title_or : null;
     doc["dc_url_loc"] = keys.includes("dc_url_loc")? doc.dc_url_loc : null;
+    doc["item_id"] = keys.includes("item_id")? doc.item_id : null;
     doc["dc_cat"] = keys.includes("dc_cat")? doc.dc_cat : null;
     doc["dc_type"] = keys.includes("dc_type")? doc.dc_type : null;
     doc["dc_publisher"] = keys.includes("dc_publisher")? doc.dc_publisher : null;
     doc["dc_content"] = keys.includes("dc_content")? doc.dc_content : null;
     doc["dc_dt_collect"] =  keys.includes("dc_dt_collect")? doc.dc_dt_collect : "1970-01-01T00:00:00+00:00";
-    doc["dc_dt_write"] =  keys.includes("dc_dt_write")? doc.dc_dt_write : "1970-01-01T00:00:00+00:00";
+    if(keys.includes("dc_dt_write")){
+        if(doc.dc_dt_write===''){
+            doc["dc_dt_write"] = "1970-01-01T00:00:00+00:00";
+        }
+    }else{
+        doc["dc_dt_write"] = "1970-01-01T00:00:00+00:00";
+    }
     return doc;
 }
 
@@ -40,12 +49,29 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
         }
     };
     const value = await elsDB.search(query);
-    if(value.statusCode==200){
+    if(value.statusCode==200||value.statusCode==201){
         const document = value.body.hits.hits[0];
         const result={
             docs:convertCrawlDocTo(document._source,'els'),
             id:document._id
         }
+
+        //국가 표시 조정 단계
+        let countrys = [];
+        await Promise.all(result.docs["dc_country"].map(async (countryId) => {
+            const countryInfo = await nationCtrl.getCountryById(countryId);
+            countrys.push(countryInfo[0]);
+        }));
+        result.docs["dc_country"]=countrys;
+
+        //코드 표시 조정 단계
+        let codes = [];
+        await Promise.all(result.docs["dc_code"].map(async (code) => {
+            const codeInfo = await codeCtrl.getInfoById(code);
+            codes.push(codeInfo[0]);
+        }));
+        result.docs["dc_code"]=codes;
+
         resolve(result);
     }else{
         resolve(false);
@@ -91,12 +117,11 @@ const elsIndex = (doc,stat,id=false) => new Promise(async (resolve,reject) =>{
         query["id"]=id;
     }
     const result = await elsDB.index(query);
-    if(result.statusCode==201){
+    if(result.statusCode==200||result.statusCode==201){
         resolve(true);
     }else{
         resolve(false);
     }
-    //result 값 받아서 return 시켜주기.
 });
 
 const elsKeep = (itemId,stat) => new Promise(async (resolve,reject) =>{
@@ -117,7 +142,7 @@ const elsKeep = (itemId,stat) => new Promise(async (resolve,reject) =>{
         body: doc
     };
     const result = await elsDB.updateByQuery(query);
-    if(result.statusCode==200){
+    if(result.statusCode==200||result.statusCode==201){
         resolve(true);
     }else{
         resolve(false);

@@ -16,6 +16,19 @@ const infoProcess = (body) => {
     return userInfo;
 }
 
+const userGet = async (req,res) => {
+    if(req.params.uid){
+        const userInfo = await userCtrl.getUserByUid(req.params.uid);
+        if(userInfo){
+            res.send(userInfo);
+        }else{
+            res.status(400).send({message:"no result"});
+        }
+    }else{
+        res.status(400).send({message:"no uid"})
+    }
+}
+
 const userAdd = async (req,res) => {
     if(req.body.userID&&req.body.userPW){
         let userInfo = infoProcess(req.body);
@@ -82,5 +95,6 @@ module.exports = {
     Add:userAdd,
     Modify:userModify,
     List:userList,
-    Delete:userDelete
+    Delete:userDelete,
+    Get:userGet
 }

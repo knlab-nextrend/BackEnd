@@ -1,4 +1,4 @@
-const db = require("../../configs/db");
+const db = require("../../models/nextrend/index");
 
 /*
 처음에 했던 await / async 방식은 then과 catch에 걸리는 return 값을 따로 명시해주지 못했지만
@@ -32,7 +32,7 @@ const addUser = (Info) => new Promise((resolve, reject)=>{
 
 const listAllUser = () => new Promise((resolve, reject)=>{
     const query = "select * from nt_users_list";
-    db.query(query, param, (err,data) => {
+    db.query(query, (err,data) => {
         if(err){
             resolve(false);
         }else{
