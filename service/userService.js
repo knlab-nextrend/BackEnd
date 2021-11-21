@@ -5,12 +5,12 @@ const infoProcess = (body) => {
     const userInfo = {
         ID:body.userID,
         PW:body.userPW,
-        Name:req.body.userName,
-        Company:req.body.userCompany,
-        Position:req.body.userPosition,
-        Email:req.body.userEmail,
-        Tel:req.body.userTel,
-        Category:req.body.userCategory,
+        Name:body.Name,
+        Company:body.Company,
+        Position:body.Position,
+        Email:body.Email,
+        Tel:body.Tel,
+        Category:body.Category,
         salt:body.salt,
     };
     return userInfo;
@@ -30,22 +30,26 @@ const userGet = async (req,res) => {
 }
 
 const userAdd = async (req,res) => {
-    if(req.body.userID&&req.body.userPW){
-        let userInfo = infoProcess(req.body);
+    if(req.body.userInfo){
+        let userInfo = infoProcess(req.body.userInfo);
 
-        //pw 및 salt는 해쉬를 거친 후 저장.
-        const saltResult = await loginCtrl.HashPW(req.body.userPW);
-        userInfo.PW = saltResult.PW;
-        userInfo.salt = saltResult.salt;
+        if(userInfo.PW&&userInfo.ID){
+            //pw 및 salt는 해쉬를 거친 후 저장.
+            const saltResult = await loginCtrl.HashPW(userInfo.PW);
+            userInfo.PW = saltResult.PW;
+            userInfo.salt = saltResult.salt;
 
-        const result = await userCtrl.Add(userInfo);
-        if(result){
-            res.send();
+            const result = await userCtrl.Add(userInfo);
+            if(result){
+                res.send();
+            }else{
+                res.status(400).send({message:"error occured on insert query"});
+            }
         }else{
-            res.status(400).send({message:"error occured on insert query"});
+            res.status(400).send({message:"must send ID, PW"})
         }
     }else{
-        res.status(400).send({message:"must send ID, PW"})
+        res.status(400).send({message:"must send userInfo in body"})
     }
 }
 
@@ -59,13 +63,8 @@ const userList = async (req,res) => {
 }
 
 const userModify = async (req,res) => {
-    if(req.body.uid){
-        let userInfo = infoProcess(req.body);
-
-        //pw 및 salt는 해쉬를 거친 후 저장.
-        const saltResult = await loginCtrl.HashPW(req.body.userPW);
-        userInfo.PW = saltResult.PW;
-        userInfo.salt = saltResult.salt;
+    if(req.body.uid&&req.body.userInfo){
+        let userInfo = infoProcess(req.body.userInfo);
         
         const result = await userCtrl.Modify(userInfo,req.body.uid);
         if(result){
@@ -74,7 +73,7 @@ const userModify = async (req,res) => {
             res.status(400).send({message:"error occured on update userinfo"});
         }
     }else{
-        res.status(400).send({message:"uid needs"});
+        res.status(400).send({message:"uid or userInfo needs"});
     }
 }
 
