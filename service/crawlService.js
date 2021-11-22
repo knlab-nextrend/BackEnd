@@ -5,9 +5,7 @@ const nasCtrl = require("../controller/nas/nasService.ctrl");
 const nationCtrl = require("../controller/nextrend/nation.ctrl");
 
 const imageService = async (req,res) => {
-    const path = req.query.path;
-    const result = 
-    console.log(result);
+    console.log(await nasCtrl.getImage(req.body.path));
     res.send(200);
 }
 
@@ -234,6 +232,9 @@ const screenStage = async(req,res) => {
         const errorList = [];
         stageList.forEach(async (itemId)=>{
             const doc = await solrCtrl.Detail(itemId);
+            //스크리닝으로부터 넘어오는 단계임. 이때 이미지 url 을 만들어 저장.
+            doc.docs.dc_cover = await nasCtrl.getImage(doc.docs.dc_cover);
+            
             const result = await elsCtrl.Index(doc.docs,2);
             if(result){
                 //정상적으로 추가했을 때 solr 에서는 삭제 수행.
