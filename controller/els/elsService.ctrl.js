@@ -107,6 +107,7 @@ const elsSearch = (size,from,stat) => new Promise(async (resolve,reject) =>{
 
 const elsIndex = (doc,stat,id=false) => new Promise(async (resolve,reject) =>{
     let body = nullProcessing(doc);
+    
     body.stat=stat;
     let query = {
         index: 'politica_service',
