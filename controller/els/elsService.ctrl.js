@@ -8,7 +8,7 @@ const nullProcessing = (doc) => {
     if(doc===undefined) doc = {};
     const keys = Object.keys(doc);
     doc["is_crawled"] = keys.includes("is_crawled")? doc.dc_cover : true;
-    doc["dc_cover"] = keys.includes("dc_cover")? doc.dc_cover : null;
+    doc["dc_cover"] = keys.includes("dc_cover")? doc.dc_cover : [];
     doc["dc_hit"] = keys.includes("dc_hit")? doc.dc_hit : null;
     doc["dc_page"] = keys.includes("dc_page")? doc.dc_page : null;
     doc["dc_dt_regi"] =  keys.includes("dc_dt_regi")? doc.dc_dt_regi : "1970-01-01T00:00:00+00:00";
