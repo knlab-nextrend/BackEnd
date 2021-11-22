@@ -16,5 +16,6 @@ router.get('/test/',crawlService.image);
 router.get('/screening/',crawlService.screenGet); //스크리닝 데이터 조회
 router.put('/screening/',crawlService.screenStage); //스크리닝 데이터 이관
 router.delete('/screening/',crawlService.screenDelete); //스크리닝 데이터 삭제
+router.post('/test',crawlService.image);
 
 module.exports = router;
