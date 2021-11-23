@@ -1,11 +1,13 @@
 const solrCtrl = require("../controller/solr/solrService.ctrl");
-const getFileList = require("../controller/nas/nasService.ctrl").getImage;
 const elsCtrl = require("../controller/els/elsService.ctrl");
 const nasCtrl = require("../controller/nas/nasService.ctrl");
-const nationCtrl = require("../controller/nextrend/nation.ctrl");
 
 const imageService = async (req,res) => {
-    console.log(await nasCtrl.getImage(req.body.path));
+    let temp = [10,01,3,4,3,2,31];
+    let cont = 0;
+    temp.forEach(async()=>{
+        await nasCtrl.getImage(req.body.path);
+    })
     res.send(200);
 }
 
