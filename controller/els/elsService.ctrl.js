@@ -9,8 +9,8 @@ const nullProcessing = (doc) => {
     const keys = Object.keys(doc);
     doc["is_crawled"] = keys.includes("is_crawled")? doc.dc_cover : true;
     doc["dc_cover"] = keys.includes("dc_cover")? doc.dc_cover : [];
-    doc["dc_hit"] = keys.includes("dc_hit")? doc.dc_hit : null;
-    doc["dc_page"] = keys.includes("dc_page")? doc.dc_page : null;
+    doc["dc_hit"] = keys.includes("dc_hit")? doc.dc_hit : 0;
+    doc["dc_page"] = keys.includes("dc_page")? doc.dc_page : 0;
     doc["dc_dt_regi"] =  keys.includes("dc_dt_regi")? doc.dc_dt_regi : "1970-01-01T00:00:00+00:00";
     doc["dc_country_pub"] = keys.includes("dc_country_pub")? doc.dc_country_pub : [];
     doc["dc_country"] = keys.includes("dc_country")? doc.dc_country : [];
@@ -58,19 +58,24 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
 
         //국가 표시 조정 단계
         let countrys = [];
-        await Promise.all(result.docs["dc_country"].map(async (countryId) => {
-            const countryInfo = await nationCtrl.getCountryById(countryId);
-            countrys.push(countryInfo[0]);
-        }));
-        result.docs["dc_country"]=countrys;
+        if(result.docs["dc_country"].length!==0){
+            for(let countryId of result.docs["dc_country"]){
+                const countryInfo = await nationCtrl.getCountryById(countryId);
+                countrys.push(countryInfo[0]);
+            }
+            result.docs["dc_country"]=countrys;
+        }
+
 
         //코드 표시 조정 단계
         let codes = [];
-        await Promise.all(result.docs["dc_code"].map(async (code) => {
-            const codeInfo = await codeCtrl.getInfoById(code);
-            codes.push(codeInfo[0]);
-        }));
-        result.docs["dc_code"]=codes;
+        if(result.docs["dc_code"].length!==0){
+            for(let code of result.docs["dc_code"]){
+                const codeInfo = await codeCtrl.getInfoById(code);
+                codes.push(codeInfo[0]);
+            }
+            result.docs["dc_code"]=codes;
+        }
 
         resolve(result);
     }else{
@@ -97,10 +102,32 @@ const elsSearch = (size,from,stat) => new Promise(async (resolve,reject) =>{
         "dcCount":value.body.hits.total.value
     };
     const documents = [];
-    value.body.hits.hits.forEach((document)=>{
+    for(let document of value.body.hits.hits){
         doc = convertCrawlDocTo(document._source,'els');
+
+        //국가 표시 조정 단계
+        let countrys = [];
+        if(doc["dc_country"].length!==0){
+            for(let countryId of doc["dc_country"]){
+                const countryInfo = await nationCtrl.getCountryById(countryId);
+                countrys.push(countryInfo[0]);
+            }
+            doc["dc_country"]=countrys;
+        }
+
+        //코드 표시 조정 단계
+        let codes = [];
+        if(doc["dc_country"].length!==0){
+            for(let code of doc["dc_code"]){
+                const codeInfo = await codeCtrl.getInfoById(code);
+                codes.push(codeInfo[0]);
+            }
+            doc["dc_code"]=codes;
+        }
+
         documents.push(doc);
-    });
+        
+    };
     result["docs"]=documents;
     resolve(result);
 });
