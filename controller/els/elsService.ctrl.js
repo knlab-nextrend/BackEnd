@@ -117,7 +117,7 @@ const elsSearch = (size,from,stat) => new Promise(async (resolve,reject) =>{
 
         //코드 표시 조정 단계
         let codes = [];
-        if(doc["dc_country"].length!==0){
+        if(doc["dc_code"].length!==0){
             for(let code of doc["dc_code"]){
                 const codeInfo = await codeCtrl.getInfoById(code);
                 codes.push(codeInfo[0]);
