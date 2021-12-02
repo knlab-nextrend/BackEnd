@@ -1,5 +1,6 @@
 const codeCtrl = require("../controller/nextrend/subjectCode.ctrl");
 const nationCtrl = require("../controller/nextrend/nation.ctrl");
+const subjectCodeCtrl = require("../controller/nextrend/subjectCode.ctrl");
 
 const codeList = async (req,res) => {
     const code = req.query.upperCode;
@@ -29,8 +30,18 @@ const countryList = async (req,res) => {
     }
 }
 
+const toDict = async (req,res) => {
+    const data = await subjectCodeCtrl.ToDict(req.params.conti);
+    if(data){
+        res.send(data);
+    }else{
+        res.status(400).send({message:"toDict error"});
+    }
+}
+
 module.exports = {
     getCodes:codeList,
     getConti:contiList,
     getCountry:countryList,
+    Todict:toDict
 }

@@ -2,6 +2,11 @@ const solrCtrl = require("../controller/solr/solrService.ctrl");
 const elsCtrl = require("../controller/els/elsService.ctrl");
 const nasCtrl = require("../controller/nas/nasService.ctrl");
 
+/*
+Document Status Code list
+*/
+
+
 const imageService = async (req,res) => {
     let temp = [10,01,3,4,3,2,31];
     let cont = 0;
@@ -69,6 +74,7 @@ const crawlDetail = async (req,res) => {
             case 4:
             case 5:
             case 6:
+            case 7:
                 result = await elsCtrl.Detail(itemId);
                 break;
         }
