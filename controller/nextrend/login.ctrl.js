@@ -20,7 +20,7 @@ const loginHashPW = (userPW) => new Promise((resolve, reject)=>{
 
 const loginOnLogin = (userId,userPw) => new Promise((resolve, reject)=>{
   const sql =
-    'SELECT id, ifnull(`userPW`, NULL) AS `userPW`, ifnull(`salt`, NULL) AS `salt`, ifnull(`Category`, NULL) AS `Category` FROM `nt_users_list` RIGHT OUTER JOIN (SELECT "") AS `nt_users_list` ON `userID` = ?';
+    'SELECT id, ifnull(`NAME`,NULL) as `NAME`, ifnull(`userPW`, NULL) AS `userPW`, ifnull(`salt`, NULL) AS `salt`, ifnull(`Category`, NULL) AS `Category` FROM `nt_users_list` RIGHT OUTER JOIN (SELECT "") AS `nt_users_list` ON `userID` = ?';
   const param = [userId];
   db.query(sql, param, (err, data) => {
     if (!err) {
@@ -46,6 +46,7 @@ const loginOnLogin = (userId,userPw) => new Promise((resolve, reject)=>{
               // 발급한 refreshToken과 userID를 redis에 저장..
               redisClient.set(user.userID, refreshToken);
               resolve({
+                name:data[0].NAME,
                 uid:data[0].id,
                 token:jwtToken,
                 refreshToken:refreshToken,

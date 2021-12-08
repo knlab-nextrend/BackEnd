@@ -68,6 +68,15 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
             result.docs["dc_country"]=countrys;
         }
 
+        let countrysPub = [];
+        if(result.docs["dc_country_pub"].length!==0){
+            for(let countryId of result.docs["dc_country_pub"]){
+                const countryInfo = await nationCtrl.getCountryById(countryId);
+                countrysPub.push(countryInfo[0]);
+            }
+            result.docs["dc_country_pub"]=countrysPub;
+        }
+
 
         //코드 표시 조정 단계
         let codes = [];
@@ -115,6 +124,15 @@ const elsSearch = (size,from,stat) => new Promise(async (resolve,reject) =>{
                 countrys.push(countryInfo[0]);
             }
             doc["dc_country"]=countrys;
+        }
+
+        let countrysPub = [];
+        if(doc["dc_country_pub"].length!==0){
+            for(let countryId of doc["dc_country_pub"]){
+                const countryInfo = await nationCtrl.getCountryById(countryId);
+                countrysPub.push(countryInfo[0]);
+            }
+            doc["dc_country_pub"]=countrysPub;
         }
 
         //코드 표시 조정 단계

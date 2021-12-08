@@ -77,12 +77,12 @@ const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve
         query=query+' AND item_id:'+paramsDict["itemId"];
     }
 
-    //stat이 0일 경우, 1이 아닌 대상을 조회함.
-    if(stat===1){
-        query=query+' AND stat:'+stat;
-    }else{
-        query=query+' AND !stat:1';
-    }
+    // //stat이 0일 경우, 1이 아닌 대상을 조회함.
+    // if(stat===1){
+    //     query=query+' AND stat:'+stat;
+    // }else{
+    //     query=query+' AND !stat:1';
+    // }
     //Date 설정.
     let fromDate;
     let toDate;

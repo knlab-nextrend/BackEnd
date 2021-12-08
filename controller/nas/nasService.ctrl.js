@@ -5,6 +5,7 @@ const thumbRoute = NasFTP.thumbRoute;
 const webServer = NasFTP.webServer;
 const config = NasFTP.config;
 
+//주어진 폴더 아래 모든 파일 조회하여 array로 리턴
 const getFileList = (path) => new Promise(async(resolve,reject) => {
     const client = new jsftp(config);
     let fileList=[];
@@ -22,6 +23,10 @@ const getFileList = (path) => new Promise(async(resolve,reject) => {
         }
     });
 });
+
+const uploadImage = (iamge) => new Promise(async(resolve,reject)=>{
+    
+})
 
 module.exports = {
     getImage:getFileList

@@ -6,14 +6,9 @@ const nasCtrl = require("../controller/nas/nasService.ctrl");
 Document Status Code list
 */
 
-
-const imageService = async (req,res) => {
-    let temp = [10,01,3,4,3,2,31];
-    let cont = 0;
-    temp.forEach(async()=>{
-        await nasCtrl.getImage(req.body.path);
-    })
-    res.send(200);
+const docImage = async (req,res) => {
+console.log(req.file);
+    res.send('temp');
 }
 
 //router.put('/detail/:itemId',crawlSearch.Keep);
@@ -201,6 +196,7 @@ const crawlStage = async (req,res) => {
                     }
                     break;
                 case 6:
+                case 7:
                     itemDetail = await elsCtrl.Detail(itemId);
                     result = await elsCtrl.Index(doc,7,itemDetail.id);
                     if(result){
@@ -290,5 +286,5 @@ module.exports = {
     screenGet:screenGet,
     screenStage:screenStage,
     screenDelete:screenDelete,
-    image:imageService,
+    docImage:docImage,
 };
