@@ -95,20 +95,42 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
     }
 });
 
-const elsSearch = (size,from,stat) => new Promise(async (resolve,reject) =>{
+const elsSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,reject) =>{
+
+    // condition의 내용들을 filter로 담아줌.
+    let filter = [];
+    for (const [key,value] of Object.entries(conditions)){
+        let term = {};
+        term[key]=value;
+        if((key==='gte')||(key==='lte')||(key==='dateType')||(value==='')){
+        }else{
+            filter.push({term:term});
+        }
+    }
+    let range = {};
+    let temp = {};
+    if(conditions.gte!=='*'){
+        temp['gte']=conditions.gte;
+    }
+    if(conditions.lte!=='*'){
+        temp['lte']=conditions.lte;
+    }
+    range[conditions.dateType]=temp;
     const query = {
         from:from,
         size:size,
-        index: 'politica_service',
+        index:'politica_service',
         body: {
             query: {
-                match : {
-                    stat:stat
+                bool : {
+                    must:{
+                        range:range,
+                    },
+                    filter:filter
                 }
             }
         }
     };
-
     const value = await elsDB.search(query);
     const result = {
         "dcCount":value.body.hits.total.value

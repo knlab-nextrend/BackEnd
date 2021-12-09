@@ -104,9 +104,20 @@ const crawlSearch = async (req,res) => {
             case 5:
             case 6:
             case 7:
+                let conditions = {
+                    dc_lang:req.query.dc_lang||'',
+                    dc_code:req.query.dc_code||'',
+                    dc_keyword:req.query.dc_keyword||'',
+                    dc_country:req.query.dc_country||'',
+                    dc_publisher:req.query.dc_publisher||'',
+                    dateType:req.query.dateType||'dc_dt_collect',
+                    gte:req.query.gte||'*',
+                    lte:req.query.lte||'*',
+                };
+
                 const size = req.query.listSize;
                 const from = req.query.pageNo? ((req.query.pageNo-1)*size):0;
-                result = await elsCtrl.Search(size,from,stat=statusCode);
+                result = await elsCtrl.Search(size,from,stat=statusCode,conditions=conditions);
                 break;
         }
         if(result){

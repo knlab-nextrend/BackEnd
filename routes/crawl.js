@@ -9,7 +9,7 @@ const imageUpload = multer({
     dest: 'images',
 });
 
-router.get('/list/:statusCode',authJWT,crawlService.Search);
+router.get('/list/:statusCode',crawlService.Search);
 router.get('/test',crawlService.test);
 
 //단일 데이터 컨트롤 단계 , 11/15 단계 재정의 이후 조정 필요.
