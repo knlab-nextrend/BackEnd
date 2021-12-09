@@ -5,9 +5,13 @@ const nasCtrl = require("../controller/nas/nasService.ctrl");
 /*
 Document Status Code list
 */
+const test = async ( req,res)=>{
+    const imgUrl = await nasCtrl.getImage(req.query.path);
+    res.status(200).send(imgUrl);
+}
 
 const docImage = async (req,res) => {
-console.log(req.file);
+    console.log(req.file);
     res.send('temp');
 }
 
@@ -287,4 +291,5 @@ module.exports = {
     screenStage:screenStage,
     screenDelete:screenDelete,
     docImage:docImage,
+    test:test
 };

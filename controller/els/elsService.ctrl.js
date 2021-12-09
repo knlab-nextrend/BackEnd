@@ -5,15 +5,16 @@ const nationCtrl = require("../nextrend/nation.ctrl");
 const codeCtrl = require("../nextrend/subjectCode.ctrl");
 
 const nullProcessing = (doc) => {
+    const now = new Date();
     if(doc===undefined) doc = {};
     const keys = Object.keys(doc);
-    doc["is_crawled"] = keys.includes("is_crawled")? doc.dc_cover : true;
+    doc["is_crawled"] = keys.includes("is_crawled")? doc.is_crawled : true;
     doc["dc_cover"] = keys.includes("dc_cover")? doc.dc_cover : [];
-    doc["dc_file"] = keys.includes("dc_cover")? doc.dc_file : null;
+    doc["dc_file"] = keys.includes("dc_file")? doc.dc_file : null;
     doc["dc_lang"] = keys.includes("dc_lang")? doc.dc_lang : null;
     doc["dc_hit"] = keys.includes("dc_hit")? doc.dc_hit : 0;
     doc["dc_page"] = keys.includes("dc_page")? doc.dc_page : 0;
-    doc["dc_dt_regi"] =  keys.includes("dc_dt_regi")? doc.dc_dt_regi : "1970-01-01T00:00:00+00:00";
+    doc["dc_dt_regi"] =  keys.includes("dc_dt_regi")? doc.dc_dt_regi : now.toISOString();
     doc["dc_country_pub"] = keys.includes("dc_country_pub")? doc.dc_country_pub : [];
     doc["dc_country"] = keys.includes("dc_country")? doc.dc_country : [];
     doc["dc_code"] = keys.includes("dc_code")? doc.dc_code : [];

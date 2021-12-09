@@ -47,7 +47,7 @@ const solrDetail = (itemId) => new Promise(async (resolve,reject)=> {
 });
 
 const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve,reject)=>{
-    let query = "q=";
+    let query = "q=thumbnail:[* TO *] ";
     let paramsDict = {
         // 상세 params
         "keyword": condition.keyword,
@@ -68,9 +68,9 @@ const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve
     
 
     if(paramsDict["keyword"]===undefined){
-        query=query+'contents:*';
+        query=query+'AND contents:*';
     }else{
-        query=query+'contents:'+paramsDict["keyword"];
+        query=query+'AND contents:'+paramsDict["keyword"];
     }
     //item_id 설정..
     if(paramsDict["itemId"]!==undefined){

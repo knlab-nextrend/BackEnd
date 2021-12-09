@@ -16,7 +16,8 @@ const authJWT = async (req,res,next) => {
         }else{
             res.status(401).send({
                 ok:false,
-                message:result.message
+                message:result.message,
+                token:token
             })
         }
     }else{
