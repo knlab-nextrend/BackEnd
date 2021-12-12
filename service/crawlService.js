@@ -11,8 +11,11 @@ const test = async ( req,res)=>{
 }
 
 const docImage = async (req,res) => {
+    const result = await elsCtrl.Detail(req.body.itemId);
     console.log(req.file);
-    res.send('temp');
+    console.log(req.body.itemId);
+    const test = new Date();
+    res.send(test);
 }
 
 //router.put('/detail/:itemId',crawlSearch.Keep);
@@ -113,6 +116,9 @@ const crawlSearch = async (req,res) => {
                     dateType:req.query.dateType||'dc_dt_collect',
                     gte:req.query.gte||'*',
                     lte:req.query.lte||'*',
+                    is_crawled:req.query.is_crawled||'',
+                    sort:req.query.sort||'desc',
+                    sortType:req.query.sortType||'dc_dt_collect'
                 };
 
                 const size = req.query.listSize;

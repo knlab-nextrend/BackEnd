@@ -38,7 +38,7 @@ const getFileList = (path) => new Promise(async(resolve,reject) => {
 });
 
 const uploadImage = (image) => new Promise(async(resolve,reject)=>{
-
+    
 })
 
 module.exports = {

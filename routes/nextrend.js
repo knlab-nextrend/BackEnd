@@ -17,6 +17,7 @@ router.get("/refresh/",tokenCtrl.refresh);
 
 router.post("/login/",loginService.Login);
 
+router.get("/countrys/dict",categoryService.countryToDict);
 router.get("/categorys/dict",categoryService.Todict);
 router.get("/categorys/",categoryService.getCodes);
 router.get("/continents/",categoryService.getConti);

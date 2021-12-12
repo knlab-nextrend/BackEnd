@@ -88,7 +88,7 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
             }
             result.docs["dc_code"]=codes;
         }
-
+        result.docs["dc_cover"]=[];
         resolve(result);
     }else{
         resolve(false);
@@ -96,17 +96,20 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
 });
 
 const elsSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,reject) =>{
-
     // condition의 내용들을 filter로 담아줌.
     let filter = [];
     for (const [key,value] of Object.entries(conditions)){
         let term = {};
         term[key]=value;
-        if((key==='gte')||(key==='lte')||(key==='dateType')||(value==='')){
+        if((key==='gte')||(key==='lte')||(key==='dateType')||(value==='')||(key==='sort')||(key==='sortType')){
         }else{
             filter.push({term:term});
         }
     }
+    // stat은 별개로
+    filter.push({term:{stat:stat}});
+
+    // 기간 range
     let range = {};
     let temp = {};
     if(conditions.gte!=='*'){
@@ -116,6 +119,13 @@ const elsSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,r
         temp['lte']=conditions.lte;
     }
     range[conditions.dateType]=temp;
+
+    // sort by
+    let sort = [];
+    let sortTemp = {};
+    sortTemp[conditions.sortType]=conditions.sort;
+    sort.push(sortTemp);
+
     const query = {
         from:from,
         size:size,
@@ -128,7 +138,8 @@ const elsSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,r
                     },
                     filter:filter
                 }
-            }
+            },
+            sort:sort,
         }
     };
     const value = await elsDB.search(query);

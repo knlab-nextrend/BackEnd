@@ -56,9 +56,47 @@ const countryConverter = (countrys) => new Promise(async (resolve,reject)=>{
     }
 });
 
+const countryToDict = () => new Promise(async (resolve,reject)=>{
+    const Lq =  'select * from nt_continents where STAT<9;';
+    const Mq =  'SELECT a.IDX,a.CTY_NAME,a.CONTI_IDX,a.CTY_PRI FROM nt_countrys a join nt_continents b  on  a.conti_idx = b.idx';
+
+    db.query(Lq+Mq,(err,data)=>{
+        if(!err){
+            const large = data[0];
+            const middle = data[1];
+
+            const allCategorys = [];
+            large.forEach(lcat => {
+                allCategorys.push({
+                    value:lcat['IDX'],
+                    label:lcat['CONTI_NAME'],
+                    children:[]
+                })
+            });
+            middle.forEach(mcat =>{
+                const conti = mcat['CONTI_IDX'];
+                allCategorys.forEach(largecat => {
+                    if(largecat['value']===conti){
+                        largecat['children'].push({
+                            value:mcat['IDX'],
+                            label:mcat['CTY_NAME'],
+                            children:[]
+                        })
+                    }
+                })
+            });
+            resolve(allCategorys);
+        }else{
+            console.log(err);
+            resolve(false);
+        }
+    })
+});
+
 module.exports = {
     getConti:getContinent,
     getCountry:getCountry,
     getCountryById:getCountryById,
-    countryConverter:countryConverter
+    countryConverter:countryConverter,
+    countryToDict:countryToDict
 }
