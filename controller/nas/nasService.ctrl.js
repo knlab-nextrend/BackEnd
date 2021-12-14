@@ -11,16 +11,17 @@ const getFileList = (path) => new Promise(async(resolve,reject) => {
     let fileList=[];
     if(Array.isArray(path)){
         if(path.length>0){
-            if('[.]png|[.]jpg'.search(path[0])){
-                const splited = path[0].split('thumbnail/');
-                resolve([webServer+thumbRoute+splited[splited.length-1]]);
+            let splited = path[0].split('.');
+            const underThumb = path[0].split('thumbnail/');
+            if(splited[splited.length-1]=='png'){
+                resolve([webServer+thumbRoute+underThumb[underThumb.length-1]]);
             }else{
-                await client.ls(thumbRoute+path[0],(err,res)=>{
+                await client.ls(thumbRoute+underThumb[underThumb.length-1],(err,res)=>{
                     if(err){
                         resolve([]);
                     }else{
                         //이미지 경로 생성
-                        res.forEach(file => fileList.push(webServer+'/'+path[0]+'/'+file.name));
+                        res.forEach(file => fileList.push(webServer+'/'+underThumb[underThumb.length-1]+'/'+file.name));
                         if(fileList.length){
                             resolve(fileList);
                         }else{

@@ -189,8 +189,8 @@ const crawlStage = async (req,res) => {
                     // 순전히 추가하는 경우
                     result = await elsCtrl.Index(doc,2);
                     if(result){
-                        //db 한쪽만 죽어있을 경우를 상정해서 나중에 복구하는 코드 만들어 놓기.
-                        await solrCtrl.Delete(itemId);
+                        //delete 에서 keep 으로 삭제는 이루어지지 않음. (stat=1로 부여함으로써 삭제 조치..)
+                        await solrCtrl.Keep(itemId,2);
                         res.send();
                     }else{
                         res.status(400).send({message:"some trouble in staging"});
@@ -262,8 +262,8 @@ const screenStage = async(req,res) => {
             
             const result = await elsCtrl.Index(doc.docs,2);
             if(result){
-                //정상적으로 추가했을 때 solr 에서는 삭제 수행.
-                await solrCtrl.Delete(itemId);
+                //정상적으로 추가했을 때 solr 에서는 삭제 수행. (keep으로 stat=1 부여)
+                await solrCtrl.Keep(itemId);
             }else{
                 errorList.push(itemId);
             }
@@ -283,7 +283,8 @@ const screenDelete = async(req,res) => {
     }else{
         const errorList = [];
         deleteList.forEach(async (itemId)=>{
-            const result = await solrCtrl.Delete(itemId);
+            //stat 2 부여함으로써 일단 추후 처리 도모... 기능상 이유는 없음.
+            const result = await solrCtrl.Keep(itemId,2);
             if(result){
                 //정상적인 값일 때, 아무것도 수행하지 않음.
             }else{

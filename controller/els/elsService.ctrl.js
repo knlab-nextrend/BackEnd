@@ -88,7 +88,6 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
             }
             result.docs["dc_code"]=codes;
         }
-        result.docs["dc_cover"]=[];
         resolve(result);
     }else{
         resolve(false);
