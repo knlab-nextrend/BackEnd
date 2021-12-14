@@ -39,9 +39,18 @@ const toDict = async (req,res) => {
     }
 }
 
+const countryToDict = async (req,res) => {
+    const data = await nationCtrl.countryToDict();
+    if(data){
+        res.send(data);
+    }else{
+        res.status(400).send({message:"error occured during loading countries"});
+    }
+}
 module.exports = {
     getCodes:codeList,
     getConti:contiList,
     getCountry:countryList,
-    Todict:toDict
+    Todict:toDict,
+    countryToDict:countryToDict
 }

@@ -5,13 +5,16 @@ const nationCtrl = require("../nextrend/nation.ctrl");
 const codeCtrl = require("../nextrend/subjectCode.ctrl");
 
 const nullProcessing = (doc) => {
+    const now = new Date();
     if(doc===undefined) doc = {};
     const keys = Object.keys(doc);
-    doc["is_crawled"] = keys.includes("is_crawled")? doc.dc_cover : true;
+    doc["is_crawled"] = keys.includes("is_crawled")? doc.is_crawled : true;
     doc["dc_cover"] = keys.includes("dc_cover")? doc.dc_cover : [];
+    doc["dc_file"] = keys.includes("dc_file")? doc.dc_file : null;
+    doc["dc_lang"] = keys.includes("dc_lang")? doc.dc_lang : null;
     doc["dc_hit"] = keys.includes("dc_hit")? doc.dc_hit : 0;
     doc["dc_page"] = keys.includes("dc_page")? doc.dc_page : 0;
-    doc["dc_dt_regi"] =  keys.includes("dc_dt_regi")? doc.dc_dt_regi : "1970-01-01T00:00:00+00:00";
+    doc["dc_dt_regi"] =  keys.includes("dc_dt_regi")? doc.dc_dt_regi : now.toISOString();
     doc["dc_country_pub"] = keys.includes("dc_country_pub")? doc.dc_country_pub : [];
     doc["dc_country"] = keys.includes("dc_country")? doc.dc_country : [];
     doc["dc_code"] = keys.includes("dc_code")? doc.dc_code : [];
@@ -66,6 +69,15 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
             result.docs["dc_country"]=countrys;
         }
 
+        let countrysPub = [];
+        if(result.docs["dc_country_pub"].length!==0){
+            for(let countryId of result.docs["dc_country_pub"]){
+                const countryInfo = await nationCtrl.getCountryById(countryId);
+                countrysPub.push(countryInfo[0]);
+            }
+            result.docs["dc_country_pub"]=countrysPub;
+        }
+
 
         //코드 표시 조정 단계
         let codes = [];
@@ -76,27 +88,60 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
             }
             result.docs["dc_code"]=codes;
         }
-
+        result.docs["dc_cover"]=[];
         resolve(result);
     }else{
         resolve(false);
     }
 });
 
-const elsSearch = (size,from,stat) => new Promise(async (resolve,reject) =>{
+const elsSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,reject) =>{
+    // condition의 내용들을 filter로 담아줌.
+    let filter = [];
+    for (const [key,value] of Object.entries(conditions)){
+        let term = {};
+        term[key]=value;
+        if((key==='gte')||(key==='lte')||(key==='dateType')||(value==='')||(key==='sort')||(key==='sortType')){
+        }else{
+            filter.push({term:term});
+        }
+    }
+    // stat은 별개로
+    filter.push({term:{stat:stat}});
+
+    // 기간 range
+    let range = {};
+    let temp = {};
+    if(conditions.gte!=='*'){
+        temp['gte']=conditions.gte;
+    }
+    if(conditions.lte!=='*'){
+        temp['lte']=conditions.lte;
+    }
+    range[conditions.dateType]=temp;
+
+    // sort by
+    let sort = [];
+    let sortTemp = {};
+    sortTemp[conditions.sortType]=conditions.sort;
+    sort.push(sortTemp);
+
     const query = {
         from:from,
         size:size,
-        index: 'politica_service',
+        index:'politica_service',
         body: {
             query: {
-                match : {
-                    stat:stat
+                bool : {
+                    must:{
+                        range:range,
+                    },
+                    filter:filter
                 }
-            }
+            },
+            sort:sort,
         }
     };
-
     const value = await elsDB.search(query);
     const result = {
         "dcCount":value.body.hits.total.value
@@ -113,6 +158,15 @@ const elsSearch = (size,from,stat) => new Promise(async (resolve,reject) =>{
                 countrys.push(countryInfo[0]);
             }
             doc["dc_country"]=countrys;
+        }
+
+        let countrysPub = [];
+        if(doc["dc_country_pub"].length!==0){
+            for(let countryId of doc["dc_country_pub"]){
+                const countryInfo = await nationCtrl.getCountryById(countryId);
+                countrysPub.push(countryInfo[0]);
+            }
+            doc["dc_country_pub"]=countrysPub;
         }
 
         //코드 표시 조정 단계

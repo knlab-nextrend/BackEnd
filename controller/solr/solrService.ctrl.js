@@ -47,7 +47,7 @@ const solrDetail = (itemId) => new Promise(async (resolve,reject)=> {
 });
 
 const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve,reject)=>{
-    let query = "q=";
+    let query = "q=thumbnail:[* TO *] ";
     let paramsDict = {
         // 상세 params
         "keyword": condition.keyword,
@@ -68,21 +68,21 @@ const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve
     
 
     if(paramsDict["keyword"]===undefined){
-        query=query+'contents:*';
+        query=query+'AND contents:*';
     }else{
-        query=query+'contents:'+paramsDict["keyword"];
+        query=query+'AND contents:'+paramsDict["keyword"];
     }
     //item_id 설정..
     if(paramsDict["itemId"]!==undefined){
         query=query+' AND item_id:'+paramsDict["itemId"];
     }
 
-    //stat이 0일 경우, 1이 아닌 대상을 조회함.
-    if(stat===1){
-        query=query+' AND stat:'+stat;
-    }else{
-        query=query+' AND !stat:1';
-    }
+    // //stat이 0일 경우, 1이 아닌 대상을 조회함.
+    // if(stat===1){
+    //     query=query+' AND stat:'+stat;
+    // }else{
+    //     query=query+' AND !stat:1';
+    // }
     //Date 설정.
     let fromDate;
     let toDate;

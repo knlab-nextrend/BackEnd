@@ -8,11 +8,16 @@ const authJWT = async (req,res,next) => {
             // token 검증 완료 시, req 에 값을 세팅한 후 콜백함수로 진행..
             req.userID = result.userID;
             req.Category = result.Category;
+            res.set({
+                userID:result.userID,
+                Category:result.Category
+            })
             next();
         }else{
             res.status(401).send({
                 ok:false,
-                message:result.message
+                message:result.message,
+                token:token
             })
         }
     }else{

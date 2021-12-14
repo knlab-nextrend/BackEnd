@@ -2,13 +2,20 @@ const solrCtrl = require("../controller/solr/solrService.ctrl");
 const elsCtrl = require("../controller/els/elsService.ctrl");
 const nasCtrl = require("../controller/nas/nasService.ctrl");
 
-const imageService = async (req,res) => {
-    let temp = [10,01,3,4,3,2,31];
-    let cont = 0;
-    temp.forEach(async()=>{
-        await nasCtrl.getImage(req.body.path);
-    })
-    res.send(200);
+/*
+Document Status Code list
+*/
+const test = async ( req,res)=>{
+    const imgUrl = await nasCtrl.getImage(req.query.path);
+    res.status(200).send(imgUrl);
+}
+
+const docImage = async (req,res) => {
+    const result = await elsCtrl.Detail(req.body.itemId);
+    console.log(req.file);
+    console.log(req.body.itemId);
+    const test = new Date();
+    res.send(test);
 }
 
 //router.put('/detail/:itemId',crawlSearch.Keep);
@@ -69,6 +76,7 @@ const crawlDetail = async (req,res) => {
             case 4:
             case 5:
             case 6:
+            case 7:
                 result = await elsCtrl.Detail(itemId);
                 break;
         }
@@ -99,9 +107,23 @@ const crawlSearch = async (req,res) => {
             case 5:
             case 6:
             case 7:
+                let conditions = {
+                    dc_lang:req.query.dc_lang||'',
+                    dc_code:req.query.dc_code||'',
+                    dc_keyword:req.query.dc_keyword||'',
+                    dc_country:req.query.dc_country||'',
+                    dc_publisher:req.query.dc_publisher||'',
+                    dateType:req.query.dateType||'dc_dt_collect',
+                    gte:req.query.gte||'*',
+                    lte:req.query.lte||'*',
+                    is_crawled:req.query.is_crawled||'',
+                    sort:req.query.sort||'desc',
+                    sortType:req.query.sortType||'dc_dt_collect'
+                };
+
                 const size = req.query.listSize;
                 const from = req.query.pageNo? ((req.query.pageNo-1)*size):0;
-                result = await elsCtrl.Search(size,from,stat=statusCode);
+                result = await elsCtrl.Search(size,from,stat=statusCode,conditions=conditions);
                 break;
         }
         if(result){
@@ -195,6 +217,7 @@ const crawlStage = async (req,res) => {
                     }
                     break;
                 case 6:
+                case 7:
                     itemDetail = await elsCtrl.Detail(itemId);
                     result = await elsCtrl.Index(doc,7,itemDetail.id);
                     if(result){
@@ -284,5 +307,6 @@ module.exports = {
     screenGet:screenGet,
     screenStage:screenStage,
     screenDelete:screenDelete,
-    image:imageService,
+    docImage:docImage,
+    test:test
 };
