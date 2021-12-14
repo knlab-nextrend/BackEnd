@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const secretKey = require("../configs/keys").secretKey;
 const options = require("../configs/keys").option;
+const refreshExpiresIn = require("../configs/keys").refreshExpiresIn;
 const {promisify} = require("util");
 const redisClient = require("./redis");
 
@@ -33,7 +34,7 @@ const verify = async (token) => {
 const refresh = () => {
     return jwt.sign({},secretKey,{
         algorithm:options.algorithm,
-        expiresIn:'1d'
+        expiresIn:refreshExpiresIn
     });
 }
 
