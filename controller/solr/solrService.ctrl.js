@@ -1,6 +1,7 @@
 const { convertCrawlDocTo } = require("../../lib/libs");
 const solrDB = require("../../models/solr/index").solrDB;
 
+// 이건 안쓴다고 보면 됨.
 const solrDelete = (itemId) => new Promise(async(resolve,reject)=>{
     const query = 'item_id:'+itemId;
     solrDB.deleteByQuery(query,function(err,obj){
@@ -13,12 +14,13 @@ const solrDelete = (itemId) => new Promise(async(resolve,reject)=>{
     });
 })
 
-const solrKeep = (itemId) => new Promise(async (resolve,reject)=>{
+// keep 을 스크리닝 삭제로 치환...
+const solrKeep = (itemId,stat=1) => new Promise(async (resolve,reject)=>{
     const itemDetail = await solrDetail(itemId,true);
     const id = itemDetail.id;
     const query = {
         'id': id,
-        'stat':{'set':1},
+        'stat':{'set':stat},
     };
     solrDB.add(query, function(err, obj) {
         if (err) {
@@ -77,12 +79,13 @@ const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve
         query=query+' AND item_id:'+paramsDict["itemId"];
     }
 
-    // //stat이 0일 경우, 1이 아닌 대상을 조회함.
-    // if(stat===1){
-    //     query=query+' AND stat:'+stat;
-    // }else{
-    //     query=query+' AND !stat:1';
-    // }
+    //stat이 0일 경우, 1과 2가 아닌 대상을 조회함.
+    if(stat===1){
+        query=query+' AND stat:'+stat;
+    }else{
+        query=query+' AND !(stat:1 OR 2)';
+    }
+
     //Date 설정.
     let fromDate;
     let toDate;
