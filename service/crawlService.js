@@ -1,12 +1,13 @@
 const solrCtrl = require("../controller/solr/solrService.ctrl");
 const elsCtrl = require("../controller/els/elsService.ctrl");
 const nasCtrl = require("../controller/nas/nasService.ctrl");
+const poliCtrl = require("../controller/politica/poliService.ctrl");
 
 /*
 Document Status Code list
 */
 const test = async ( req,res)=>{
-    const imgUrl = await nasCtrl.getImage(req.query.path);
+    const imgUrl = await poliCtrl.checkStat();
     res.status(200).send(imgUrl);
 }
 
@@ -217,6 +218,21 @@ const crawlStage = async (req,res) => {
                     }
                     break;
                 case 6:
+                    const checked = await poliCtrl.checkStat(itemId);
+                    if(checked){
+                        itemDetail = await elsCtrl.Detail(itemId);
+                        result = await elsCtrl.Index(doc,7,itemDetail.id);
+                        if(result){
+                            await poliCtrl.modSubmitStat(itemId);
+                            res.send();
+                        }else{
+                            res.status(400).send({message:"els error"});
+                        }
+                        res.send();
+                    }else{
+                        res.status(400).send({message:"poli error"});
+                    }
+                    break;
                 case 7:
                     itemDetail = await elsCtrl.Detail(itemId);
                     result = await elsCtrl.Index(doc,7,itemDetail.id);
