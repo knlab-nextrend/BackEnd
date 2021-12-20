@@ -1,6 +1,7 @@
 const jsftp = require("jsftp");
 const path = require('path');
 const fs = require('fs');
+const ftp = require('basic-ftp');
 
 const NasFTP = require("../../models/nas/index");
 const thumbRoute = NasFTP.thumbRoute;
@@ -56,7 +57,6 @@ const checkFolderExist = (folderPath,type=false) => new Promise(async (resolve, 
     const subPath = pathTypeCatcher(type).subPath;
     const client = new jsftp(config);
     client.ls(subPath.slice(0,-1)+folderPath, (err, res) => {
-        console.log(res);
         if (err) {
             resolve(err);
         } else {
@@ -81,20 +81,22 @@ const uploadFile = (file, filePath, type=false) => new Promise(async (resolve, r
     const pathList = pathTypeCatcher(type);
     const subPath = pathList.subPath;
     const tailPath = pathList.tailPath;
-    const client = new jsftp(config);
+    const stream = await fs.createReadStream(file.path);
 
-    const stream = await fs.createReadStream('C:\\home\\BackEnd\\images\\'+file.filename);
-    console.log(stream);
-    console.log('C:\\home\\BackEnd\\images\\'+file.filename,subPath.slice(0,-1)+filePath+file.filename+tailPath);
-    console.log(client);
-    client.put(stream, subPath.slice(0,-1)+filePath+file.filename+tailPath, (err, res) => {
-        console.log(res,err);
-        if (err) {
-            resolve(err);
-        } else {
+    const client = new ftp.Client()
+    try {
+        await client.access(config);
+        const result = await client.uploadFrom(stream,subPath.slice(0,-1)+filePath+file.filename+tailPath);
+        if(result.code===226){
             resolve(false);
+        }else{
+            resolve(result);
         }
-    });
+    }
+    catch(err) {
+        resolve(err);
+    }
+    client.close();
 });
 
 module.exports = {

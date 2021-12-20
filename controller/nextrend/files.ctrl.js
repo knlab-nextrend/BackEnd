@@ -1,7 +1,8 @@
 const fs = require('fs');
+const path = require('path');
 
 const unlinkFile = (filePath) => new Promise((resolve, reject)=>{
-    fs.unlinkSync(filePath,(err)=>{
+    fs.unlinkSync(path.resolve(filePath),(err,res)=>{
         if(err){
             resolve(false);
         }else{

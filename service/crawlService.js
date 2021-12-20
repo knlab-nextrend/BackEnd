@@ -43,24 +43,21 @@ const docImage = async (req, res) => {
 
                 // 이 시점에서는 폴더가 만들어져 있음. 업로드 진행.
                 const uploadError = await nasCtrl.uploadFile(req.file,contentPath,type='image');
-                console.log(uploadError);
                 if(uploadError){
                     // 업로드 실패시 throw
-                    console.log('test');
                     throw 'error occured put file to nas storage';
                 }else{
                     // 모든 작업 수행 성공 시 fileRoute를 반환.
-                    const fileRoute = path.join(serverIP,contentPath,req.file.filename);
-                    await fileCtrl.unlinkFile(req.file.path);
+                    const fileRoute = serverIP+contentPath+req.file.filename;
+                    fileCtrl.unlinkFile(req.file.path);
                     res.send(fileRoute);
                 }
             } else {
                 throw 'not given itemid';
             }
         } catch (e) {
-            console.log('clear');
             // exception으로 인한 에러 시, 직접 file을 unlink 해줌. 에러 메세지를 그대로 전달.
-            await fileCtrl.unlinkFile(req.file.path);
+            fileCtrl.unlinkFile(req.file.path);
             res.status(400).send({message:e});
         }
     } else {
