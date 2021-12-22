@@ -4,17 +4,64 @@ const nasCtrl = require("../controller/nas/nasService.ctrl");
 const poliCtrl = require("../controller/politica/poliService.ctrl");
 const fileCtrl = require("../controller/nextrend/files.ctrl");
 const path = require("path");
+const libs = require("../lib/libs");
+const nas = require("../models/nas");
 
 /*
 Document Status Code list
 */
 
 const test = async (req, res) => {
-    const imgUrl = await poliCtrl.checkStat();
-    res.status(200).send(imgUrl);
+    const result = await nasCtrl.getFileList(req.query.path);
+    
+    res.send(result);
 }
 
-const docImage = async (req, res) => {
+// 페이지를 벗어날 때, item_id만으로 작업중이던 nas에 등록된 contentImage 파일들을 삭제함.
+const docImageDetach = async (req,res) => {
+    if(req.query.item_id){
+        try{
+            const itemDetail = await elsCtrl.Detail(req.query.item_id);
+            const prevImages = libs.ImageExtractorFromContent(itemDetail.docs.dc_content);
+            if(prevImages===null){
+                // 저장된 본문 이미지가 없을 경우, 아무런 로직도 수행하지 않음.
+                res.send();
+            }else{
+                const imageFolderPath = libs.folderExtractorFromCover(itemDetail.docs.dc_cover[0]);
+                const fileList = await nasCtrl.getFileList(imageFolderPath+'/contentImage/');
+                if(fileList){
+                    // contentImage에 파일이 있을 경우
+                    let oldFileList = [];
+                    fileList.forEach((file)=>{
+                        oldFileList.push(file.split('.png')[0]);
+                    })
+                    const compResult = libs.compareArray(oldFileList,prevImages.imageName);
+                    console.log(compResult);
+
+                    if(compResult.delete.length===0){
+                        // 존재하는 파일이 모두 keep 대상이라면
+                        res.send();
+                    }else{ 
+                        compResult.delete.forEach(async(fileName)=>{
+                            console.log(fileName);
+                            await nasCtrl.deleteFile(imageFolderPath+'/contentImage/'+fileName,'image');
+                        })
+                        res.send();
+                    }
+                }else{
+                    throw 'contentImage folder not exist or some error occured';
+                }
+            }
+        }catch(e){
+            console.log(e);
+            res.status(400).send({message:e})
+        }
+    }else{
+        res.status(400).send({message:'item_id is not given'})
+    }
+}
+
+const docImageAttach = async (req, res) => {
     if (req.file) {
         try {
             const result = await elsCtrl.Detail(req.body.itemId);
@@ -125,6 +172,8 @@ const crawlDetail = async (req, res) => {
             case 6:
             case 7:
                 result = await elsCtrl.Detail(itemId);
+                console.log(result.docs.dc_content);
+                console.log(libs.ImageExtractorFromContent(result.docs.dc_content));
                 break;
         }
         if (result) {
@@ -370,6 +419,7 @@ module.exports = {
     screenGet: screenGet,
     screenStage: screenStage,
     screenDelete: screenDelete,
-    docImage: docImage,
+    docImageAttach: docImageAttach,
+    docImageDetach:docImageDetach,
     test: test
 };

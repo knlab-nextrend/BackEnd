@@ -21,7 +21,7 @@ const pathTypeCatcher = (type) => {
 }
 
 //주어진 폴더 아래 모든 파일 조회하여 array로 리턴
-const getFileList = (path) => new Promise(async (resolve, reject) => {
+const getImageFileList = (path) => new Promise(async (resolve, reject) => {
     const client = new jsftp(config);
     let fileList = [];
     if (Array.isArray(path)) {
@@ -53,6 +53,34 @@ const getFileList = (path) => new Promise(async (resolve, reject) => {
     }
 });
 
+
+const getFileList = (path) => new Promise(async (resolve, reject) => {
+    const client = new ftp.Client()
+    try {
+        await client.access(config);
+        const result = await client.list(thumbRoute+path);
+        if(result.code===550){
+            // 폴더가 없을 경우
+            resolve(false);
+        }else{
+            if(result.length===0){
+                // 폴더 속 파일이 없을 경우
+                resolve(false);
+            }else{
+                let fileList = [];
+                result.forEach((item)=>{
+                    fileList.push(item.name);
+                })
+                resolve(fileList);
+            }
+        }
+    }
+    catch(err) {
+        resolve(false);
+    }
+    client.close();
+});
+
 const checkFolderExist = (folderPath,type=false) => new Promise(async (resolve, reject) => {
     const subPath = pathTypeCatcher(type).subPath;
     const client = new jsftp(config);
@@ -75,6 +103,23 @@ const makeFolder = (folderPath,type=false) => new Promise(async (resolve, reject
             resolve(false);
         }
     })
+});
+
+const deleteFile = (path,type=false) => new  Promise(async (resolve, reject) => {
+    const pathList = pathTypeCatcher(type);
+    const subPath = pathList.subPath;
+    const tailPath = pathList.tailPath;
+
+    const client = new ftp.Client()
+    try {
+        await client.access(config);
+        await client.remove(subPath+path+tailPath);
+        resolve(false);
+    }
+    catch(err) {
+        resolve(err);
+    }
+    client.close();
 });
 
 const uploadFile = (file, filePath, type=false) => new Promise(async (resolve, reject) => {
@@ -100,8 +145,10 @@ const uploadFile = (file, filePath, type=false) => new Promise(async (resolve, r
 });
 
 module.exports = {
-    getImage: getFileList,
+    getImage: getImageFileList,
+    getFileList:getFileList,
     uploadFile: uploadFile,
     checkFolderExist: checkFolderExist,
-    makeFolder: makeFolder
+    makeFolder: makeFolder,
+    deleteFile:deleteFile
 }

@@ -9,7 +9,7 @@ const imageUpload = multer({
 });
 
 router.get('/list/:statusCode',authJWT,crawlService.Search);
-router.get('/test',crawlService.test);
+router.get('/test',crawlService.docImageDetach);
 
 //단일 데이터 컨트롤 단계 , 11/15 단계 재정의 이후 조정 필요.
 router.get('/detail/:itemId',authJWT,crawlService.Detail);
@@ -21,6 +21,6 @@ router.get('/screening/',authJWT,crawlService.screenGet); //스크리닝 데이�
 router.put('/screening/',authJWT,crawlService.screenStage); //스크리닝 데이터 이관
 router.delete('/screening/',authJWT,crawlService.screenDelete); //스크리닝 데이터 삭제
 
-router.post('/docImage/',imageUpload.single('file'),crawlService.docImage); //본문 이미지 업로드 및 url 리턴
+router.post('/docImage/',imageUpload.single('file'),crawlService.docImageAttach); //본문 이미지 업로드 및 url 리턴
 
 module.exports = router;
