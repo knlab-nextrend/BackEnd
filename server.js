@@ -13,11 +13,14 @@ app.use(cors({
 
 const nextrend = require('./routes/nextrend');
 const crawl = require('./routes/crawl');
+const file = require('./routes/file');
 
 app.use(morgan('dev',{ stream })); // 개발 : dev -> 자세히 : combined
 
 app.use('/nextrend', nextrend);
 app.use('/crawl',crawl);
+app.use('/file',file);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server On : http://localhost:${PORT}/`);
