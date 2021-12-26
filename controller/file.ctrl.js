@@ -2,7 +2,7 @@ const e = require('express');
 const fs = require('fs');
 const path = require('path');
 const nasCtrl = require('../controller/nas/nasService.ctrl');
-const elsCtrl = require('../controller/els/elsService.ctrl');
+const esCtrl = require('../controller/es/esService.ctrl');
 const libs = require('../lib/libs');
 
 const unlinkFile = (filePath) => new Promise((resolve, reject)=>{
@@ -17,7 +17,7 @@ const unlinkFile = (filePath) => new Promise((resolve, reject)=>{
 
 // 무조건 prev 는 nas 결과, curr 는 target 으로 구성...
 const deleteComparedContentImage = (itemId,target=null) => new Promise(async (resolve,reject) =>{
-    const itemDetail = await elsCtrl.Detail(itemId);
+    const itemDetail = await esCtrl.Detail(itemId);
     // 본문에 image가 없더라도 cover를 통해 경로 추출.. 
     //TODO: link 필드가 생성되면 그것을 사용하여 모두 바꾸기..
 

@@ -1,5 +1,5 @@
 const solrCtrl = require("../controller/solr/solrService.ctrl");
-const elsCtrl = require("../controller/els/elsService.ctrl");
+const esCtrl = require("../controller/es/esService.ctrl");
 const nasCtrl = require("../controller/nas/nasService.ctrl");
 const poliCtrl = require("../controller/politica/poliService.ctrl");
 const libs = require("../lib/libs");
@@ -33,11 +33,11 @@ const crawlKeep = async (req, res) => {
             case 2:
             case 3:
                 // 일단 직접 지정...
-                result = await elsCtrl.Keep(itemId, 3);
+                result = await esCtrl.Keep(itemId, 3);
                 break;
             case 4:
             case 5:
-                result = await elsCtrl.Keep(itemId, 5);
+                result = await esCtrl.Keep(itemId, 5);
                 break;
         }
         if (result) {
@@ -74,7 +74,7 @@ const crawlDetail = async (req, res) => {
             case 5:
             case 6:
             case 7:
-                result = await elsCtrl.Detail(itemId);
+                result = await esCtrl.Detail(itemId);
                 break;
         }
         if (result) {
@@ -120,7 +120,7 @@ const crawlSearch = async (req, res) => {
 
                 const size = req.query.listSize;
                 const from = req.query.pageNo ? ((req.query.pageNo - 1) * size) : 0;
-                result = await elsCtrl.Search(size, from, stat = statusCode, conditions = conditions);
+                result = await esCtrl.Search(size, from, stat = statusCode, conditions = conditions);
                 break;
         }
         if (result) {
@@ -155,8 +155,8 @@ const crawlDelete = async (req, res) => {
             case 5:
             case 6:
             case 7:
-                //els 부터는 삭제가 아닌, status 9 로 부여한 후 관리.
-                result = await elsCtrl.Keep(itemId, 9);
+                //es 부터는 삭제가 아닌, status 9 로 부여한 후 관리.
+                result = await esCtrl.Keep(itemId, 9);
                 break;
         }
         if (result) {
@@ -184,7 +184,7 @@ const crawlStage = async (req, res) => {
                 case 0:
                 case 1:
                     // 순전히 추가하는 경우
-                    result = await elsCtrl.Index(doc, 2);
+                    result = await esCtrl.Index(doc, 2);
                     if (result) {
                         //delete 에서 keep 으로 삭제는 이루어지지 않음. (stat=1로 부여함으로써 삭제 조치..)
                         await solrCtrl.Keep(itemId, 2);
@@ -195,8 +195,8 @@ const crawlStage = async (req, res) => {
                     break;
                 case 2:
                 case 3:
-                    itemDetail = await elsCtrl.Detail(itemId);
-                    result = await elsCtrl.Index(doc, 4, itemDetail.id);
+                    itemDetail = await esCtrl.Detail(itemId);
+                    result = await esCtrl.Index(doc, 4, itemDetail.id);
                     if (result) {
                         res.send();
                     } else {
@@ -205,8 +205,8 @@ const crawlStage = async (req, res) => {
                     break;
                 case 4:
                 case 5:
-                    itemDetail = await elsCtrl.Detail(itemId);
-                    result = await elsCtrl.Index(doc, 6, itemDetail.id);
+                    itemDetail = await esCtrl.Detail(itemId);
+                    result = await esCtrl.Index(doc, 6, itemDetail.id);
                     if (result) {
                         res.send();
                     } else {
@@ -216,13 +216,13 @@ const crawlStage = async (req, res) => {
                 case 6:
                     const checked = await poliCtrl.checkStat(itemId);
                     if (checked) {
-                        itemDetail = await elsCtrl.Detail(itemId);
-                        result = await elsCtrl.Index(doc, 7, itemDetail.id);
+                        itemDetail = await esCtrl.Detail(itemId);
+                        result = await esCtrl.Index(doc, 7, itemDetail.id);
                         if (result) {
                             await poliCtrl.modSubmitStat(itemId);
                             res.send();
                         } else {
-                            res.status(400).send({ message: "els error" });
+                            res.status(400).send({ message: "es error" });
                         }
                         res.send();
                     } else {
@@ -230,8 +230,8 @@ const crawlStage = async (req, res) => {
                     }
                     break;
                 case 7:
-                    itemDetail = await elsCtrl.Detail(itemId);
-                    result = await elsCtrl.Index(doc, 7, itemDetail.id);
+                    itemDetail = await esCtrl.Detail(itemId);
+                    result = await esCtrl.Index(doc, 7, itemDetail.id);
                     if (result) {
                         await fileCtrl.deleteComparedContentImage(itemId,doc.dc_content);
                         res.send();
@@ -249,7 +249,7 @@ const crawlStage = async (req, res) => {
 
 
 /* 이하 스크리닝 전용 라우터 함수
-Detail 에서는 els 에서만 작업되기에 solr인 스크리닝은 분리.
+Detail 에서는 es 에서만 작업되기에 solr인 스크리닝은 분리.
  */
 const screenGet = async (req, res) => {
     //stat 0으로 부여, 기존 정의된 함수 방법을 따르기 위해서임.
@@ -273,7 +273,7 @@ const screenStage = async (req, res) => {
             //스크리닝으로부터 넘어오는 단계임. 이때 이미지 url 을 만들어 저장.
             doc.docs.dc_cover = await nasCtrl.getImage(doc.docs.dc_cover);
 
-            const result = await elsCtrl.Index(doc.docs, 2);
+            const result = await esCtrl.Index(doc.docs, 2);
             if (result) {
                 //정상적으로 추가했을 때 solr 에서는 삭제 수행. (keep으로 stat=1 부여)
                 await solrCtrl.Keep(itemId);

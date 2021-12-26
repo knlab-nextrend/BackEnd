@@ -1,4 +1,4 @@
-const elsCtrl = require("../controller/els/elsService.ctrl");
+const esCtrl = require("../controller/es/esService.ctrl");
 const nasCtrl = require("../controller/nas/nasService.ctrl");
 const fileCtrl = require("../controller/file.ctrl");
 const libs = require("../lib/libs");
@@ -21,7 +21,7 @@ const docImageDetach = async (req,res) => {
 const docImageAttach = async (req, res) => {
     if (req.file) {
         try {
-            const result = await elsCtrl.Detail(req.body.itemId);
+            const result = await esCtrl.Detail(req.body.itemId);
 
             if (result) {
                 const splited = result.docs.dc_cover[0].split(/(?=\/)/g);
@@ -69,9 +69,13 @@ const docImageAttach = async (req, res) => {
     }
 }
 
-// prev와 curr은 dc_content를 담고 있음.
+const uploadExcelData = async (req,res) => {
+    console.log(req.files);
+    console.log(req.body.meta);
+}
 
 module.exports ={
     docImageAttach: docImageAttach,
     docImageDetach:docImageDetach,
+    uploadExcelData:uploadExcelData
 }

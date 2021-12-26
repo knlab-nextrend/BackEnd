@@ -1,6 +1,6 @@
-const elsDB = require("../../models/els/index").elsDB;
+const esDB = require("../../models/es/index").esDB;
 const {convertCrawlDocTo} = require("../../lib/libs");
-const config = require("../../models/els/index").config;
+const config = require("../../models/es/index").config;
 const nationCtrl = require("../nextrend/nation.ctrl");
 const codeCtrl = require("../nextrend/subjectCode.ctrl");
 
@@ -40,7 +40,7 @@ const nullProcessing = (doc) => {
     return doc;
 }
 
-const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
+const esDetail = (itemId) => new Promise(async (resolve,reject)=>{
     const query = {
         index: 'politica_service',
         body: {
@@ -51,11 +51,11 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
             }
         }
     };
-    const value = await elsDB.search(query);
+    const value = await esDB.search(query);
     if(value.statusCode==200||value.statusCode==201){
         const document = value.body.hits.hits[0];
         const result={
-            docs:convertCrawlDocTo(document._source,'els'),
+            docs:convertCrawlDocTo(document._source,'es'),
             id:document._id
         }
 
@@ -94,7 +94,7 @@ const elsDetail = (itemId) => new Promise(async (resolve,reject)=>{
     }
 });
 
-const elsSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,reject) =>{
+const esSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,reject) =>{
     // condition의 내용들을 filter로 담아줌.
     let filter = [];
     for (const [key,value] of Object.entries(conditions)){
@@ -141,13 +141,13 @@ const elsSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,r
             sort:sort,
         }
     };
-    const value = await elsDB.search(query);
+    const value = await esDB.search(query);
     const result = {
         "dcCount":value.body.hits.total.value
     };
     const documents = [];
     for(let document of value.body.hits.hits){
-        doc = convertCrawlDocTo(document._source,'els');
+        doc = convertCrawlDocTo(document._source,'es');
 
         //국가 표시 조정 단계
         let countrys = [];
@@ -185,7 +185,7 @@ const elsSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,r
     resolve(result);
 });
 
-const elsIndex = (doc,stat,id=false) => new Promise(async (resolve,reject) =>{
+const esIndex = (doc,stat,id=false) => new Promise(async (resolve,reject) =>{
     let body = nullProcessing(doc);
     
     body.stat=stat;
@@ -197,7 +197,7 @@ const elsIndex = (doc,stat,id=false) => new Promise(async (resolve,reject) =>{
     if(id){
         query["id"]=id;
     }
-    const result = await elsDB.index(query);
+    const result = await esDB.index(query);
     if(result.statusCode==200||result.statusCode==201){
         resolve(true);
     }else{
@@ -205,7 +205,7 @@ const elsIndex = (doc,stat,id=false) => new Promise(async (resolve,reject) =>{
     }
 });
 
-const elsKeep = (itemId,stat) => new Promise(async (resolve,reject) =>{
+const esKeep = (itemId,stat) => new Promise(async (resolve,reject) =>{
     let doc = {
         "script": {
           "inline": "ctx._source.stat = "+stat,
@@ -222,7 +222,7 @@ const elsKeep = (itemId,stat) => new Promise(async (resolve,reject) =>{
         refresh:true,
         body: doc
     };
-    const result = await elsDB.updateByQuery(query);
+    const result = await esDB.updateByQuery(query);
     if(result.statusCode==200||result.statusCode==201){
         resolve(true);
     }else{
@@ -231,8 +231,8 @@ const elsKeep = (itemId,stat) => new Promise(async (resolve,reject) =>{
 });
 
 module.exports = {
-    Search:elsSearch,
-    Index:elsIndex,
-    Detail:elsDetail,
-    Keep:elsKeep
+    Search:esSearch,
+    Index:esIndex,
+    Detail:esDetail,
+    Keep:esKeep
 }
