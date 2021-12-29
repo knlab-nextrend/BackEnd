@@ -5,6 +5,8 @@ const ftp = require('basic-ftp');
 
 const NasFTP = require("../../models/nas/index");
 const thumbRoute = NasFTP.thumbRoute;
+const pdfRoute = NasFTP.pdfRoute;
+const uploadRoute = NasFTP.uploadRoute;
 const webServer = NasFTP.webServer;
 const config = NasFTP.config;
 
@@ -15,6 +17,10 @@ const pathTypeCatcher = (type) => {
         case 'image':
             subPath = thumbRoute;
             tailPath = '.png';
+            break;
+        case 'pdf':
+            subPath = uploadRoute;
+            tailPath = '.pdf';
             break;
     }
     return {subPath:subPath,tailPath:tailPath};
@@ -54,11 +60,12 @@ const getImageFileList = (path) => new Promise(async (resolve, reject) => {
 });
 
 
-const getFileList = (path) => new Promise(async (resolve, reject) => {
+const getFileList = (path,type='image') => new Promise(async (resolve, reject) => {
+    const subPath = pathTypeCatcher(type).subPath;
     const client = new ftp.Client()
     try {
         await client.access(config);
-        const result = await client.list(thumbRoute+path);
+        const result = await client.list(subPath+path);
         if(result.code===550){
             // 폴더가 없을 경우
             resolve(false);
@@ -81,28 +88,18 @@ const getFileList = (path) => new Promise(async (resolve, reject) => {
     client.close();
 });
 
-const checkFolderExist = (folderPath,type=false) => new Promise(async (resolve, reject) => {
+const checkThenMakeFolder = (folderPath,type=false) => new Promise(async (resolve, reject) => {
     const subPath = pathTypeCatcher(type).subPath;
-    const client = new jsftp(config);
-    client.ls(subPath.slice(0,-1)+folderPath, (err, res) => {
-        if (err) {
-            resolve(err);
-        } else {
-            resolve(false);
-        }
-    })
-});
-
-const makeFolder = (folderPath,type=false) => new Promise(async (resolve, reject) => {
-    const subPath = pathTypeCatcher(type).subPath;
-    const client = new jsftp(config);
-    client.raw("mkd", subPath.slice(0,-1)+folderPath, (err, res) => {
-        if (err) {
-            resolve(err);
-        } else {
-            resolve(false);
-        }
-    })
+    const client = new ftp.Client()
+    try {
+        await client.access(config);
+        await client.ensureDir(subPath.slice(0,-1)+folderPath);
+        resolve(false);
+    }
+    catch(err) {
+        resolve(err);
+    }
+    client.close();
 });
 
 const deleteFile = (path,type=false) => new  Promise(async (resolve, reject) => {
@@ -127,7 +124,6 @@ const uploadFile = (file, filePath, type=false) => new Promise(async (resolve, r
     const subPath = pathList.subPath;
     const tailPath = pathList.tailPath;
     const stream = await fs.createReadStream(file.path);
-
     const client = new ftp.Client()
     try {
         await client.access(config);
@@ -148,7 +144,6 @@ module.exports = {
     getImage: getImageFileList,
     getFileList:getFileList,
     uploadFile: uploadFile,
-    checkFolderExist: checkFolderExist,
-    makeFolder: makeFolder,
+    checkThenMakeFolder: checkThenMakeFolder,
     deleteFile:deleteFile
 }

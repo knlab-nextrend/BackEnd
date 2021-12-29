@@ -6,38 +6,38 @@ const codeCtrl = require("../nextrend/subjectCode.ctrl");
 
 const nullProcessing = (doc) => {
     const now = new Date();
-    if(doc===undefined) doc = {};
+    let newDoc = {};
     const keys = Object.keys(doc);
-    doc["is_crawled"] = keys.includes("is_crawled")? doc.is_crawled : true;
-    doc["dc_cover"] = keys.includes("dc_cover")? doc.dc_cover : [];
-    doc["dc_file"] = keys.includes("dc_file")? doc.dc_file : null;
-    doc["dc_lang"] = keys.includes("dc_lang")? doc.dc_lang : null;
-    doc["dc_hit"] = keys.includes("dc_hit")? doc.dc_hit : 0;
-    doc["dc_page"] = keys.includes("dc_page")? doc.dc_page : 0;
-    doc["dc_dt_regi"] =  keys.includes("dc_dt_regi")? doc.dc_dt_regi : now.toISOString();
-    doc["dc_country_pub"] = keys.includes("dc_country_pub")? doc.dc_country_pub : [];
-    doc["dc_country"] = keys.includes("dc_country")? doc.dc_country : [];
-    doc["dc_code"] = keys.includes("dc_code")? doc.dc_code : [];
-    doc["dc_keyword"] = keys.includes("dc_keyword")? doc.dc_keyword :[];
-    doc["dc_link"] = keys.includes("dc_link")? doc.dc_link : null;
-    doc["dc_smry_kr"] = keys.includes("dc_smry_kr")? doc.dc_smry_kr : null;
-    doc["dc_title_kr"] = keys.includes("dc_title_kr")? doc.dc_title_kr : null;
-    doc["dc_title_or"] = keys.includes("dc_title_or")? doc.dc_title_or : null;
-    doc["dc_url_loc"] = keys.includes("dc_url_loc")? doc.dc_url_loc : null;
-    doc["item_id"] = keys.includes("item_id")? doc.item_id : null;
-    doc["dc_cat"] = keys.includes("dc_cat")? doc.dc_cat : null;
-    doc["dc_type"] = keys.includes("dc_type")? doc.dc_type : null;
-    doc["dc_publisher"] = keys.includes("dc_publisher")? doc.dc_publisher : null;
-    doc["dc_content"] = keys.includes("dc_content")? doc.dc_content : null;
-    doc["dc_dt_collect"] =  keys.includes("dc_dt_collect")? doc.dc_dt_collect : "1970-01-01T00:00:00+00:00";
+    newDoc["is_crawled"] = keys.includes("is_crawled")? doc.is_crawled : true;
+    newDoc["dc_cover"] = keys.includes("dc_cover")? doc.dc_cover : [];
+    newDoc["dc_file"] = keys.includes("dc_file")? doc.dc_file : null;
+    newDoc["dc_lang"] = keys.includes("dc_lang")? doc.dc_lang : null;
+    newDoc["dc_hit"] = keys.includes("dc_hit")? doc.dc_hit : 0;
+    newDoc["dc_page"] = keys.includes("dc_page")? doc.dc_page : 0;
+    newDoc["dc_dt_regi"] =  keys.includes("dc_dt_regi")? doc.dc_dt_regi : now.toISOString();
+    newDoc["dc_country_pub"] = keys.includes("dc_country_pub")? doc.dc_country_pub : [];
+    newDoc["dc_country"] = keys.includes("dc_country")? doc.dc_country : [];
+    newDoc["dc_code"] = keys.includes("dc_code")? doc.dc_code : [];
+    newDoc["dc_keyword"] = keys.includes("dc_keyword")? doc.dc_keyword :[];
+    newDoc["dc_link"] = keys.includes("dc_link")? doc.dc_link : null;
+    newDoc["dc_smry_kr"] = keys.includes("dc_smry_kr")? doc.dc_smry_kr : null;
+    newDoc["dc_title_kr"] = keys.includes("dc_title_kr")? doc.dc_title_kr : null;
+    newDoc["dc_title_or"] = keys.includes("dc_title_or")? doc.dc_title_or : null;
+    newDoc["dc_url_loc"] = keys.includes("dc_url_loc")? doc.dc_url_loc : null;
+    newDoc["item_id"] = keys.includes("item_id")? doc.item_id : null;
+    newDoc["dc_cat"] = keys.includes("dc_cat")? doc.dc_cat : null;
+    newDoc["dc_type"] = keys.includes("dc_type")? doc.dc_type : null;
+    newDoc["dc_publisher"] = keys.includes("dc_publisher")? doc.dc_publisher : null;
+    newDoc["dc_content"] = keys.includes("dc_content")? doc.dc_content : null;
+    newDoc["dc_dt_collect"] =  keys.includes("dc_dt_collect")? doc.dc_dt_collect : "1970-01-01T00:00:00+00:00";
     if(keys.includes("dc_dt_write")){
-        if(doc.dc_dt_write===''){
-            doc["dc_dt_write"] = "1970-01-01T00:00:00+00:00";
+        if(newDoc.dc_dt_write===''){
+            newDoc["dc_dt_write"] = "1970-01-01T00:00:00+00:00";
         }
     }else{
-        doc["dc_dt_write"] = "1970-01-01T00:00:00+00:00";
+        newDoc["dc_dt_write"] = "1970-01-01T00:00:00+00:00";
     }
-    return doc;
+    return newDoc;
 }
 
 const esDetail = (itemId) => new Promise(async (resolve,reject)=>{

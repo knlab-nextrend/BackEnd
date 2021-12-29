@@ -29,7 +29,21 @@ const modSubmitStat = (itemId) => new Promise((resolve, reject) => {
     })
 })
 
+const insertUploadData = (itemId,dc_page) => new Promise((resolve, reject) => {
+    const date = new Date().toISOString().split('T')[0];
+    const param = [date,date,date,dc_page,itemId];
+    const query = "insert into collected_item (job_id,table_name,download_status,solr_status,submit_status,download_time,solr_time,submint_time,solr_page,item_id) values (-1,'crawler_item',1,1,1,?,?,?,?,?)";
+    db.query(query, param,(err, data) => {
+        if (err) {
+            resolve(false);
+        } else {
+            resolve(data);
+        }
+    })
+})
+
 module.exports = {
     modSubmitStat:modSubmitStat,
-    checkStat:checkStat
+    checkStat:checkStat,
+    insertUploadData:insertUploadData
 }
