@@ -8,6 +8,7 @@ const config = require(path.join(__dirname, '..','..', 'configs', 'db.json'))[db
 module.exports = {
     thumbRoute:"/GPS/pdf/files/thumbnail/",
     pdfRoute:"/GPS/pdf/files/archived/",
+    uploadRoute:"/GPS/pdf/upload_files/",
     webServer:config.host+":"+config.webport,
     config:config
 };

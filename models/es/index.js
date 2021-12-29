@@ -1,12 +1,12 @@
 
 const { Client } = require('@elastic/elasticsearch');
 const path = require('path');
-const dbtype = process.env.NODE_ENV || 'els';
+const dbtype = process.env.NODE_ENV || 'es';
 const env = process.env.NODE_ENV || 'development';
 const config = require(path.join(__dirname, '..','..', 'configs', 'db.json'))[dbtype][env];
-const elsDB = new Client({ node: config.host });
+const esDB = new Client({ node: config.host });
 
 module.exports = {
-    elsDB:elsDB,
+    esDB:esDB,
     config:config
 };

@@ -2,14 +2,8 @@ const express = require("express");
 const router = express.Router();
 const crawlService = require("../service/crawlService");
 const authJWT = require("../middlewares/auth");
-const multer = require('multer');
-// Create multer object
-const imageUpload = multer({
-    dest: 'images',
-});
 
 router.get('/list/:statusCode',authJWT,crawlService.Search);
-router.get('/test',crawlService.test);
 
 //단일 데이터 컨트롤 단계 , 11/15 단계 재정의 이후 조정 필요.
 router.get('/detail/:itemId',authJWT,crawlService.Detail);
@@ -20,7 +14,5 @@ router.post('/detail/:itemId',authJWT,crawlService.Stage); //다음 공정으로
 router.get('/screening/',authJWT,crawlService.screenGet); //스크리닝 데이터 조회
 router.put('/screening/',authJWT,crawlService.screenStage); //스크리닝 데이터 이관
 router.delete('/screening/',authJWT,crawlService.screenDelete); //스크리닝 데이터 삭제
-
-router.post('/docImage/',imageUpload.single('file'),crawlService.docImage); //본문 이미지 업로드 및 url 리턴
 
 module.exports = router;
