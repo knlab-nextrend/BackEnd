@@ -6,6 +6,7 @@ const libs = require("../lib/libs");
 const jwt = require("../modules/jwt");
 const poliCtrl = require("../controller/politica/poliService.ctrl");
 const userCtrl =  require("../controller/nextrend/user.ctrl");
+const dayjs = require("dayjs");
 
 // 페이지를 벗어날 때, item_id만으로 작업중이던 nas에 등록된 contentImage 파일들을 삭제함.
 const docImageDetach = async (req, res) => {
@@ -66,8 +67,7 @@ const uploadExcelData = async (req, res) => {
     if (req.files) {
         let metaDict = {};
         const metaData = JSON.parse(req.body.meta);
-        const date = new Date();
-        const folderDate = '/'+date.getUTCFullYear() + '/' + date.getMonth();
+        const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
         metaData.forEach((meta) => {
             metaDict[meta.pdf_file_name] = meta;
         });

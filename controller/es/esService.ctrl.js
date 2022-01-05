@@ -3,9 +3,10 @@ const {convertCrawlDocTo} = require("../../lib/libs");
 const config = require("../../models/es/index").config;
 const nationCtrl = require("../nextrend/nation.ctrl");
 const codeCtrl = require("../nextrend/subjectCode.ctrl");
+const dayjs = require("dayjs");
 
 const nullProcessing = (doc) => {
-    const now = new Date();
+    const now = dayjs().locale('se-kr').format().split('+')[0];
     let newDoc = {};
     const keys = Object.keys(doc);
     newDoc["is_crawled"] = keys.includes("is_crawled")? doc.is_crawled : true;
@@ -14,7 +15,7 @@ const nullProcessing = (doc) => {
     newDoc["dc_lang"] = keys.includes("dc_lang")? doc.dc_lang : null;
     newDoc["dc_hit"] = keys.includes("dc_hit")? doc.dc_hit : 0;
     newDoc["dc_page"] = keys.includes("dc_page")? doc.dc_page : 0;
-    newDoc["dc_dt_regi"] =  keys.includes("dc_dt_regi")? doc.dc_dt_regi : now.toISOString();
+    newDoc["dc_dt_regi"] =  keys.includes("dc_dt_regi")? doc.dc_dt_regi : now;
     newDoc["dc_country_pub"] = keys.includes("dc_country_pub")? doc.dc_country_pub : [];
     newDoc["dc_country"] = keys.includes("dc_country")? doc.dc_country : [];
     newDoc["dc_code"] = keys.includes("dc_code")? doc.dc_code : [];
