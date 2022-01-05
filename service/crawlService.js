@@ -1,7 +1,9 @@
 const solrCtrl = require("../controller/solr/solrService.ctrl");
 const esCtrl = require("../controller/es/esService.ctrl");
 const nasCtrl = require("../controller/nas/nasService.ctrl");
+const nationCtrl = require("../controller/nextrend/nation.ctrl");
 const poliCtrl = require("../controller/politica/poliService.ctrl");
+const codeCtrl = require("../controller/nextrend/subjectCode.ctrl");
 const libs = require("../lib/libs");
 const fileCtrl = require("../controller/file.ctrl");
 
@@ -55,7 +57,7 @@ const crawlDetail = async (req, res) => {
         res.status(400).send({ message: "no item_id" });
     } else {
         let statusCode = parseInt(req.query.statusCode);
-        let result;
+        let result,error='error';
         switch (statusCode) {
             case 0:
             case 1:
@@ -74,13 +76,52 @@ const crawlDetail = async (req, res) => {
             case 5:
             case 6:
             case 7:
-                result = await esCtrl.Detail(itemId);
+                try{
+                    value = await esCtrl.Detail(itemId);
+                    const document = value.body.hits.hits[0];
+                    result={
+                        docs:libs.convertCrawlDocTo(document._source,'es'),
+                        id:document._id
+                    }
+            
+                    //국가 표시 조정 단계
+                    let countrys = [];
+                    if(result.docs["dc_country"].length!==0){
+                        for(let countryId of result.docs["dc_country"]){
+                            const countryInfo = await nationCtrl.getCountryById(countryId);
+                            countrys.push(countryInfo[0]);
+                        }
+                        result.docs["dc_country"]=countrys;
+                    }
+            
+                    let countrysPub = [];
+                    if(result.docs["dc_country_pub"].length!==0){
+                        for(let countryId of result.docs["dc_country_pub"]){
+                            const countryInfo = await nationCtrl.getCountryById(countryId);
+                            countrysPub.push(countryInfo[0]);
+                        }
+                        result.docs["dc_country_pub"]=countrysPub;
+                    }
+            
+            
+                    //코드 표시 조정 단계
+                    let codes = [];
+                    if(result.docs["dc_code"].length!==0){
+                        for(let code of result.docs["dc_code"]){
+                            const codeInfo = await codeCtrl.getInfoById(code);
+                            codes.push(codeInfo[0]);
+                        }
+                        result.docs["dc_code"]=codes;
+                    }
+                }catch(e){
+                    error=e;
+                }
                 break;
         }
         if (result) {
             res.send(result);
         } else {
-            res.status(400).send({ message: "no result" });
+            res.status(400).send({ message: error });
         }
     }
 }
