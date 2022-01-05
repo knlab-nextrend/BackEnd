@@ -125,7 +125,6 @@ const crawlDetail = async (req, res) => {
         }
     }
 }
-
 //router.get('/list/:statusCode',crawlSearch.Search);
 const crawlSearch = async (req, res) => {
     const statusCode = parseInt(req.params.statusCode);

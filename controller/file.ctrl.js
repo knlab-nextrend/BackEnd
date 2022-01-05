@@ -1,4 +1,3 @@
-const e = require('express');
 const fs = require('fs');
 const path = require('path');
 const nasCtrl = require('../controller/nas/nasService.ctrl');

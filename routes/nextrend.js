@@ -4,7 +4,9 @@ const userService = require("../service/userService");
 const tokenCtrl = require("../service/tokenService");
 const categoryService = require("../service/categorysService");
 const loginService = require("../service/loginService");
+const testService = require("../service/testService");
 const authJWT = require("../middlewares/auth");
+
 
 router.post("/user/add", userService.Add);
 router.get("/user/list", userService.List);
@@ -23,5 +25,6 @@ router.get("/categorys/",categoryService.getCodes);
 router.get("/continents/",categoryService.getConti);
 router.get("/countrys/:conti",categoryService.getCountry);
 
+router.get("/test",testService.test);
 
 module.exports = router;
