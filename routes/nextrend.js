@@ -7,12 +7,13 @@ const loginService = require("../service/loginService");
 const testService = require("../service/testService");
 const authJWT = require("../middlewares/auth");
 
-
+router.post("/user/restrict",userService.Restrict);
 router.post("/user/add", userService.Add);
 router.get("/user/list", userService.List);
 router.get("/user/get", userService.Get);
 router.post("/user/modify", userService.Modify);
 router.post("/user/delete", userService.Delete);
+router.post("/user/verify", userService.Verify);
 
 router.get("/user/",authJWT,tokenCtrl.getUser);
 router.get("/refresh/",tokenCtrl.refresh);

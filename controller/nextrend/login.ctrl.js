@@ -20,11 +20,11 @@ const loginHashPW = (userPW) => new Promise((resolve, reject)=>{
 
 const loginOnLogin = (userId,userPw) => new Promise((resolve, reject)=>{
   const sql =
-    'SELECT id, ifnull(`NAME`,NULL) as `NAME`, ifnull(`userPW`, NULL) AS `userPW`, ifnull(`salt`, NULL) AS `salt`, ifnull(`Category`, NULL) AS `Category` FROM `nt_users_list` RIGHT OUTER JOIN (SELECT "") AS `nt_users_list` ON `userID` = ?';
+    'SELECT id, ifnull(`NAME`,NULL) as `NAME`, ifnull(`userPW`, NULL) AS `userPW`, ifnull(`salt`, NULL) AS `salt`, ifnull(`Category`, NULL) AS `Category` FROM `nt_users_list` RIGHT OUTER JOIN (SELECT "") AS `nt_users_list` ON `userID` = ? where `stat`=0';
   const param = [userId];
   db.query(sql, param, (err, data) => {
     if (!err) {
-      if(data[0].userPW === null){
+      if(data.length===0){
         resolve({message:"no matched user information"});
       }else{
         crypto.pbkdf2(userPw,data[0].salt,1203947,64,"sha512", async (err, key) => {

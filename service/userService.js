@@ -90,10 +90,42 @@ const userDelete = async (req,res) => {
     }
 }
 
+const userRestrict = async (req,res) => {
+    if(req.body.uid){
+        try{
+            await userCtrl.Restrict(req.body.uid,req.body.restrict)
+        }catch(e){
+            res.status(400).send({message:"error occured on modify user restriction"});
+        }
+        res.send();
+    }else{
+        res.status(400).send({message:"no restriction information"})
+    }
+}
+
+const userVerify = async (req,res) => {
+    if(req.body.userId&&req.body.id){
+        try{
+            const data = await userCtrl.Verify(req.body.id,req.body.userId);
+            if(data.length){
+                res.status(400).send({message:"duplicated user id"});
+            }else{
+                res.send();
+            }
+        }catch(e){
+            res.status(400).send({message:"error occured"});
+        }
+    }else{
+        res.status(400).send();
+    }
+}
+
 module.exports = {
     Add:userAdd,
     Modify:userModify,
     List:userList,
     Delete:userDelete,
-    Get:userGet
+    Get:userGet,
+    Restrict:userRestrict,
+    Verify:userVerify
 }
