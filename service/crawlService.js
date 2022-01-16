@@ -136,7 +136,7 @@ const crawlSearch = async (req, res) => {
             case 0:
             case 1:
                 const condition = req.query;
-                result = await solrCtrl.Search(condition, stat = statusCode);
+                result = await solrCtrl.Search(condition, stat = statusCode, restrict=true);
                 break;
             case 2:
             case 3:
@@ -292,9 +292,11 @@ const crawlStage = async (req, res) => {
 Detail 에서는 es 에서만 작업되기에 solr인 스크리닝은 분리.
  */
 const screenGet = async (req, res) => {
-    //stat 0으로 부여, 기존 정의된 함수 방법을 따르기 위해서임.
+    console.log(req.query,req.params);
     const condition = req.query;
-    result = await solrCtrl.Search(condition, stat = 0, restrict = true);
+    let stat;
+    stat = req.query.keep ? 3:0;
+    result = await solrCtrl.Search(condition, stat = stat, restrict = true);
     if (result) {
         res.send(result);
     } else {
@@ -312,7 +314,6 @@ const screenStage = async (req, res) => {
             const doc = await solrCtrl.Detail(itemId);
             //스크리닝으로부터 넘어오는 단계임. 이때 이미지 url 을 만들어 저장.
             doc.docs.dc_cover = await nasCtrl.getImage(doc.docs.dc_cover);
-
             const result = await esCtrl.Index(doc.docs, 2);
             if (result) {
                 //정상적으로 추가했을 때 solr 에서는 삭제 수행. (keep으로 stat=1 부여)
@@ -323,6 +324,29 @@ const screenStage = async (req, res) => {
         })
         if (errorList.length) {
             res.status(400).send({ message: "cannot stage above list", list: errorList });
+        } else {
+            res.send();
+        }
+    }
+}
+
+const screenKeep = async (req,res) => {
+    const keepList = req.body.list;
+    if (keepList === undefined) {
+        res.status(400).send({ message: "no given keep list" });
+    } else {
+        const errorList = [];
+        keepList.forEach(async (itemId) => {
+            //stat 3은 keep list.
+            const result = await solrCtrl.Keep(itemId, 3);
+            if (result) {
+                //정상적인 값일 때, 아무것도 수행하지 않음.
+            } else {
+                errorList.push(itemId);
+            }
+        })
+        if (errorList.length) {
+            res.status(400).send({ message: "cannot keep above list", list: errorList });
         } else {
             res.send();
         }
@@ -361,5 +385,6 @@ module.exports = {
     screenGet: screenGet,
     screenStage: screenStage,
     screenDelete: screenDelete,
+    screenKeep:screenKeep,
     test: test
 };

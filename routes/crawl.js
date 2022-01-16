@@ -14,5 +14,6 @@ router.post('/detail/:itemId',authJWT,crawlService.Stage); //다음 공정으로
 router.get('/screening/',authJWT,crawlService.screenGet); //스크리닝 데이터 조회
 router.put('/screening/',authJWT,crawlService.screenStage); //스크리닝 데이터 이관
 router.delete('/screening/',authJWT,crawlService.screenDelete); //스크리닝 데이터 삭제
+router.post('/screening/',authJWT,crawlService.screenKeep);
 
 module.exports = router;

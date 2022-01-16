@@ -80,11 +80,7 @@ const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve
     }
 
     //stat이 0일 경우, 1과 2가 아닌 대상을 조회함.
-    if(stat===1){
-        query=query+' AND stat:'+stat;
-    }else{
-        query=query+' AND !(stat:1 OR 2)';
-    }
+    query=query+' AND stat:'+stat;
 
     //Date 설정.
     let fromDate;
