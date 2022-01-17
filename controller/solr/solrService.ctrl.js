@@ -49,30 +49,38 @@ const solrDetail = (itemId) => new Promise(async (resolve,reject)=> {
 });
 
 const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve,reject)=>{
-    let query = "q=thumbnail:[* TO *] ";
+
+    let query = "thumbnail:[* TO *]";
     let paramsDict = {
         // 상세 params
         "keyword": condition.keyword,
         "lang": condition.lang,
         "subscribed": condition.subscribed,
         "itemId": condition.itemId,
-        "fromDate":condition.fromDate,
-        "toDate":condition.toDate,
+        "fromDate":condition.dateLte,
+        "toDate":condition.dateGte,
+        "pageGte":condition.pageGte||'*',
+        "pageLte":condition.pageLte||'*',
+        "host":condition.host,
+        "sort":condition.sort||'desc',
 
         //기본 params
-        "pageNo":condition.pageNo,   
+        "pageNo":condition.pageNo,
         "listSize": condition.listSize
     }
 
     //null check and solr query 형태로 변환
     //키워드 없을 시 contents 컬럼 전체
+    query=query+' AND pages:['+paramsDict["pageGte"]+' TO '+paramsDict["pageLte"]+']';
     
-    
+    if(paramsDict["host"]!==undefined){
+        query=query+' AND host:'+paramsDict["host"];
+    }
 
     if(paramsDict["keyword"]===undefined){
-        query=query+'AND contents:*';
+        query=query+' AND contents:*';
     }else{
-        query=query+'AND contents:'+paramsDict["keyword"];
+        query=query+' AND contents:'+paramsDict["keyword"];
     }
     //item_id 설정..
     if(paramsDict["itemId"]!==undefined){
@@ -97,7 +105,11 @@ const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve
         toDate = new Date(paramsDict["toDate"]);
         toDate = toDate.toISOString();
     }
-    query=query+' AND updated_at:['+toDate+' TO '+fromDate+']';
+
+    if((paramsDict["toDate"]==undefined)&&(paramsDict["fromDate"]==undefined)){
+    }else{
+        query=query+' AND lastmodified:['+toDate+' TO '+fromDate+']';
+    }
     //keyword, date는 쿼리에 항상 들어감.
 
     if(paramsDict["lang"]!==undefined){
@@ -111,15 +123,27 @@ const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve
     */
 
     //pagination 기능 param은 항상 뒤에 붙음.
+    // if(paramsDict["pageNo"]!==undefined){
+    //     let documentIndex = (parseInt(paramsDict["pageNo"])-1)*paramsDict["listSize"];
+    //     query=query+'&start='+documentIndex.toString();
+    // }
+    // query=query+'&rows='+paramsDict["listSize"];
+    let start;
     if(paramsDict["pageNo"]!==undefined){
-        let documentIndex = (parseInt(paramsDict["pageNo"])-1)*paramsDict["listSize"];
-        query=query+'&start='+documentIndex.toString();
+        const documentIndex = (parseInt(paramsDict["pageNo"])-1)*paramsDict["listSize"];
+        start = documentIndex.toString();
+    }else{
+        start = 0;
     }
-    query=query+'&rows='+paramsDict["listSize"];
-    
+
+    console.log(query);
+    let solrQuery = solrDB.createQuery().q(query).start(start).rows(paramsDict["listSize"]).sort({lastmodified:paramsDict["sort"]});
+    //query=query+'&sort=creationdate '+paramsDict["sort"];
     // 띄어쓰기--> %20
-    query = encodeURI(query);
-    solrDB.search(query, function(err, obj){
+    // solrDB.search(query, function(err, obj){
+    console.log(solrQuery);
+
+    solrDB.search(solrQuery, function(err, obj){
         if(err){
             resolve(false);
         }else{

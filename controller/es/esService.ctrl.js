@@ -29,7 +29,7 @@ const esSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,re
     for (const [key,value] of Object.entries(conditions)){
         let term = {};
         term[key]=value;
-        if((key==='gte')||(key==='lte')||(key==='dateType')||(value==='')||(key==='sort')||(key==='sortType')){
+        if((key==='dateGte')||(key==='dateLte')||(value==='')||(key==='sort')||(key==='sortType')||(key==='pageGte')||(key==='pageLte')){
         }else{
             filter.push({term:term});
         }
@@ -40,13 +40,13 @@ const esSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,re
     // 기간 range
     let range = {};
     let temp = {};
-    if(conditions.gte!=='*'){
-        temp['gte']=conditions.gte;
+    if(conditions.dateGte!=='*'){
+        temp['gte']=conditions.dateGte;
     }
-    if(conditions.lte!=='*'){
-        temp['lte']=conditions.lte;
+    if(conditions.dateLte!=='*'){
+        temp['lte']=conditions.dateLte;
     }
-    range[conditions.dateType]=temp;
+    range[conditions.sortType]=temp;
 
     // sort by
     let sort = [];
@@ -70,6 +70,7 @@ const esSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,re
             sort:sort,
         }
     };
+    
     const value = await esDB.search(query);
     const result = {
         "dcCount":value.body.hits.total.value

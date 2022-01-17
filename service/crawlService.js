@@ -145,14 +145,16 @@ const crawlSearch = async (req, res) => {
             case 6:
             case 7:
                 let conditions = {
-                    dc_lang: req.query.dc_lang || '',
+                    dc_lang: req.query.lang || '',
                     dc_code: req.query.dc_code || '',
                     dc_keyword: req.query.dc_keyword || '',
                     dc_country: req.query.dc_country || '',
                     dc_publisher: req.query.dc_publisher || '',
-                    dateType: req.query.dateType || 'dc_dt_collect',
-                    gte: req.query.gte || '*',
-                    lte: req.query.lte || '*',
+                    dateGte: req.query.dateGte || '*',
+                    dateLte: req.query.dateLte || '*',
+                    pageGte: req.query.pageGte || '*',
+                    pageLte: req.query.pageLte || '*',
+                    dc_publisher:req.query.host || '',
                     is_crawled: req.query.is_crawled || '',
                     sort: req.query.sort || 'desc',
                     sortType: req.query.sortType || 'dc_dt_collect'
@@ -292,7 +294,6 @@ const crawlStage = async (req, res) => {
 Detail 에서는 es 에서만 작업되기에 solr인 스크리닝은 분리.
  */
 const screenGet = async (req, res) => {
-    console.log(req.query,req.params);
     const condition = req.query;
     let stat;
     stat = req.query.keep ? 3:0;

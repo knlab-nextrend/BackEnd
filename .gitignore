@@ -2,3 +2,5 @@
 *.log
 /configs
 /images
+login.sql
+nohup.out
