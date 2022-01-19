@@ -1,7 +1,7 @@
 const db = require("../../models/nextrend/index");
 
 const checkUploadTable = () => new Promise((resolve, reject) => {
-    const query = "create table if not exists nt_uploaded_files ( `IDX` int(10) unsigned NOT NULL AUTO_INCREMENT,`FILE_NAME` varchar(50) NOT NULL ,`DT` datetime DEFAULT CURRENT_TIMESTAMP,`UID` int(10) unsigned NOT NULL,PRIMARY KEY (`IDX`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=0;";
+    const query = "create table if not exists nt_uploaded_files ( `IDX` int(10) unsigned NOT NULL AUTO_INCREMENT, `_ID` varchar(64), `FILE_NAME` varchar(50) NOT NULL ,`DT` datetime DEFAULT CURRENT_TIMESTAMP,`UID` int(10) unsigned NOT NULL,PRIMARY KEY (`IDX`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=0;";
     db.query(query, (err, data) => {
         if (err) {
             resolve(err);
@@ -35,8 +35,21 @@ const insertUploadedFile = (filename,uid) => new Promise((resolve, reject) => {
     })
 });
 
+const updateId = (_id,idx) => new Promise((resolve, reject) => {
+    const query = "update nt_uploaded_files set (_id=?) where idx=?";
+    const params = [_id,idx];
+    db.query(query,params, (err, data) => {
+        if (err) {
+            resolve(false);
+        } else {
+            resolve(data); 
+        }
+    })
+});
+
 module.exports = { 
     checkUploadTable: checkUploadTable,
     getItemIdAsStored:getItemIdAsStored,
-    insertUploadedFile:insertUploadedFile
+    insertUploadedFile:insertUploadedFile,
+    updateId:updateId
 };

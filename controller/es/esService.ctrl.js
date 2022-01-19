@@ -4,13 +4,13 @@ const nationCtrl = require("../nextrend/nation.ctrl");
 const codeCtrl = require("../nextrend/subjectCode.ctrl");
 const libs = require("../../lib/libs");
 
-const esDetail = (itemId) => new Promise(async (resolve,reject)=>{
+const esDetail = (_id) => new Promise(async (resolve,reject)=>{
     const query = {
         index: 'politica_service',
         body: {
             query: {
                 match : {
-                    item_id:itemId
+                    _id:_id
                 }
             }
         }
@@ -78,7 +78,7 @@ const esSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,re
     const documents = [];
     for(let document of value.body.hits.hits){
         doc = libs.convertCrawlDocTo(document._source,'es');
-
+        doc["_id"] = document._id;
         //국가 표시 조정 단계
         let countrys = [];
         if(doc["dc_country"].length!==0){
@@ -115,7 +115,7 @@ const esSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,re
     resolve(result);
 });
 
-const esIndex = (doc,stat,id=false) => new Promise(async (resolve,reject) =>{
+const esIndex = (doc,stat,id=false, ret=false) => new Promise(async (resolve,reject) =>{
     let body = libs.nullProcessing(doc);
     
     body.stat=stat;
@@ -130,12 +130,14 @@ const esIndex = (doc,stat,id=false) => new Promise(async (resolve,reject) =>{
     const result = await esDB.index(query);
     if(result.statusCode==200||result.statusCode==201){
         resolve(true);
+    }else if(ret){
+        resolve(result._id);
     }else{
         resolve(false);
     }
 });
 
-const esKeep = (itemId,stat) => new Promise(async (resolve,reject) =>{
+const esKeep = (_id,stat) => new Promise(async (resolve,reject) =>{
     let doc = {
         "script": {
           "inline": "ctx._source.stat = "+stat,
@@ -143,7 +145,7 @@ const esKeep = (itemId,stat) => new Promise(async (resolve,reject) =>{
         },
         "query": {
           "match": {
-            "item_id":itemId
+            "_id":_id
           }
         }
       };

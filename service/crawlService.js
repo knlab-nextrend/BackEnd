@@ -17,12 +17,12 @@ const test = async (req, res) => {
     res.send(result);
 }
 
-//router.put('/detail/:itemId',crawlSearch.Keep);
+//router.put('/detail/:_id',crawlSearch.Keep);
 //단일 데이터 기준 
 const crawlKeep = async (req, res) => {
-    const itemId = parseInt(req.params.itemId);
+    const _id = parseInt(req.params._id);
     //안되면 params 시도 혹은 query 시도.
-    if (itemId === undefined) {
+    if (_id === undefined) {
         res.status(400).send();
     } else {
         let statusCode = parseInt(req.body.statusCode);
@@ -30,16 +30,16 @@ const crawlKeep = async (req, res) => {
         switch (statusCode) {
             case 0:
             case 1:
-                result = await solrCtrl.Keep(itemId);
+                result = await solrCtrl.Keep(_id);
                 break;
             case 2:
             case 3:
                 // 일단 직접 지정...
-                result = await esCtrl.Keep(itemId, 3);
+                result = await esCtrl.Keep(_id, 3);
                 break;
             case 4:
             case 5:
-                result = await esCtrl.Keep(itemId, 5);
+                result = await esCtrl.Keep(_id, 5);
                 break;
         }
         if (result) {
@@ -50,18 +50,18 @@ const crawlKeep = async (req, res) => {
     }
 }
 
-//router.get('/detail/:itemId',crawlSearch.Detail);
+//router.get('/detail/:_id',crawlSearch.Detail);
 const crawlDetail = async (req, res) => {
-    const itemId = parseInt(req.params.itemId);
-    if (itemId === undefined) {
-        res.status(400).send({ message: "no item_id" });
+    const _id = parseInt(req.params._id);
+    if (_id === undefined) {
+        res.status(400).send({ message: "no _id" });
     } else {
         let statusCode = parseInt(req.query.statusCode);
         let result,error='error';
         switch (statusCode) {
             case 0:
             case 1:
-                result = await solrCtrl.Detail(itemId);
+                result = await solrCtrl.Detail(_id);
                 if (typeof result.docs === 'object') {
                     if (result.docs["stat"] === undefined) {
                         result.docs["stat"] = 0;
@@ -77,7 +77,7 @@ const crawlDetail = async (req, res) => {
             case 6:
             case 7:
                 try{
-                    value = await esCtrl.Detail(itemId);
+                    value = await esCtrl.Detail(_id);
                     const document = value.body.hits.hits[0];
                     result={
                         docs:libs.convertCrawlDocTo(document._source,'es'),
@@ -178,10 +178,10 @@ const crawlSearch = async (req, res) => {
     }
 }
 
-//router.delete('/detail/:itemId',crawlSearch.Delete);
+//router.delete('/detail/:_id',crawlSearch.Delete);
 const crawlDelete = async (req, res) => {
-    const itemId = parseInt(req.params.itemId);
-    if (itemId === undefined) {
+    const _id = parseInt(req.params._id);
+    if (_id === undefined) {
         res.status(400).send();
     } else {
         let statusCode = parseInt(req.query.statusCode);
@@ -198,7 +198,7 @@ const crawlDelete = async (req, res) => {
             case 6:
             case 7:
                 //es 부터는 삭제가 아닌, status 9 로 부여한 후 관리.
-                result = await esCtrl.Keep(itemId, 9);
+                result = await esCtrl.Keep(_id, 9);
                 break;
         }
         if (result) {
@@ -209,19 +209,19 @@ const crawlDelete = async (req, res) => {
     }
 }
 
-//router.post('/detail/:itemId',authJWT,crawlService.Stage);
+//router.post('/detail/:_id',authJWT,crawlService.Stage);
 //Stage 의 경우, 내용 수정이 있기 때문에 Modify로 접근하는 것이 맞음.
 const crawlStage = async (req, res) => {
-    const itemId = req.params.itemId;
+    const _id = req.params._id;
     let itemDetail;
-    if (itemId === undefined) {
+    if (_id === undefined) {
         res.status(400).send();
     } else {
         let statusCode = parseInt(req.body.statusCode);
         let result;
         if (req.body.docs) {
             let doc = req.body.docs;
-            doc["item_id"] = itemId;
+            doc["_id"] = _id;
             switch (statusCode) {
                 case 0:
                 case 1:
@@ -229,7 +229,7 @@ const crawlStage = async (req, res) => {
                     result = await esCtrl.Index(doc, 2);
                     if (result) {
                         //delete 에서 keep 으로 삭제는 이루어지지 않음. (stat=1로 부여함으로써 삭제 조치..)
-                        await solrCtrl.Keep(itemId, 2);
+                        await solrCtrl.Keep(_id, 2);
                         res.send();
                     } else {
                         res.status(400).send({ message: "some trouble in staging" });
@@ -237,7 +237,7 @@ const crawlStage = async (req, res) => {
                     break;
                 case 2:
                 case 3:
-                    itemDetail = await esCtrl.Detail(itemId);
+                    itemDetail = await esCtrl.Detail(_id);
                     result = await esCtrl.Index(doc, 4, itemDetail.id);
                     if (result) {
                         res.send();
@@ -247,7 +247,7 @@ const crawlStage = async (req, res) => {
                     break;
                 case 4:
                 case 5:
-                    itemDetail = await esCtrl.Detail(itemId);
+                    itemDetail = await esCtrl.Detail(_id);
                     result = await esCtrl.Index(doc, 6, itemDetail.id);
                     if (result) {
                         res.send();
@@ -256,12 +256,13 @@ const crawlStage = async (req, res) => {
                     }
                     break;
                 case 6:
-                    const checked = await poliCtrl.checkStat(itemId);
+                    // 테스트 모듈 수정 요망..
+                    //const checked = await poliCtrl.checkStat(_id);
                     if (checked) {
-                        itemDetail = await esCtrl.Detail(itemId);
+                        itemDetail = await esCtrl.Detail(_id);
                         result = await esCtrl.Index(doc, 7, itemDetail.id);
                         if (result) {
-                            await poliCtrl.modSubmitStat(itemId);
+                            await poliCtrl.modSubmitStat(itemDetail.item_id);
                             res.send();
                         } else {
                             res.status(400).send({ message: "es error" });
@@ -272,10 +273,10 @@ const crawlStage = async (req, res) => {
                     }
                     break;
                 case 7:
-                    itemDetail = await esCtrl.Detail(itemId);
+                    itemDetail = await esCtrl.Detail(_id);
                     result = await esCtrl.Index(doc, 7, itemDetail.id);
                     if (result) {
-                        await fileCtrl.deleteComparedContentImage(itemId,doc.dc_content);
+                        await fileCtrl.deleteComparedContentImage(_id,doc.dc_content);
                         res.send();
                     } else {
                         res.status(400).send({ message: "some trouble in staging" });

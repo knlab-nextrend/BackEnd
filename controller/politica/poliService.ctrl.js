@@ -1,6 +1,7 @@
 const db = require("../../models/politica/index");
 const dayjs = require("dayjs");
 
+//수정 요망... 핑테스트로 재구현
 const checkStat = (itemId)=> new Promise((resolve, reject) => {
     const param = [itemId];
     const query = "select * from collected_item where item_id=?";

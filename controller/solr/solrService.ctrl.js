@@ -49,7 +49,6 @@ const solrDetail = (itemId) => new Promise(async (resolve,reject)=> {
 });
 
 const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve,reject)=>{
-
     let query = "thumbnail:[* TO *]";
     let paramsDict = {
         // 상세 params
@@ -136,13 +135,10 @@ const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve
         start = 0;
     }
 
-    console.log(query);
     let solrQuery = solrDB.createQuery().q(query).start(start).rows(paramsDict["listSize"]).sort({lastmodified:paramsDict["sort"]});
     //query=query+'&sort=creationdate '+paramsDict["sort"];
     // 띄어쓰기--> %20
     // solrDB.search(query, function(err, obj){
-    console.log(solrQuery);
-
     solrDB.search(solrQuery, function(err, obj){
         if(err){
             resolve(false);

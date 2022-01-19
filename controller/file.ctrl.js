@@ -15,8 +15,8 @@ const unlinkFile = (filePath) => new Promise((resolve, reject)=>{
 });
 
 // 무조건 prev 는 nas 결과, curr 는 target 으로 구성...
-const deleteComparedContentImage = (itemId,target=null) => new Promise(async (resolve,reject) =>{
-    const itemDetail = await esCtrl.Detail(itemId);
+const deleteComparedContentImage = (_id,target=null) => new Promise(async (resolve,reject) =>{
+    const itemDetail = await esCtrl.Detail(_id);
     // 본문에 image가 없더라도 cover를 통해 경로 추출.. 
     //TODO: link 필드가 생성되면 그것을 사용하여 모두 바꾸기..
 

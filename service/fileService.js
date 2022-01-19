@@ -8,25 +8,25 @@ const poliCtrl = require("../controller/politica/poliService.ctrl");
 const userCtrl =  require("../controller/nextrend/user.ctrl");
 const dayjs = require("dayjs");
 
-// 페이지를 벗어날 때, item_id만으로 작업중이던 nas에 등록된 contentImage 파일들을 삭제함.
+// 페이지를 벗어날 때, _id만으로 작업중이던 nas에 등록된 contentImage 파일들을 삭제함.
 const docImageDetach = async (req, res) => {
-    if (req.query.itemId) {
+    if (req.query._id) {
         try {
-            await fileCtrl.deleteComparedContentImage(req.query.itemId)
+            await fileCtrl.deleteComparedContentImage(req.query._id)
             res.send();
         } catch (e) {
             console.log(e);
             res.status(400).send({ message: e })
         }
     } else {
-        res.status(400).send({ message: 'item_id is not given' })
+        res.status(400).send({ message: '_id is not given' })
     }
 }
 
 const docImageAttach = async (req, res) => {
     if (req.file) {
         try {
-            const result = await esCtrl.Detail(req.body.itemId);
+            const result = await esCtrl.Detail(req.body._id);
 
             if (result) {
                 const splited = result.docs.dc_cover[0].split(/(?=\/)/g);
@@ -101,7 +101,8 @@ const uploadExcelData = async (req, res) => {
                 fileMeta['is_crawled']=false;
                 fileMeta['dc_file']=pdfFolderPath+file.filename+'.pdf';
                 fileMeta['item_id']=itemId;
-                const esUpload = await esCtrl.Index(fileMeta, 8);
+                const _id = await esCtrl.Index(fileMeta, 8);
+                await uploadCtrl.updateId(_id,itemId);
             })
             res.send();
         }catch(e){
