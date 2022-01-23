@@ -26,6 +26,11 @@ router.get("/categorys/",categoryService.getCodes);
 router.get("/continents/",categoryService.getConti);
 router.get("/countrys/:conti",categoryService.getCountry);
 
+router.get("/cat/",categoryService.readCat);
+router.post("/cat/",categoryService.createCat);
+router.put("/cat/",categoryService.updateCat);
+router.delete("/cat/",categoryService.deleteCat);
+
 router.get("/test",testService.test);
 
 module.exports = router;

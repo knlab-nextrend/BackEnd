@@ -20,7 +20,7 @@ const test = async (req, res) => {
 //router.put('/detail/:_id',crawlSearch.Keep);
 //단일 데이터 기준 
 const crawlKeep = async (req, res) => {
-    const _id = parseInt(req.params._id);
+    const _id = req.params._id;
     //안되면 params 시도 혹은 query 시도.
     if (_id === undefined) {
         res.status(400).send();
@@ -52,7 +52,7 @@ const crawlKeep = async (req, res) => {
 
 //router.get('/detail/:_id',crawlSearch.Detail);
 const crawlDetail = async (req, res) => {
-    const _id = parseInt(req.params._id);
+    const _id = req.params._id;
     if (_id === undefined) {
         res.status(400).send({ message: "no _id" });
     } else {
@@ -180,7 +180,7 @@ const crawlSearch = async (req, res) => {
 
 //router.delete('/detail/:_id',crawlSearch.Delete);
 const crawlDelete = async (req, res) => {
-    const _id = parseInt(req.params._id);
+    const _id = req.params._id;
     if (_id === undefined) {
         res.status(400).send();
     } else {
