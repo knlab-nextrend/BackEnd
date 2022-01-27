@@ -16,9 +16,16 @@ const readQuery = (length,type,code=null) => new Promise((resolve, reject)=>{
     });
 });
 
-const createQuery = (length,type,ct_nm) => new Promise((resolve, reject)=>{
-    const query = 'insert into login.nt_categorys (type,ct_nm,code) values(?,?, (select temp.* from (select max(code)+1 from login.nt_categorys where type=? and length(code)=?) temp));';
-    const params = [type,ct_nm,type,length];
+const createQuery = (length,type,ct_nm,code) => new Promise((resolve, reject)=>{
+    let query,params;
+    if(code){
+        query = 'insert into login.nt_categorys (type,ct_nm,code) values(?,?, (select temp.* from (select ifnull((select max(code)+1 from login.nt_categorys where type=? and length(code)=? and `CODE` like "'+code+'%"),?) as val) temp));';
+        params = [type,ct_nm,type,length,code+'10'];
+    }else{
+        query = 'insert into login.nt_categorys (type,ct_nm,code) values(?,?, (select temp.* from (select ifnull((select max(code)+1 from login.nt_categorys where type=? and length(code)=?),?) as val) temp));';
+        params = [type,ct_nm,type,length,'10'];
+    }
+
 
     db.query(query,params,(err,data)=>{
         if(err){

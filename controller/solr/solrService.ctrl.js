@@ -33,7 +33,7 @@ const solrKeep = (itemId,stat=1) => new Promise(async (resolve,reject)=>{
 });
 
 const solrDetail = (itemId) => new Promise(async (resolve,reject)=> {
-    let query = 'q=item_id:'+itemId;
+    let query = 'q=thumbnail:[* TO *] AND item_id:'+itemId;
     query = encodeURI(query);
     solrDB.search(query, function(err, obj){
         if(err){

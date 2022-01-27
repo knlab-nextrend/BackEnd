@@ -22,8 +22,9 @@ const createCat = async (req,res) => {
     if((!req.body.type)||(!req.body.length)||(!req.body.ct_nm)){
         res.status(400).send({message:'value not exists'})
     }else{
+        const code = req.body.code||null;
         try{
-            const result = await categoryCtrl.create(req.body.length,req.body.type,req.body.ct_nm);
+            const result = await categoryCtrl.create(req.body.length,req.body.type,req.body.ct_nm,code);
             res.send(result);
         }catch(e){
             res.status(400).send({message:e});
@@ -86,11 +87,15 @@ const countryList = async (req,res) => {
 }
 
 const toDict = async (req,res) => {
-    const data = await subjectCodeCtrl.ToDict(req.params.conti);
-    if(data){
-        res.send(data);
+    if(!req.query.type){
+        res.status(400).send();
     }else{
-        res.status(400).send({message:"toDict error"});
+        try{
+            const data = await subjectCodeCtrl.ToDict(req.query.type);
+            res.send(data);
+        }catch(e){
+            res.status(400).send({message:"toDict error"});
+        }
     }
 }
 

@@ -83,8 +83,10 @@ const esSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,re
         let countrys = [];
         if(doc["dc_country"].length!==0){
             for(let countryId of doc["dc_country"]){
-                const countryInfo = await nationCtrl.getCountryById(countryId);
-                countrys.push(countryInfo[0]);
+                const countryInfo = await codeCtrl.getInfoById(countryId,3);
+                if(countryInfo[0]){
+                    countrys.push(countryInfo[0]);
+                }
             }
             doc["dc_country"]=countrys;
         }
@@ -92,8 +94,10 @@ const esSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,re
         let countrysPub = [];
         if(doc["dc_country_pub"].length!==0){
             for(let countryId of doc["dc_country_pub"]){
-                const countryInfo = await nationCtrl.getCountryById(countryId);
-                countrysPub.push(countryInfo[0]);
+                const countryInfo = await codeCtrl.getInfoById(countryId,3);
+                if(countryInfo[0]){
+                    countrysPub.push(countryInfo[0]);
+                }
             }
             doc["dc_country_pub"]=countrysPub;
         }
@@ -102,8 +106,11 @@ const esSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,re
         let codes = [];
         if(doc["dc_code"].length!==0){
             for(let code of doc["dc_code"]){
-                const codeInfo = await codeCtrl.getInfoById(code);
-                codes.push(codeInfo[0]);
+                // type 1로 코드 나타냄.
+                const codeInfo = await codeCtrl.getInfoById(code,1);
+                if(codeInfo[0]){
+                    codes.push(codeInfo[0]);
+                }
             }
             doc["dc_code"]=codes;
         }

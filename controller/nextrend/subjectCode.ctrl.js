@@ -1,9 +1,9 @@
 const db = require("../../models/nextrend/index");
 
-const codesToDict = ()  => new Promise((resolve, reject)=>{
-    const Lq =  'select * from nt_categorys where length(`CODE`)=2 and type=1 and stat<9; ';
-    const Mq =  'select * from nt_categorys where length(`CODE`)=4 and type=1 and stat<9; ';
-    const Sq =  'select * from nt_categorys where length(`CODE`)=6 and type=1 and stat<9; ';
+const codesToDict = (type)  => new Promise((resolve, reject)=>{
+    const Lq =  'select * from nt_categorys where length(`CODE`)=2 and type='+type+' and stat<9; ';
+    const Mq =  'select * from nt_categorys where length(`CODE`)=4 and type='+type+' and stat<9; ';
+    const Sq =  'select * from nt_categorys where length(`CODE`)=6 and type='+type+' and stat<9; ';
 
     db.query(Lq+Mq+Sq, (err,data) => {
         if(!err){
@@ -50,6 +50,7 @@ const codesToDict = ()  => new Promise((resolve, reject)=>{
             })
             resolve(allCategorys);
         }else{
+            console.log(err);
             resolve(false);
         }
     })
@@ -76,9 +77,9 @@ const getCodes = (upperCode=null) => new Promise((resolve,reject)=>{
     });
 })
 
-const getInfoById = (code)  => new Promise((resolve,reject)=>{
-    const query = 'select * from nt_categorys where code = ?';
-    const params = [code];
+const getInfoById = (code,type)  => new Promise((resolve,reject)=>{
+    const query = 'select * from nt_categorys where code = ? and type=? and stat<9';
+    const params = [code,type];
     db.query(query,params, (err,data) => {
         if(err){
             resolve(false);

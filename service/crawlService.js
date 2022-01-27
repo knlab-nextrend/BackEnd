@@ -13,7 +13,7 @@ Document Status Code list
 
 const test = async (req, res) => {
     const result = await nasCtrl.getFileList(req.query.path);
-    
+
     res.send(result);
 }
 
@@ -57,7 +57,7 @@ const crawlDetail = async (req, res) => {
         res.status(400).send({ message: "no _id" });
     } else {
         let statusCode = parseInt(req.query.statusCode);
-        let result,error='error';
+        let result, error = 'error';
         switch (statusCode) {
             case 0:
             case 1:
@@ -76,45 +76,50 @@ const crawlDetail = async (req, res) => {
             case 5:
             case 6:
             case 7:
-                try{
+                try {
                     value = await esCtrl.Detail(_id);
                     const document = value.body.hits.hits[0];
-                    result={
-                        docs:libs.convertCrawlDocTo(document._source,'es'),
-                        id:document._id
+                    result = {
+                        docs: libs.convertCrawlDocTo(document._source, 'es'),
+                        _id: document._id
                     }
-            
+
                     //국가 표시 조정 단계
                     let countrys = [];
-                    if(result.docs["dc_country"].length!==0){
-                        for(let countryId of result.docs["dc_country"]){
-                            const countryInfo = await nationCtrl.getCountryById(countryId);
-                            countrys.push(countryInfo[0]);
+                    if (result.docs["dc_country"].length !== 0) {
+                        for (let countryId of result.docs["dc_country"]) {
+                            const countryInfo = await codeCtrl.getInfoById(countryId, 3);
+                            if (countryInfo[0]) {
+                                countrys.push(countryInfo[0]);
+                            }
                         }
-                        result.docs["dc_country"]=countrys;
+                        result.docs["dc_country"] = countrys;
                     }
-            
+
                     let countrysPub = [];
-                    if(result.docs["dc_country_pub"].length!==0){
-                        for(let countryId of result.docs["dc_country_pub"]){
-                            const countryInfo = await nationCtrl.getCountryById(countryId);
-                            countrysPub.push(countryInfo[0]);
+                    if (result.docs["dc_country_pub"].length !== 0) {
+                        for (let countryId of result.docs["dc_country_pub"]) {
+                            const countryInfo = await codeCtrl.getInfoById(countryId, 3);
+                            if (countryInfo[0]) {
+                                countrysPub.push(countryInfo[0]);
+                            }
                         }
-                        result.docs["dc_country_pub"]=countrysPub;
+                        result.docs["dc_country_pub"] = countrysPub;
                     }
-            
-            
+
                     //코드 표시 조정 단계
                     let codes = [];
-                    if(result.docs["dc_code"].length!==0){
-                        for(let code of result.docs["dc_code"]){
-                            const codeInfo = await codeCtrl.getInfoById(code);
-                            codes.push(codeInfo[0]);
+                    if (result.docs["dc_code"].length !== 0) {
+                        for (let code of result.docs["dc_code"]) {
+                            const codeInfo = await codeCtrl.getInfoById(code, 1);
+                            if (codeInfo[0]) {
+                                codes.push(codeInfo[0]);
+                            }
                         }
-                        result.docs["dc_code"]=codes;
+                        result.docs["dc_code"] = codes;
                     }
-                }catch(e){
-                    error=e;
+                } catch (e) {
+                    error = e;
                 }
                 break;
         }
@@ -136,7 +141,7 @@ const crawlSearch = async (req, res) => {
             case 0:
             case 1:
                 const condition = req.query;
-                result = await solrCtrl.Search(condition, stat = statusCode, restrict=true);
+                result = await solrCtrl.Search(condition, stat = statusCode, restrict = true);
                 break;
             case 2:
             case 3:
@@ -154,7 +159,7 @@ const crawlSearch = async (req, res) => {
                     dateLte: req.query.dateLte || '*',
                     pageGte: req.query.pageGte || '*',
                     pageLte: req.query.pageLte || '*',
-                    dc_publisher:req.query.host || '',
+                    dc_publisher: req.query.host || '',
                     is_crawled: req.query.is_crawled || '',
                     sort: req.query.sort || 'desc',
                     sortType: req.query.sortType || 'dc_dt_collect'
@@ -222,6 +227,7 @@ const crawlStage = async (req, res) => {
         if (req.body.docs) {
             let doc = req.body.docs;
             doc["_id"] = _id;
+            console.log(doc);
             switch (statusCode) {
                 case 0:
                 case 1:
@@ -237,8 +243,7 @@ const crawlStage = async (req, res) => {
                     break;
                 case 2:
                 case 3:
-                    itemDetail = await esCtrl.Detail(_id);
-                    result = await esCtrl.Index(doc, 4, itemDetail.id);
+                    result = await esCtrl.Index(doc, 4, _id);
                     if (result) {
                         res.send();
                     } else {
@@ -247,8 +252,7 @@ const crawlStage = async (req, res) => {
                     break;
                 case 4:
                 case 5:
-                    itemDetail = await esCtrl.Detail(_id);
-                    result = await esCtrl.Index(doc, 6, itemDetail.id);
+                    result = await esCtrl.Index(doc, 6, _id);
                     if (result) {
                         res.send();
                     } else {
@@ -258,25 +262,19 @@ const crawlStage = async (req, res) => {
                 case 6:
                     // 테스트 모듈 수정 요망..
                     //const checked = await poliCtrl.checkStat(_id);
-                    if (checked) {
-                        itemDetail = await esCtrl.Detail(_id);
-                        result = await esCtrl.Index(doc, 7, itemDetail.id);
-                        if (result) {
-                            await poliCtrl.modSubmitStat(itemDetail.item_id);
-                            res.send();
-                        } else {
-                            res.status(400).send({ message: "es error" });
-                        }
+                    result = await esCtrl.Index(doc, 7, _id);
+                    if (result) {
+                        await poliCtrl.modSubmitStat(doc.item_id);
                         res.send();
                     } else {
-                        res.status(400).send({ message: "poli error" });
+                        res.status(400).send({ message: "es error" });
                     }
+                    res.send();
                     break;
                 case 7:
-                    itemDetail = await esCtrl.Detail(_id);
-                    result = await esCtrl.Index(doc, 7, itemDetail.id);
+                    result = await esCtrl.Index(doc, 7, _id);
                     if (result) {
-                        await fileCtrl.deleteComparedContentImage(_id,doc.dc_content);
+                        await fileCtrl.deleteComparedContentImage(_id, doc.dc_content);
                         res.send();
                     } else {
                         res.status(400).send({ message: "some trouble in staging" });
@@ -297,7 +295,7 @@ Detail 에서는 es 에서만 작업되기에 solr인 스크리닝은 분리.
 const screenGet = async (req, res) => {
     const condition = req.query;
     let stat;
-    stat = req.query.keep ? 3:0;
+    stat = req.query.keep ? 3 : 0;
     result = await solrCtrl.Search(condition, stat = stat, restrict = true);
     if (result) {
         res.send(result);
@@ -332,7 +330,7 @@ const screenStage = async (req, res) => {
     }
 }
 
-const screenKeep = async (req,res) => {
+const screenKeep = async (req, res) => {
     const keepList = req.body.list;
     if (keepList === undefined) {
         res.status(400).send({ message: "no given keep list" });
@@ -387,6 +385,6 @@ module.exports = {
     screenGet: screenGet,
     screenStage: screenStage,
     screenDelete: screenDelete,
-    screenKeep:screenKeep,
+    screenKeep: screenKeep,
     test: test
 };
