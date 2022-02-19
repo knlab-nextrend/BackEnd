@@ -17,3 +17,4 @@ router.delete('/screening/',authJWT,crawlService.screenDelete); //스크리닝 �
 router.post('/screening/',authJWT,crawlService.screenKeep);
 
 module.exports = router;
+

@@ -1,7 +1,6 @@
 const solrCtrl = require("../controller/solr/solrService.ctrl");
 const esCtrl = require("../controller/es/esService.ctrl");
 const nasCtrl = require("../controller/nas/nasService.ctrl");
-const nationCtrl = require("../controller/nextrend/nation.ctrl");
 const poliCtrl = require("../controller/politica/poliService.ctrl");
 const codeCtrl = require("../controller/nextrend/subjectCode.ctrl");
 const libs = require("../lib/libs");
