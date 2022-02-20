@@ -5,6 +5,7 @@ const tokenCtrl = require("../service/tokenService");
 const categoryService = require("../service/categorysService");
 const loginService = require("../service/loginService");
 const testService = require("../service/testService");
+const customService = require("../service/customService");
 const authJWT = require("../middlewares/auth");
 
 router.post("/user/restrict",userService.Restrict);
@@ -28,6 +29,11 @@ router.get("/cat/",categoryService.readCat);
 router.post("/cat/",categoryService.createCat);
 router.put("/cat/",categoryService.updateCat);
 router.delete("/cat/",categoryService.deleteCat);
+
+router.get("/custom/",customService.read);
+router.post("/custom/",customService.create);
+router.put("/custom/",customService.update);
+router.delete("/custom/",customService.delete);
 
 router.get("/test",testService.test);
 
