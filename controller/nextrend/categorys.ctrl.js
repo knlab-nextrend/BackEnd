@@ -17,15 +17,8 @@ const readQuery = (length,type,code=null) => new Promise((resolve, reject)=>{
 });
 
 const createQuery = (length,type,ct_nm,code) => new Promise((resolve, reject)=>{
-    let query,params;
-    if(code){
-        query = 'insert into login.nt_categorys (type,ct_nm,code) values(?,?, (select temp.* from (select ifnull((select max(code)+1 from login.nt_categorys where type=? and length(code)=? and `CODE` like "'+code+'%"),?) as val) temp));';
-        params = [type,ct_nm,type,length,code+'10'];
-    }else{
-        query = 'insert into login.nt_categorys (type,ct_nm,code) values(?,?, (select temp.* from (select ifnull((select max(code)+1 from login.nt_categorys where type=? and length(code)=?),?) as val) temp));';
-        params = [type,ct_nm,type,length,'10'];
-    }
-
+    const query = 'call setLimitCat(?,?,?,?)';
+    const params = [type,code,length,ct_nm];
 
     db.query(query,params,(err,data)=>{
         if(err){
@@ -37,6 +30,7 @@ const createQuery = (length,type,ct_nm,code) => new Promise((resolve, reject)=>{
 });
 
 const updateQuery = (type, code, ct_nm) => new Promise((resolve, reject)=>{
+    console.log(type);
     const query = 'update login.nt_categorys set CT_NM=? where type=? and code=?;'
     const params = [ct_nm,type,code];
 
@@ -50,11 +44,13 @@ const updateQuery = (type, code, ct_nm) => new Promise((resolve, reject)=>{
 });
 
 const deleteQuery = (type, code) => new Promise((resolve, reject)=>{
-    const query = 'update login.nt_categorys set stat=9 where type=? and code=?;';
-    const params = [type,code];
+    console.log(type);
+    const query = "delete from nt_categorys where type=? and code like '" +code+ "%'";
+    const params = [type];
 
     db.query(query,params,(err,data)=>{
         if(err){
+            console.log(err);
             reject(err)
         }else{
             resolve(data);
