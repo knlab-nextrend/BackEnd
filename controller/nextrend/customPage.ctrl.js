@@ -51,9 +51,23 @@ const readCustomedPageSetting = () => new Promise((resolve,reject) => {
     });
 });
 
+const callUnderCatList = (uid,axis) => new Promise((resolve,reject)=>{
+    const query = 'select cat.type,cat.ct_nm,cat.code from nt_categorys cat inner join  (select a.type,a.code from nt_categorys a inner join nt_customed_cat b on a.idx = b.'+axis+' where b.uid = 67) tg on cat.type = tg.type and cat.code like concat(tg.code,"%") and cat.code!=tg.code;';
+    const params=[uid];
+
+    db.query(query,params,(err,data)=>{
+        if(err||data.length===0){
+            reject({message:"no exist category setting for this user"});
+        }else{
+            resolve(data);
+        }
+    });
+})
+
 module.exports = {
     create:createCustomedPageSetting,
     delete:deleteCustomedPageSetting,
     update:updateCustomedPageSetting,
-    read:readCustomedPageSetting
+    read:readCustomedPageSetting,
+    call:callUnderCatList,
 }
