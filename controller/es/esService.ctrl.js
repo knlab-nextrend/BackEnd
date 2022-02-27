@@ -3,174 +3,177 @@ const config = require("../../models/es/index").config;
 const codeCtrl = require("../nextrend/subjectCode.ctrl");
 const libs = require("../../lib/libs");
 
-const esDetail = (_id) => new Promise(async (resolve,reject)=>{
+const esDetail = (_id) => new Promise(async (resolve, reject) => {
     const query = {
         index: 'politica_service',
         body: {
             query: {
-                match : {
-                    _id:_id
+                match: {
+                    _id: _id
                 }
             }
         }
     };
-    try{
+    try {
         const value = await esDB.search(query);
         resolve(value);
-    }catch(e){
+    } catch (e) {
         reject(e);
     }
 });
 
-const esSearch = (size,from,stat,conditions={}) => new Promise(async (resolve,reject) =>{
-    // condition의 내용들을 filter로 담아줌.
+const esSearch = (size, from, stat, filters = {}, prefix = {}) => new Promise(async (resolve, reject) => {
+    // filters 내용들을 filter로 담아줌.
     let filter = [];
-    for (const [key,value] of Object.entries(conditions)){
+    for (const [key, value] of Object.entries(filters)) {
         let term = {};
-        term[key]=value;
-        if((key==='dateGte')||(key==='dateLte')||(value==='')||(key==='sort')||(key==='sortType')||(key==='pageGte')||(key==='pageLte')){
-        }else{
-            filter.push({term:term});
+        term[key] = value;
+        if ((key === 'dateGte') || (key === 'dateLte') || (value === '') || (key === 'sort') || (key === 'sortType') || (key === 'pageGte') || (key === 'pageLte')) {
+        } else {
+            filter.push({ term: term });
         }
     }
     // stat은 별개로
-    filter.push({term:{stat:stat}});
+    filter.push({ term: { stat: stat } });
 
     // 기간 range
     let range = {};
     let temp = {};
-    if(conditions.dateGte!=='*'){
-        temp['gte']=conditions.dateGte;
+    if (filters.dateGte !== '*') {
+        temp['gte'] = filters.dateGte;
     }
-    if(conditions.dateLte!=='*'){
-        temp['lte']=conditions.dateLte;
+    if (filters.dateLte !== '*') {
+        temp['lte'] = filters.dateLte;
     }
-    range[conditions.sortType]=temp;
+    range[filters.sortType] = temp;
+    let must = [];
+    must.push({range:range});
+    if(prefix.length){
+        must.push({prefix:prefix});
+    }
 
     // sort by
     let sort = [];
     let sortTemp = {};
-    sortTemp[conditions.sortType]=conditions.sort;
+    sortTemp[filters.sortType] = filters.sort;
     sort.push(sortTemp);
 
     const query = {
-        from:from,
-        size:size,
-        index:'politica_service',
+        from: from,
+        size: size,
+        index: 'politica_service',
         body: {
             query: {
-                bool : {
-                    must:{
-                        range:range,
-                    },
-                    filter:filter
-                }
+                bool: {
+                    must: must,
+                    filter: filter
+                },
             },
-            sort:sort,
+            sort: sort,
         }
     };
-    
+
     const value = await esDB.search(query);
     const result = {
-        "dcCount":value.body.hits.total.value
+        "dcCount": value.body.hits.total.value
     };
     const documents = [];
-    for(let document of value.body.hits.hits){
-        doc = libs.convertCrawlDocTo(document._source,'es');
+    for (let document of value.body.hits.hits) {
+        doc = libs.convertCrawlDocTo(document._source, 'es');
         doc["_id"] = document._id;
         //국가 표시 조정 단계
         let countrys = [];
-        if(doc["dc_country"].length!==0){
-            for(let countryId of doc["dc_country"]){
-                const countryInfo = await codeCtrl.getInfoById(countryId,3);
-                if(countryInfo[0]){
+        if (doc["dc_country"].length !== 0) {
+            for (let countryId of doc["dc_country"]) {
+                const countryInfo = await codeCtrl.getInfoById(countryId, 3);
+                if (countryInfo[0]) {
                     countrys.push(countryInfo[0]);
                 }
             }
-            doc["dc_country"]=countrys;
+            doc["dc_country"] = countrys;
         }
 
         let countrysPub = [];
-        if(doc["dc_country_pub"].length!==0){
-            for(let countryId of doc["dc_country_pub"]){
-                const countryInfo = await codeCtrl.getInfoById(countryId,3);
-                if(countryInfo[0]){
+        if (doc["dc_country_pub"].length !== 0) {
+            for (let countryId of doc["dc_country_pub"]) {
+                const countryInfo = await codeCtrl.getInfoById(countryId, 3);
+                if (countryInfo[0]) {
                     countrysPub.push(countryInfo[0]);
                 }
             }
-            doc["dc_country_pub"]=countrysPub;
+            doc["dc_country_pub"] = countrysPub;
         }
 
         //코드 표시 조정 단계
         let codes = [];
-        if(doc["dc_code"].length!==0){
-            for(let code of doc["dc_code"]){
+        if (doc["dc_code"].length !== 0) {
+            for (let code of doc["dc_code"]) {
                 // type 1로 코드 나타냄.
-                const codeInfo = await codeCtrl.getInfoById(code,1);
-                if(codeInfo[0]){
+                const codeInfo = await codeCtrl.getInfoById(code, 1);
+                if (codeInfo[0]) {
                     codes.push(codeInfo[0]);
                 }
             }
-            doc["dc_code"]=codes;
+            doc["dc_code"] = codes;
         }
 
         documents.push(doc);
-        
+
     };
-    result["docs"]=documents;
+    result["docs"] = documents;
     resolve(result);
 });
 
-const esIndex = (doc,stat,id=false, ret=false) => new Promise(async (resolve,reject) =>{
+const esIndex = (doc, stat, id = false, ret = false) => new Promise(async (resolve, reject) => {
     let body = libs.nullProcessing(doc);
-    
-    body.stat=stat;
+
+    body.stat = stat;
     let query = {
         index: 'politica_service',
-        refresh:true,
+        refresh: true,
         body: body
     };
-    if(id){
-        query["id"]=id;
+    if (id) {
+        query["id"] = id;
     }
     const result = await esDB.index(query);
-    if(result.statusCode==200||result.statusCode==201){
+    if (result.statusCode == 200 || result.statusCode == 201) {
         resolve(true);
-    }else if(ret){
+    } else if (ret) {
         resolve(result._id);
-    }else{
+    } else {
         resolve(false);
     }
 });
 
-const esKeep = (_id,stat) => new Promise(async (resolve,reject) =>{
+const esKeep = (_id, stat) => new Promise(async (resolve, reject) => {
     let doc = {
         "script": {
-          "inline": "ctx._source.stat = "+stat,
-          "lang": "painless"
+            "inline": "ctx._source.stat = " + stat,
+            "lang": "painless"
         },
         "query": {
-          "match": {
-            "_id":_id
-          }
+            "match": {
+                "_id": _id
+            }
         }
-      };
+    };
     const query = {
         index: 'politica_service',
-        refresh:true,
+        refresh: true,
         body: doc
     };
     const result = await esDB.updateByQuery(query);
-    if(result.statusCode==200||result.statusCode==201){
+    if (result.statusCode == 200 || result.statusCode == 201) {
         resolve(true);
-    }else{
+    } else {
         resolve(false);
     }
 });
 
 module.exports = {
-    Search:esSearch,
-    Index:esIndex,
-    Detail:esDetail,
-    Keep:esKeep
+    Search: esSearch,
+    Index: esIndex,
+    Detail: esDetail,
+    Keep: esKeep
 }

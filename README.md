@@ -1,19 +1,21 @@
 # nextrend(react) Backend
----
 
-### master
-> 1103 v1.0.1-release0
-1106 v1.1.1-release1
-temporal
+## Start Application
 
-### release
-> 11.03 iteration 0
-11.06 iteration 1
+```
+yarn start
+```
 
-### develope
-> 11.06 init
-temporal
+## Project Confirmation
+1. 서버 폴더 구조에 따른 기능 명시
+    - controller(수정 필요) :  routes가 호출. http 오류 검출.
+    - routes : http 요청을 직접 받는 부분. 
+    - service(수정 필요) : controller 가 호출. migration이 통신하기 위해 쓰는 parameter를 직접 수정.
+    - migration(추가 필요) : *작성 필요*
 
+
+### Only use master branch
+1인 개발의 사유로 인해 gitflow 원칙을 따르지 않습니다.
 
 ## Status Code Definition
 > ### 200번대

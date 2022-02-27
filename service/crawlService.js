@@ -148,25 +148,37 @@ const crawlSearch = async (req, res) => {
             case 5:
             case 6:
             case 7:
-                let conditions = {
-                    dc_lang: req.query.lang || '',
-                    dc_code: req.query.dc_code || '',
+                let filters = {
                     dc_keyword: req.query.dc_keyword || '',
-                    dc_country: req.query.dc_country || '',
                     dc_publisher: req.query.dc_publisher || '',
                     dateGte: req.query.dateGte || '*',
                     dateLte: req.query.dateLte || '*',
                     pageGte: req.query.pageGte || '*',
                     pageLte: req.query.pageLte || '*',
-                    dc_publisher: req.query.host || '',
                     is_crawled: req.query.is_crawled || '',
                     sort: req.query.sort || 'desc',
                     sortType: req.query.sortType || 'dc_dt_collect'
                 };
+                let prefix = {};
+                if('dc_code' in req.query){
+                    prefix["dc_code"]=req.query.dc_code;
+                }
+                if('dc_type' in req.query){
+                    prefix["dc_type_doc"]=req.query.dc_type;
+                }
+                if('dc_country' in req.query){
+                    prefix["dc_country"]=req.query.dc_country;
+                }
+                if('dc_language' in req.query){
+                    prefix["dc_language"]=req.query.dc_language;
+                }
+                if('dc_custom' in req.query){
+                    prefix["dc_custom"]=req.query.dc_custom;
+                }
 
                 const size = req.query.listSize;
                 const from = req.query.pageNo ? ((req.query.pageNo - 1) * size) : 0;
-                result = await esCtrl.Search(size, from, stat = statusCode, conditions = conditions);
+                result = await esCtrl.Search(size, from, stat = statusCode, filters = filters, prefix = prefix);
                 break;
         }
         if (result) {
