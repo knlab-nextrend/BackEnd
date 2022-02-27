@@ -1,4 +1,3 @@
-const codeCtrl = require("../controller/nextrend/subjectCode.ctrl");
 const subjectCodeCtrl = require("../controller/nextrend/subjectCode.ctrl");
 const categoryCtrl = require("../controller/nextrend/categorys.ctrl");
 
@@ -59,7 +58,7 @@ const deleteCat = async (req,res) => {
 
 const codeList = async (req,res) => {
     const code = req.query.upperCode;
-    const data = await codeCtrl.getCodes(code);
+    const data = await subjectCodeCtrl.getCodes(code);
     if(data){
         res.send(data);
     }else{
