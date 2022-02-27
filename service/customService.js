@@ -58,6 +58,15 @@ const readSetting = async(req,res) => {
     }
 }
 
+const testAxis = async(req,res) => {
+    try{
+        const result = await customCtrl.test(req.query.cid);
+        res.send(result);
+    }catch(e){
+        res.status(400).send({message:e});
+    }
+}
+
 const loadPage = async(req,res) => {
     try{
         const xAxisList = await customCtrl.call(req.body.uid,'axis_x');
@@ -77,5 +86,6 @@ module.exports={
     update:updateSetting,
     delete:deleteSetting,
     read:readSetting,
-    loadPage:loadPage
+    loadPage:loadPage,
+    testAxis:testAxis
 }

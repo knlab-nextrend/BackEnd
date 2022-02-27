@@ -36,6 +36,7 @@ router.put("/custom/",customService.update);
 router.delete("/custom/",customService.delete);
 
 router.post("/custom/load",customService.loadPage);
+router.get("/custom/test",customService.testAxis);
 
 router.get('/viewPage/');
 // 해당 엔드포인트를 사용하여 view 페이지 렌더링.
