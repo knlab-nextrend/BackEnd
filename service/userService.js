@@ -104,9 +104,10 @@ const userRestrict = async (req,res) => {
 }
 
 const userVerify = async (req,res) => {
-    if(req.body.userId&&req.body.id){
+    const uid = req.body.id||null;
+    if(req.body.userId){
         try{
-            const data = await userCtrl.Verify(req.body.id,req.body.userId);
+            const data = await userCtrl.Verify(uid,req.body.userId);
             if(data.length){
                 res.status(400).send({message:"duplicated user id"});
             }else{
