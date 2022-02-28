@@ -5,8 +5,14 @@ const db = require("../../models/nextrend/index");
 객체로 만드는 방법은 resolve와 reject를 통해 명시가 가능하기에 await로 잡을 수 있음
 */
 const verifyUserId = (uid,userId) =>new Promise((resolve, reject)=>{
-    const query = "select * from nt_users_list where userID=? and (not id=?);";
-    const param = [userId,uid];
+    let query, param;
+    if(uid){
+        query = "select * from nt_users_list where userID=? and (not id=?);";
+        param = [userId,uid];
+    }else{
+        query = "select * from nt_users_list where userID=?";
+        param = [userId];
+    }
     db.query(query, param, (err,data) => {
         if(err){
             reject(false);

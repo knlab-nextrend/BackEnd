@@ -1,6 +1,7 @@
 const solrCtrl = require("../controller/solr/solrService.ctrl");
 const esCtrl = require("../controller/es/esService.ctrl");
 const nasCtrl = require("../controller/nas/nasService.ctrl");
+const nationCtrl = require("../controller/nextrend/nation.ctrl");
 const poliCtrl = require("../controller/politica/poliService.ctrl");
 const codeCtrl = require("../controller/nextrend/subjectCode.ctrl");
 const libs = require("../lib/libs");
@@ -171,6 +172,9 @@ const crawlSearch = async (req, res) => {
                 }
                 if('dc_language' in req.query){
                     prefix["dc_language"]=req.query.dc_language;
+                }
+                if('dc_topic' in req.query){
+                    prefix["dc_topic"]=req.query.dc_topic;
                 }
                 if('dc_custom' in req.query){
                     prefix["dc_custom"]=req.query.dc_custom;

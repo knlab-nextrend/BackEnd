@@ -1,14 +1,14 @@
 const customCtrl = require("../controller/nextrend/customPage.ctrl");
 
 const createSetting = async (req,res) => {
-    if(req.query.xaxis&&req.query.yaxis&&req.query.uid){
+    if(req.body.xaxis&&req.body.yaxis&&req.body.uid){
         try{
             const authToken = req.headers.authorization.split('Bearer ')[1];
             const decoded = await jwt.verify(authToken);
             const userID = decoded.userID;
             const userInfo = await userCtrl.getUserByUid(userID);
             const wid = userInfo.id;
-            await customCtrl.create(req.query.uid,req.query.xaxis,req.query.yaxis,wid);
+            await customCtrl.create(req.body.uid,req.body.xaxis,req.body.yaxis,wid);
             res.send();
         }catch(e){
             res.status(400).send({message:e});
@@ -37,9 +37,9 @@ const updateSetting = async(req,res) => {
 }
 
 const deleteSetting = async(req,res) => {
-    if(req.body.idx){
+    if(req.query.idx){
         try{
-            await customCtrl.delete(req.body.idx);
+            await customCtrl.delete(req.query.idx);
             res.send();
         }catch(e){
             res.status(400).send({message:e});
@@ -58,10 +58,19 @@ const readSetting = async(req,res) => {
     }
 }
 
+const testAxis = async(req,res) => {
+    try{
+        const result = await customCtrl.test(req.query.cid);
+        res.send(result);
+    }catch(e){
+        res.status(400).send({message:e});
+    }
+}
+
 const loadPage = async(req,res) => {
     try{
-        const xAxisList = await customCtrl.call(req.body.uid,'axis_x');
-        const yAxisList = await customCtrl.call(req.body.uid,'axis_y');
+        const xAxisList = await customCtrl.call(req.query.uid,'axis_x');
+        const yAxisList = await customCtrl.call(req.query.uid,'axis_y');
         const axis = {
             axis_x : xAxisList,
             axis_y : yAxisList
@@ -77,5 +86,6 @@ module.exports={
     update:updateSetting,
     delete:deleteSetting,
     read:readSetting,
-    loadPage:loadPage
+    loadPage:loadPage,
+    testAxis:testAxis
 }
