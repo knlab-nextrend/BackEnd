@@ -6,6 +6,7 @@ const poliCtrl = require("../controller/politica/poliService.ctrl");
 const codeCtrl = require("../controller/nextrend/subjectCode.ctrl");
 const libs = require("../lib/libs");
 const fileCtrl = require("../controller/file.ctrl");
+const workLogCtrl = require("../controller/nextrend/workingLog.ctrl");
 
 /*
 Document Status Code list
