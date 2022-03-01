@@ -36,6 +36,7 @@ const loginOnLogin = (userId,userPw) => new Promise((resolve, reject)=>{
 
               // user의 category를 가져와 payload에 포함시킴.
               const user = {
+                uid:data[0].id,
                 userID:userId,
                 Category:data[0].Category
               }

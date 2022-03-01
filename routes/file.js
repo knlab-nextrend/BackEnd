@@ -13,6 +13,6 @@ const pdfUpload = multer({
 
 router.get('/docImageDetach/',fileService.docImageDetach);
 router.post('/docImageAttach/',imageUpload.single('file'),fileService.docImageAttach); //본문 이미지 업로드 및 url 리턴
-router.post('/uploadExcelData/',pdfUpload.array('files'),fileService.uploadExcelData);
+router.post('/uploadExcelData/',pdfUpload.array('files'),authJWT,fileService.uploadExcelData);
 
 module.exports = router;

@@ -6,9 +6,11 @@ const authJWT = async (req,res,next) => {
         const result = await jwt.verify(token);
         if(result.ok){
             // token 검증 완료 시, req 에 값을 세팅한 후 콜백함수로 진행..
+            req.uid = result.uid;
             req.userID = result.userID;
             req.Category = result.Category;
             res.set({
+                uid:result.uid,
                 userID:result.userID,
                 Category:result.Category
             })
