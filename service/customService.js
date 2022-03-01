@@ -3,11 +3,7 @@ const customCtrl = require("../controller/nextrend/customPage.ctrl");
 const createSetting = async (req,res) => {
     if(req.body.xaxis&&req.body.yaxis&&req.body.uid){
         try{
-            const authToken = req.headers.authorization.split('Bearer ')[1];
-            const decoded = await jwt.verify(authToken);
-            const userID = decoded.userID;
-            const userInfo = await userCtrl.getUserByUid(userID);
-            const wid = userInfo.id;
+            const wid = req.uid;
             await customCtrl.create(req.body.uid,req.body.xaxis,req.body.yaxis,wid);
             res.send();
         }catch(e){
@@ -21,11 +17,7 @@ const createSetting = async (req,res) => {
 const updateSetting = async(req,res) => {
     if(req.body.idx&&req.body.uid&&req.body.xaxis&&req.body.yaxis){
         try{
-            const authToken = req.headers.authorization.split('Bearer ')[1];
-            const decoded = await jwt.verify(authToken);
-            const userID = decoded.userID;
-            const userInfo = await userCtrl.getUserByUid(userID);
-            const wid = userInfo.id;
+            const wid = req.uid;
             await customCtrl.update(req.body.idx,req.body.uid,req.body.xaxis,req.body.yaxis,wid);
             res.send();
         }catch(e){

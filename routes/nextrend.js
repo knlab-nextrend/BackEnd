@@ -37,9 +37,9 @@ router.put("/cat/",categoryService.updateCat);
 router.delete("/cat/",categoryService.deleteCat);
 
 router.get("/custom/",customService.read);
-router.post("/custom/",customService.create);
-router.put("/custom/",customService.update);
-router.delete("/custom/",customService.delete);
+router.post("/custom/",authJWT,customService.create);
+router.put("/custom/",authJWT,customService.update);
+router.delete("/custom/",authJWT,customService.delete);
 
 router.get("/custom/load",customService.loadPage);
 router.get("/custom/test",customService.testAxis);

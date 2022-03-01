@@ -8,6 +8,7 @@ const redisClient = require("./redis");
 const sign = async(user) =>{
     //payload 는 암호화 되지 않기에 password를 담지 않음.
     const payload = {
+        uid:user.uid,
         userID:user.userID,
         Category:user.Category,
     };
@@ -20,6 +21,7 @@ const verify = async (token) => {
         decoded = jwt.verify(token,secretKey);
         return {
             ok:true,
+            uid:decoded.uid,
             userID:decoded.userID,
             Category:decoded.Category
         };

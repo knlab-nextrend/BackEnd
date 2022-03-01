@@ -87,11 +87,7 @@ const uploadExcelData = async (req, res) => {
                 } else {
                     fileCtrl.unlinkFile(file.path);
                 }
-                const authToken = req.headers.authorization.split('Bearer ')[1];
-                const decoded = await jwt.verify(authToken);
-                const userID = decoded.userID;
-                const userInfo = await userCtrl.getUserByUid(userID);
-                const uploadedData = await uploadCtrl.insertUploadedFile(file.filename, userInfo.id);
+                const uploadedData = await uploadCtrl.insertUploadedFile(file.filename, req.uid);
                 const itemId = uploadedData.insertId;
                 await poliCtrl.insertUploadData(itemId, fileMeta.dc_page);
                 fileMeta['is_crawled'] = false;
