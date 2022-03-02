@@ -37,13 +37,13 @@ const crawlKeep = async (req, res) => {
             case 3:
                 // 일단 직접 지정...
                 result = await esCtrl.Keep(_id, 3);
-                // addLog의 workType 4는 보류.
-                await workLogCtrl.addLog(req.uid,_id,statusCode,4)
+                // addEditLog의 workType 4는 보류.
+                await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
                 break;
             case 4:
             case 5:
                 result = await esCtrl.Keep(_id, 5);
-                await workLogCtrl.addLog(req.uid,_id,statusCode,4)
+                await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
                 break;
         }
         if (result) {
@@ -125,8 +125,8 @@ const crawlDetail = async (req, res) => {
                 } catch (e) {
                     error = e;
                 }
-                // addLog의 workType 1은 조회.
-                await workLogCtrl.addLog(req.uid,_id,statusCode,1);
+                // addEditLog의 workType 1은 조회.
+                await workLogCtrl.addEditLog(req.uid,_id,statusCode,1);
                 break;
         }
         if (result) {
@@ -225,8 +225,8 @@ const crawlDelete = async (req, res) => {
             case 7:
                 //es 부터는 삭제가 아닌, status 9 로 부여한 후 관리.
                 result = await esCtrl.Keep(_id, 9);
-                // addLog의 workType 5는 삭제.
-                await workLogCtrl.addLog(req.uid,_id,statusCode,5)
+                // addEditLog의 workType 5는 삭제.
+                await workLogCtrl.addEditLog(req.uid,_id,statusCode,5)
                 break;
         }
         if (result) {
@@ -267,8 +267,8 @@ const crawlStage = async (req, res) => {
                 case 3:
                     result = await esCtrl.Index(doc, 4, _id);
                     if (result) {
-                        // addLog의 workType 2은 이관.
-                        await workLogCtrl.addLog(req.uid,_id,statusCode,2)
+                        // addEditLog의 workType 2은 이관.
+                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,2)
                         res.send();
                     } else {
                         res.status(400).send({ message: "some trouble in staging" });
@@ -278,8 +278,8 @@ const crawlStage = async (req, res) => {
                 case 5:
                     result = await esCtrl.Index(doc, 6, _id);
                     if (result) {
-                        // addLog의 workType 2은 이관.
-                        await workLogCtrl.addLog(req.uid,_id,statusCode,2)
+                        // addEditLog의 workType 2은 이관.
+                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,2)
                         res.send();
                     } else {
                         res.status(400).send({ message: "some trouble in staging" });
@@ -290,8 +290,8 @@ const crawlStage = async (req, res) => {
                     //const checked = await poliCtrl.checkStat(_id);
                     result = await esCtrl.Index(doc, 7, _id);
                     if (result) {
-                        // addLog의 workType 2은 이관.
-                        await workLogCtrl.addLog(req.uid,_id,statusCode,2)
+                        // addEditLog의 workType 2은 이관.
+                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,2)
                         await poliCtrl.modSubmitStat(doc.item_id);
                         res.send();
                     } else {
@@ -302,8 +302,8 @@ const crawlStage = async (req, res) => {
                 case 7:
                     result = await esCtrl.Index(doc, 7, _id);
                     if (result) {
-                        // addLog의 workType 3은 수정. 기존 curation -> curation 의 경우임.
-                        await workLogCtrl.addLog(req.uid,_id,statusCode,3)
+                        // addEditLog의 workType 3은 수정. 기존 curation -> curation 의 경우임.
+                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,3)
                         await fileCtrl.deleteComparedContentImage(_id, doc.dc_content);
                         res.send();
                     } else {
@@ -353,8 +353,12 @@ const screenStage = async (req, res) => {
             }
         })
         if (errorList.length) {
+            // Log의 workType 2는 이관.
+            await workLogCtrl.addScreeningLog(req.uid,2,2,(stageList.length-errorList.length));
             res.status(400).send({ message: "cannot stage above list", list: errorList });
         } else {
+            // Log의 workType 2는 이관.
+            await workLogCtrl.addScreeningLog(req.uid,2,2,stageList.length);
             res.send();
         }
     }
@@ -376,8 +380,12 @@ const screenKeep = async (req, res) => {
             }
         })
         if (errorList.length) {
+            // Log의 workType 4는 보류.
+            await workLogCtrl.addScreeningLog(req.uid,2,4,(keepList.length-errorList.length));
             res.status(400).send({ message: "cannot keep above list", list: errorList });
         } else {
+            // Log의 workType 4는 보류.
+            await workLogCtrl.addScreeningLog(req.uid,2,4,keepList.length);
             res.send();
         }
     }
@@ -399,8 +407,12 @@ const screenDelete = async (req, res) => {
             }
         })
         if (errorList.length) {
+            // Log의 workType 5는 삭제.
+            await workLogCtrl.addScreeningLog(req.uid,2,5,(deleteList.length-errorList.length));
             res.status(400).send({ message: "cannot delete above list", list: errorList });
         } else {
+            // Log의 workType 5는 삭제.
+            await workLogCtrl.addScreeningLog(req.uid,2,5,deleteList.length);
             res.send();
         }
     }
