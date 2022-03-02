@@ -17,6 +17,33 @@ const test = async (req, res) => {
     res.send(result);
 }
 
+const docCatViewer = (doc) => new Promise(async(resolve,reject)=>{
+    let newDoc = doc;
+    const fieldList = {
+        dc_country:3,
+        dc_country_pub:3,
+        dc_code:1,
+        dc_type:2,
+    };
+    for (const [key,catType] of Object.entries(fieldList)){
+        try{
+            let converted = [];
+            if(doc[key].length!==0){
+                for (let valueId of doc[key]) {
+                    const valueInfo = await codeCtrl.getInfoById(valueId,catType);
+                    if(valueInfo[0]){
+                        converted.push(valueInfo[0]);
+                    }
+                };
+                newDoc[key] = converted;
+            }
+        }catch(e){
+            continue;
+        }
+    }
+    resolve(newDoc);
+})
+
 //router.put('/detail/:_id',crawlSearch.Keep);
 //단일 데이터 기준 
 const crawlKeep = async (req, res) => {
@@ -83,41 +110,7 @@ const crawlDetail = async (req, res) => {
                         docs: libs.convertCrawlDocTo(document._source, 'es'),
                         _id: document._id
                     }
-
-                    //국가 표시 조정 단계
-                    let countrys = [];
-                    if (result.docs["dc_country"].length !== 0) {
-                        for (let countryId of result.docs["dc_country"]) {
-                            const countryInfo = await codeCtrl.getInfoById(countryId, 3);
-                            if (countryInfo[0]) {
-                                countrys.push(countryInfo[0]);
-                            }
-                        }
-                        result.docs["dc_country"] = countrys;
-                    }
-
-                    let countrysPub = [];
-                    if (result.docs["dc_country_pub"].length !== 0) {
-                        for (let countryId of result.docs["dc_country_pub"]) {
-                            const countryInfo = await codeCtrl.getInfoById(countryId, 3);
-                            if (countryInfo[0]) {
-                                countrysPub.push(countryInfo[0]);
-                            }
-                        }
-                        result.docs["dc_country_pub"] = countrysPub;
-                    }
-
-                    //코드 표시 조정 단계
-                    let codes = [];
-                    if (result.docs["dc_code"].length !== 0) {
-                        for (let code of result.docs["dc_code"]) {
-                            const codeInfo = await codeCtrl.getInfoById(code, 1);
-                            if (codeInfo[0]) {
-                                codes.push(codeInfo[0]);
-                            }
-                        }
-                        result.docs["dc_code"] = codes;
-                    }
+                    result.docs = await docCatViewer(result.docs);
                 } catch (e) {
                     error = e;
                 }
@@ -183,6 +176,12 @@ const crawlSearch = async (req, res) => {
                 const size = req.query.listSize;
                 const from = req.query.pageNo ? ((req.query.pageNo - 1) * size) : 0;
                 result = await esCtrl.Search(size, from, stat = statusCode, filters = filters, prefix = prefix);
+                const document = [];
+                for(let doc of result.docs){
+                    doc = await docCatViewer(doc);
+                    document.push(doc);
+                }
+                result.docs = document;
                 break;
         }
         if (result) {
