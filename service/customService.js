@@ -15,10 +15,10 @@ const createSetting = async (req,res) => {
 }
 
 const updateSetting = async(req,res) => {
-    if(req.body.idx&&req.body.uid&&req.body.xaxis&&req.body.yaxis){
+    if(req.body.uid&&req.body.xaxis&&req.body.yaxis){
         try{
             const wid = req.uid;
-            await customCtrl.update(req.body.idx,req.body.uid,req.body.xaxis,req.body.yaxis,wid);
+            await customCtrl.update(req.body.uid,req.body.xaxis,req.body.yaxis,wid);
             res.send();
         }catch(e){
             res.status(400).send({message:e});
@@ -43,7 +43,7 @@ const deleteSetting = async(req,res) => {
 
 const readSetting = async(req,res) => {
     try{
-        const result = await customCtrl.read();
+        const result = await customCtrl.read(req.query.uid);
         res.send(result);
     }catch(e){
         res.status(400).send({message:e});

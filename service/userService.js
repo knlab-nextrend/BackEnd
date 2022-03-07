@@ -65,7 +65,12 @@ const userList = async (req,res) => {
 const userModify = async (req,res) => {
     if(req.body.uid&&req.body.userInfo){
         let userInfo = infoProcess(req.body.userInfo);
-        
+        if(userInfo.PW){
+            //pw 및 salt는 해쉬를 거친 후 저장.
+            const saltResult = await loginCtrl.HashPW(userInfo.PW);
+            userInfo.PW = saltResult.PW;
+            userInfo.salt = saltResult.salt;
+        }
         const result = await userCtrl.Modify(userInfo,req.body.uid);
         if(result){
             res.send();

@@ -13,9 +13,9 @@ const createCustomedPageSetting = (uid, xaxis, yaxis, wid) => new Promise((resol
     });
 });
 
-const updateCustomedPageSetting = (idx, uid, xaxis, yaxis, wid) => new Promise((resolve,reject) => {
-    const query = 'UPDATE `nt_customed_cat` SET `UID` = ?,`AXIS_X` = ?,`AXIS_y` =?, `MODI_USER` = ?, `DT_MODI` = CURRENT_TIMESTAMP WHERE `IDX` = ?;';
-    const params = [uid,xaxis,yaxis,wid,idx];
+const updateCustomedPageSetting = (uid, xaxis, yaxis, wid) => new Promise((resolve,reject) => {
+    const query = 'UPDATE `nt_customed_cat` SET `UID` = ?,`AXIS_X` = ?,`AXIS_y` =?, `MODI_USER` = ?, `DT_MODI` = CURRENT_TIMESTAMP WHERE `UID` = ?;';
+    const params = [uid,xaxis,yaxis,wid,uid];
 
     db.query(query,params,(err,data)=>{
         if(err){
@@ -39,11 +39,13 @@ const deleteCustomedPageSetting = (idx) => new Promise((resolve,reject) => {
     });
 });
 
-const readCustomedPageSetting = () => new Promise((resolve,reject) => {
-    const query = 'select a.idx, a.uid, a.dt_added,a.dt_modi,a.stat,b.type as x_type, b.ct_nm as x_name,c.type as y_type, c.ct_nm as y_name,d.name as modi_user from nt_customed_cat a left join nt_categorys b on a.axis_x = b.idx left join nt_categorys c on a.axis_y = c.idx left join nt_users_list d on a.modi_user = d.id;';
+const readCustomedPageSetting = (uid) => new Promise((resolve,reject) => {
+    const query = 'select a.idx, a.uid, a.dt_added,a.dt_modi,a.stat,b.idx as x_cid, b.code as x_code, b.type as x_type, b.ct_nm as x_name,c.idx as y_cid, c.code as y_code,c.type as y_type, c.ct_nm as y_name,d.name as modi_user from nt_customed_cat a left join nt_categorys b on a.axis_x = b.idx left join nt_categorys c on a.axis_y = c.idx left join nt_users_list d on a.modi_user = d.id where a.uid = ?;'
+    const params = [uid];
 
-    db.query(query,(err,data)=>{
+    db.query(query,params,(err,data)=>{
         if(err){
+            console.log(err);
             reject(err)
         }else{
             resolve(data);
@@ -68,7 +70,7 @@ const callUnderCatList = (uid,axis) => new Promise((resolve,reject)=>{
     const params=[uid];
 
     db.query(query,params,(err,data)=>{
-        if(err||data.length===0){
+        if(err){
             reject({message:"no exist category setting for this user"});
         }else{
             resolve(data);
