@@ -82,44 +82,7 @@ const esSearch = (size, from, stat, filters = {}, prefix = {}) => new Promise(as
     for (let document of value.body.hits.hits) {
         doc = libs.convertCrawlDocTo(document._source, 'es');
         doc["_id"] = document._id;
-        //국가 표시 조정 단계
-        let countrys = [];
-        if (doc["dc_country"].length !== 0) {
-            for (let countryId of doc["dc_country"]) {
-                const countryInfo = await codeCtrl.getInfoById(countryId, 3);
-                if (countryInfo[0]) {
-                    countrys.push(countryInfo[0]);
-                }
-            }
-            doc["dc_country"] = countrys;
-        }
-
-        let countrysPub = [];
-        if (doc["dc_country_pub"].length !== 0) {
-            for (let countryId of doc["dc_country_pub"]) {
-                const countryInfo = await codeCtrl.getInfoById(countryId, 3);
-                if (countryInfo[0]) {
-                    countrysPub.push(countryInfo[0]);
-                }
-            }
-            doc["dc_country_pub"] = countrysPub;
-        }
-
-        //코드 표시 조정 단계
-        let codes = [];
-        if (doc["dc_code"].length !== 0) {
-            for (let code of doc["dc_code"]) {
-                // type 1로 코드 나타냄.
-                const codeInfo = await codeCtrl.getInfoById(code, 1);
-                if (codeInfo[0]) {
-                    codes.push(codeInfo[0]);
-                }
-            }
-            doc["dc_code"] = codes;
-        }
-
         documents.push(doc);
-
     };
     result["docs"] = documents;
     resolve(result);

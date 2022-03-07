@@ -77,10 +77,10 @@ const getCodes = (upperCode=null) => new Promise((resolve,reject)=>{
     });
 })
 
-const getInfoById = (code,type)  => new Promise((resolve,reject)=>{
+const getInfoById = (code,type)  => new Promise(async(resolve,reject)=>{
     const query = 'select * from nt_categorys where code = ? and type=? and stat<9';
     const params = [code,type];
-    db.query(query,params, (err,data) => {
+    await db.query(query,params, (err,data) => {
         if(err){
             resolve(false);
         }else{
