@@ -80,7 +80,7 @@ const esSearch = (size, from, stat, filters = {}, prefix = {}) => new Promise(as
     };
     const documents = [];
     for (let document of value.body.hits.hits) {
-        doc = libs.convertCrawlDocTo(document._source, 'es');
+        doc = document._source;
         doc["_id"] = document._id;
         documents.push(doc);
     };
@@ -91,7 +91,7 @@ const esSearch = (size, from, stat, filters = {}, prefix = {}) => new Promise(as
 const esIndex = (doc, stat, id = false, ret = false) => new Promise(async (resolve, reject) => {
     let body = libs.nullProcessing(doc);
 
-    body.stat = stat;
+    body.status = stat;
     let query = {
         index: 'politica_service',
         refresh: true,
@@ -113,7 +113,7 @@ const esIndex = (doc, stat, id = false, ret = false) => new Promise(async (resol
 const esKeep = (_id, stat) => new Promise(async (resolve, reject) => {
     let doc = {
         "script": {
-            "inline": "ctx._source.stat = " + stat,
+            "inline": "ctx._source.status = " + stat,
             "lang": "painless"
         },
         "query": {
