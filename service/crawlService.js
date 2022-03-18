@@ -21,11 +21,10 @@ const test = async (req, res) => {
 const docCatViewer = (doc) => new Promise(async(resolve,reject)=>{
     let newDoc = doc;
     const fieldList = {
-        doc_country:3,
-        doc_publish_country:3,
-        doc_category:1,
-        doc_content_type:2,
-        doc_content_category:2,
+        dc_country:3,
+        dc_country_pub:3,
+        dc_code:1,
+        dc_type:2,
     };
     for (const [key,catType] of Object.entries(fieldList)){
         try{
@@ -107,6 +106,23 @@ const crawlDetail = async (req, res) => {
             case 4:
             case 5:
             case 6:
+                try {
+                    value = await esCtrl.Detail(_id);
+                    const document = value.body.hits.hits[0];
+                    
+                    result = {
+                        docs: document._source,
+                        _id: document._id
+                    }
+                    //이미지 폴더 url로부터 파일들을 가져와서 배열로 저장
+                    result.docs.doc_thumbnail = await nasCtrl.getImage(result.docs.doc_thumbnail);
+                    result.docs = await docCatViewer(result.docs);
+                } catch (e) {
+                    error = e;
+                }
+                // addEditLog의 workType 1은 조회.
+                await workLogCtrl.addEditLog(req.uid,_id,statusCode,1);
+                break;
             case 7:
                 try {
                     value = await esCtrl.Detail(_id);
@@ -142,11 +158,6 @@ const crawlSearch = async (req, res) => {
             case 1:
                 const condition = req.query;
                 result = await solrCtrl.Search(condition, stat = statusCode, restrict = true);
-                result.docs.forEach((doc) => {
-                    if (doc["stat"] === undefined) {
-                        doc["stat"] = 0;
-                    }
-                });
                 break;
             case 2:
             case 3:
@@ -155,34 +166,34 @@ const crawlSearch = async (req, res) => {
             case 6:
             case 7:
                 let filters = {
-                    doc_keyowrd: req.query.doc_keyowrd || '',
-                    doc_publisher: req.query.doc_publisher || '',
+                    dc_keyword: req.query.dc_keyword || '',
+                    dc_publisher: req.query.dc_publisher || '',
                     dateGte: req.query.dateGte || '*',
                     dateLte: req.query.dateLte || '*',
                     pageGte: req.query.pageGte || '*',
                     pageLte: req.query.pageLte || '*',
                     is_crawled: req.query.is_crawled || '',
                     sort: req.query.sort || 'desc',
-                    sortType: req.query.sortType || 'doc_collect_date'
+                    sortType: req.query.sortType || 'dc_dt_collect'
                 };
                 let prefix = {};
-                if('doc_category' in req.query){
-                    prefix["doc_category"]=req.query.doc_category;
+                if('dc_code' in req.query){
+                    prefix["dc_code"]=req.query.dc_code;
                 }
-                if('doc_content_type' in req.query){
-                    prefix["doc_content_type"]=req.query.doc_content_type;
+                if('dc_type' in req.query){
+                    prefix["dc_type_doc"]=req.query.dc_type;
                 }
-                if('doc_country' in req.query){
-                    prefix["doc_country"]=req.query.doc_country;
+                if('dc_country' in req.query){
+                    prefix["dc_country"]=req.query.dc_country;
                 }
-                if('doc_language' in req.query){
-                    prefix["doc_language"]=req.query.doc_language;
+                if('dc_language' in req.query){
+                    prefix["dc_language"]=req.query.dc_language;
                 }
-                if('doc_topic' in req.query){
-                    prefix["doc_topic"]=req.query.doc_topic;
+                if('dc_topic' in req.query){
+                    prefix["dc_topic"]=req.query.dc_topic;
                 }
-                if('doc_custom' in req.query){
-                    prefix["doc_custom"]=req.query.doc_custom;
+                if('dc_custom' in req.query){
+                    prefix["dc_custom"]=req.query.dc_custom;
                 }
 
                 const size = req.query.listSize;
@@ -197,6 +208,11 @@ const crawlSearch = async (req, res) => {
                 break;
         }
         if (result) {
+            result.docs.forEach((doc) => {
+                if (doc["stat"] === undefined) {
+                    doc["stat"] = 0;
+                }
+            });
             res.send(result);
         } else {
             res.status(400).send();
@@ -304,7 +320,7 @@ const crawlStage = async (req, res) => {
                     if (result) {
                         // addEditLog의 workType 3은 수정. 기존 curation -> curation 의 경우임.
                         await workLogCtrl.addEditLog(req.uid,_id,statusCode,3)
-                        await fileCtrl.deleteComparedContentImage(_id, doc.doc_content);
+                        await fileCtrl.deleteComparedContentImage(_id, doc.dc_content);
                         res.send();
                     } else {
                         res.status(400).send({ message: "some trouble in staging" });
@@ -342,8 +358,6 @@ const screenStage = async (req, res) => {
         const errorList = [];
         stageList.forEach(async (itemId) => {
             const doc = await solrCtrl.Detail(itemId);
-            //스크리닝으로부터 넘어오는 단계임. 이때 이미지 url 을 만들어 저장.
-            doc.docs.doc_thumbnail = await nasCtrl.getImage(doc.docs.doc_thumbnail);
             const result = await esCtrl.Index(doc.docs, 2);
             if (result) {
                 //정상적으로 추가했을 때 solr 에서는 삭제 수행. (keep으로 stat=1 부여)
