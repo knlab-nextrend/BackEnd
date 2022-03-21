@@ -20,14 +20,14 @@ const deleteComparedContentImage = (_id,target=null) => new Promise(async (resol
     const itemDetail = result.body.hits.hits[0]._source;
     // 본문에 image가 없더라도 cover를 통해 경로 추출.. 
     //TODO: link 필드가 생성되면 그것을 사용하여 모두 바꾸기..
-    if(itemDetail.dc_cover[0]){
-        const imageFolderPath = libs.folderExtractorFromCover(itemDetail.dc_cover[0])+'/contentImage/';
+    if(itemDetail.doc_thumbnail[0]){
+        const imageFolderPath = libs.folderExtractorFromCover(itemDetail.doc_thumbnail[0])+'/contentImage/';
         const fileList = await nasCtrl.getFileList(imageFolderPath);
         let currImage;
     
         if(target===null){
-            // target이 null인 경우는 페이지를 벗어나는 경우, 원래 저장되 있던 본문으로 돌아감.
-            currImage = libs.ImageExtractorFromContent(itemDetail.dc_content);
+            // target이 null인 경우는 페이지를 벗어나는 경우, 원래 저장되있던 본문으로 돌아감.
+            currImage = libs.ImageExtractorFromContent(itemDetail.doc_content);
         }else{
             currImage = libs.ImageExtractorFromContent(target);
         }

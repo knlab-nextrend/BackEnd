@@ -35,9 +35,9 @@ const esSearch = (size, from, stat, filters = {}, prefix = {}) => new Promise(as
         }
     }
     // stat은 별개로
-    filter.push({ term: { stat: stat } });
+    filter.push({ term: { status: stat } });
 
-    // 기간 range
+    // 기간 range   
     let range = {};
     let temp = {};
     if (filters.dateGte !== '*') {

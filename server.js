@@ -21,6 +21,15 @@ app.use('/nextrend', nextrend);
 app.use('/crawl',crawl);
 app.use('/file',file);
 
+process.once('SIGUSR2', function () {
+  process.kill(process.pid, 'SIGUSR2');
+});
+
+process.on('SIGINT', function () {
+  // this is only called on ctrl+c, not restart
+  process.kill(process.pid, 'SIGINT');
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server On : http://localhost:${PORT}/`);

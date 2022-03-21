@@ -21,10 +21,14 @@ const test = async (req, res) => {
 const docCatViewer = (doc) => new Promise(async(resolve,reject)=>{
     let newDoc = doc;
     const fieldList = {
-        dc_country:3,
-        dc_country_pub:3,
-        dc_code:1,
-        dc_type:2,
+        doc_country:3,
+        doc_publish_country:3,
+        doc_category:1,
+        doc_language:4,
+        doc_content_type:2,
+        doc_custom:6,
+        doc_content_category:2,
+        doc_topic:5,
     };
     for (const [key,catType] of Object.entries(fieldList)){
         try{
@@ -105,6 +109,21 @@ const crawlDetail = async (req, res) => {
             case 3:
             case 4:
             case 5:
+            case 7:
+                try {
+                    value = await esCtrl.Detail(_id);
+                    const document = value.body.hits.hits[0];
+                    result = {
+                        docs: document._source,
+                        _id: document._id
+                    }
+                    result.docs = await docCatViewer(result.docs);
+                } catch (e) {
+                    error = e;
+                }
+                // addEditLog의 workType 1은 조회.
+                await workLogCtrl.addEditLog(req.uid,_id,statusCode,1);
+                break;
             case 6:
                 try {
                     value = await esCtrl.Detail(_id);
@@ -123,21 +142,7 @@ const crawlDetail = async (req, res) => {
                 // addEditLog의 workType 1은 조회.
                 await workLogCtrl.addEditLog(req.uid,_id,statusCode,1);
                 break;
-            case 7:
-                try {
-                    value = await esCtrl.Detail(_id);
-                    const document = value.body.hits.hits[0];
-                    result = {
-                        docs: document._source,
-                        _id: document._id
-                    }
-                    result.docs = await docCatViewer(result.docs);
-                } catch (e) {
-                    error = e;
-                }
-                // addEditLog의 workType 1은 조회.
-                await workLogCtrl.addEditLog(req.uid,_id,statusCode,1);
-                break;
+                
         }
         if (result) {
             res.send(result);
@@ -174,7 +179,7 @@ const crawlSearch = async (req, res) => {
                     pageLte: req.query.pageLte || '*',
                     is_crawled: req.query.is_crawled || '',
                     sort: req.query.sort || 'desc',
-                    sortType: req.query.sortType || 'dc_dt_collect'
+                    sortType: req.query.sortType || 'doc_collect_date'
                 };
                 let prefix = {};
                 if('dc_code' in req.query){
