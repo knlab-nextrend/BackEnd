@@ -27,10 +27,23 @@ const docImageAttach = async (req, res) => {
     if (req.file) {
         try {
             const result = await esCtrl.Detail(req.body._id);
-            const splited = result.body.hits.hits[0]._source.dc_cover[0].split(/(?=\/)/g);
-            const serverIP = splited[0];
-            const nasCoverPath = splited.slice(1, -1).join('');
-            const contentPath = nasCoverPath + '/contentImage/';
+            let thumbnail = result.body.hits.hits[0]._source.doc_thumbnail;
+            if(Array.isArray(thumbnail)){
+                thumbnail = thumbnail[0];
+            }
+            const splited = thumbnail.split(/(?=\/)/g);
+            let serverIP;
+            let nasCoverPath;
+            let contentPath;
+            if(splited.includes('/data_nas')){
+                serverIP = '1.214.203.131:3330';
+                nasCoverPath = splited.slice(-4).join('');
+                contentPath = nasCoverPath + '/contentImage/';
+            }else{
+                serverIP = splited[0];
+                nasCoverPath = splited.slice(1, -1).join('');
+                contentPath = nasCoverPath + '/contentImage/';
+            }
             const existError = await nasCtrl.checkThenMakeFolder(contentPath, type = 'image');
 
             if (existError) {

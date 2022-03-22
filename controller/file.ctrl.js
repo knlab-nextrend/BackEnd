@@ -7,7 +7,7 @@ const libs = require('../lib/libs');
 const unlinkFile = (filePath) => new Promise((resolve, reject)=>{
     fs.unlinkSync(path.resolve(filePath),(err,res)=>{
         if(err){
-            resolve(false);
+            reject(err);
         }else{
             resolve(true);
         }
@@ -20,8 +20,11 @@ const deleteComparedContentImage = (_id,target=null) => new Promise(async (resol
     const itemDetail = result.body.hits.hits[0]._source;
     // 본문에 image가 없더라도 cover를 통해 경로 추출.. 
     //TODO: link 필드가 생성되면 그것을 사용하여 모두 바꾸기..
-    if(itemDetail.doc_thumbnail[0]){
-        const imageFolderPath = libs.folderExtractorFromCover(itemDetail.doc_thumbnail[0])+'/contentImage/';
+    if(Array.isArray(itemDetail.doc_thumbnail)){
+        itemDetail.doc_thumbnail = itemDetail.doc_thumbnail[0];
+    }
+    if(itemDetail.doc_thumbnail){
+        const imageFolderPath = libs.folderExtractorFromCover(itemDetail.doc_thumbnail)+'/contentImage/';
         const fileList = await nasCtrl.getFileList(imageFolderPath);
         let currImage;
     

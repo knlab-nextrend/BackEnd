@@ -4,6 +4,7 @@ const fs = require('fs');
 const ftp = require('basic-ftp');
 
 const NasFTP = require("../../models/nas/index");
+const { rejects } = require("assert");
 const thumbRoute = NasFTP.thumbRoute;
 const pdfRoute = NasFTP.pdfRoute;
 const uploadRoute = NasFTP.uploadRoute;
@@ -97,7 +98,7 @@ const checkThenMakeFolder = (folderPath,type=false) => new Promise(async (resolv
         resolve(false);
     }
     catch(err) {
-        resolve(err);
+        reject(err);
     }
     client.close();
 });
@@ -135,7 +136,7 @@ const uploadFile = (file, filePath, type=false) => new Promise(async (resolve, r
         }
     }
     catch(err) {
-        resolve(err);
+        reject(err);
     }
     client.close();
 });

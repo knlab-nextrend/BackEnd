@@ -30,7 +30,6 @@ const createQuery = (length,type,ct_nm,code) => new Promise((resolve, reject)=>{
 });
 
 const updateQuery = (type, code, ct_nm) => new Promise((resolve, reject)=>{
-    console.log(type);
     const query = 'update login.nt_categorys set CT_NM=? where type=? and code=?;'
     const params = [ct_nm,type,code];
 
@@ -44,7 +43,6 @@ const updateQuery = (type, code, ct_nm) => new Promise((resolve, reject)=>{
 });
 
 const deleteQuery = (type, code) => new Promise((resolve, reject)=>{
-    console.log(type);
     const query = "delete from nt_categorys where type=? and code like '" +code+ "%'";
     const params = [type];
 
