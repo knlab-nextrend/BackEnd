@@ -44,8 +44,20 @@ const insertUploadData = (itemId,dc_page) => new Promise((resolve, reject) => {
     })
 })
 
+const getHostListInfo = () => new Promise((resolve,reject)=>{
+    const query = "select * from crawler_host";
+    db.query(query,(err, data) => {
+        if (err) {
+            reject(err);
+        } else {
+            resolve(data);
+        }
+    })
+})
+
 module.exports = {
     modSubmitStat:modSubmitStat,
     checkStat:checkStat,
-    insertUploadData:insertUploadData
+    insertUploadData:insertUploadData,
+    getHostListInfo:getHostListInfo
 }
