@@ -6,6 +6,7 @@ const categoryService = require("../service/categorysService");
 const loginService = require("../service/loginService");
 const testService = require("../service/testService");
 const customService = require("../service/customService");
+const hostService = require("../service/hostService");
 const authJWT = require("../middlewares/auth");
 
 router.post("/user/restrict",userService.Restrict);
@@ -43,6 +44,10 @@ router.delete("/custom/",authJWT,customService.delete);
 
 router.get("/custom/load",customService.loadPage);
 router.get("/custom/test",customService.testAxis);
+
+router.get("/host/poli",hostService.getHostListInfo);
+router.get("/host/",hostService.readHostInfo);
+router.post("/host/",hostService.insertHostInfo);
 
 router.get('/viewPage/');
 // 해당 엔드포인트를 사용하여 view 페이지 렌더링.
