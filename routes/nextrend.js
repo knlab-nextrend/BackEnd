@@ -9,6 +9,7 @@ const customService = require("../service/customService");
 const multiService = require("../service/multiService");
 const hostService = require("../service/hostService");
 const authJWT = require("../middlewares/auth");
+const boardService = require("../service/boardService");
 
 router.post("/user/restrict",userService.Restrict);
 router.post("/user/add", userService.Add);
@@ -54,6 +55,8 @@ router.delete("/multilingual/",authJWT,multiService.delete);
 router.get("/host/poli",hostService.getHostListInfo);
 router.get("/host/",hostService.readHostInfo);
 router.post("/host/",hostService.insertHostInfo);
+
+router.get("/board/",boardService.crawlInfoPerCountry);
 
 router.get('/viewPage/');
 // 해당 엔드포인트를 사용하여 view 페이지 렌더링.
