@@ -7,6 +7,7 @@ const codeCtrl = require("../controller/nextrend/subjectCode.ctrl");
 const libs = require("../lib/libs");
 const fileCtrl = require("../controller/file.ctrl");
 const workLogCtrl = require("../controller/nextrend/workingLog.ctrl");
+const hostCtrl = require("../controller/nextrend/host.ctrl");
 
 /*
 Document Status Code list
@@ -347,7 +348,7 @@ const screenGet = async (req, res) => {
     const condition = req.query;
     let stat;
     stat = req.query.keep ? 3 : 0;
-    result = await solrCtrl.Search(condition, stat = stat, restrict = true);
+    let result = await solrCtrl.Search(condition, stat = stat, restrict = true)
     if (result) {
         res.send(result);
     } else {
@@ -363,6 +364,7 @@ const screenStage = async (req, res) => {
         const errorList = [];
         stageList.forEach(async (itemId) => {
             const doc = await solrCtrl.Detail(itemId);
+            console.log(doc);
             const result = await esCtrl.Index(doc.docs, 2);
             if (result) {
                 //정상적으로 추가했을 때 solr 에서는 삭제 수행. (keep으로 stat=1 부여)

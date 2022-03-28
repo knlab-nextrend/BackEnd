@@ -1,7 +1,12 @@
 const db = require("../../models/nextrend/index");
 
-const readQuery = () => new Promise((resolve, reject)=>{
-    let query =  'select * from nt_hosts';
+const readQuery = (like=null) => new Promise((resolve, reject)=>{
+    let query;
+    if(like){
+        query =  'select * from nt_hosts where host like '+'"%'+like+'%" or name like '+'"%'+like+'%"';
+    }else{
+        query =  'select * from nt_hosts';
+    }
     db.query(query,(err,data)=>{
         if(err){
             reject(err)
@@ -24,7 +29,19 @@ const createQuery = (host,name,category,country,lang,workCycle) => new Promise((
     });
 });
 
+const getInfo = (host) => new Promise((resolve,reject)=>{
+    const query = 'select idx,name,lang, country from nt_hosts where host like "'+host+'"';
+    db.query(query,(err,data)=>{
+        if(err||data.length==0){
+            reject(err)
+        }else{
+            resolve(data[0]);
+        }
+    });
+})
+
 module.exports={
     create:createQuery,
     read:readQuery,
+    getInfo:getInfo
 }

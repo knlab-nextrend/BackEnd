@@ -23,7 +23,12 @@ const insertHostInfo = async(req,res) => {
 
 const readHostInfo = async(req,res) => {
     try{
-        const hostResult = await hostCtrl.read()
+        let hostResult;
+        if(req.query.like){
+            hostResult = await hostCtrl.read(req.query.like)
+        }else{
+            hostResult = await hostCtrl.read()
+        }
         res.send(hostResult);
     }catch(e){
         res.status(400).send(e);
