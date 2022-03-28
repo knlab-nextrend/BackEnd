@@ -46,6 +46,7 @@ router.delete("/custom/",authJWT,customService.delete);
 
 router.get("/custom/load",customService.loadPage);
 router.get("/custom/test",customService.testAxis);
+router.get("/custom/search",customService.customSearch);
 
 router.get("/multilingual/",multiService.read);
 router.post("/multilingual/",authJWT,multiService.create);

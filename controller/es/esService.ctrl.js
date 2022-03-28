@@ -23,7 +23,7 @@ const esDetail = (_id) => new Promise(async (resolve, reject) => {
     }
 });
 
-const esSearch = (size, from, stat, filters = {}, prefix = {}) => new Promise(async (resolve, reject) => {
+const esSearch = (size, from, stat, filters = {}, prefix = {}, regexp=[]) => new Promise(async (resolve, reject) => {
     // filters 내용들을 filter로 담아줌.
     let filter = [];
     for (const [key, value] of Object.entries(filters)) {
@@ -52,6 +52,9 @@ const esSearch = (size, from, stat, filters = {}, prefix = {}) => new Promise(as
     if(prefix.length){
         must.push({prefix:prefix});
     }
+    regexp.forEach((cond)=>{
+        must.push({regexp:cond})
+    })
 
     // sort by
     let sort = [];
@@ -74,18 +77,22 @@ const esSearch = (size, from, stat, filters = {}, prefix = {}) => new Promise(as
         }
     };
 
-    const value = await esDB.search(query);
-    const result = {
-        "dcCount": value.body.hits.total.value
-    };
-    const documents = [];
-    for (let document of value.body.hits.hits) {
-        doc = document._source;
-        doc["_id"] = document._id;
-        documents.push(doc);
-    };
-    result["docs"] = documents;
-    resolve(result);
+    try{
+        const value = await esDB.search(query);
+        const result = {
+            "dcCount": value.body.hits.total.value
+        };
+        const documents = [];
+        for (let document of value.body.hits.hits) {
+            doc = document._source;
+            doc["_id"] = document._id;
+            documents.push(doc);
+        };
+        result["docs"] = documents;
+        resolve(result);
+    }catch(e){
+        reject(e);
+    }
 });
 
 const esIndex = (doc, stat, id = false, ret = false) => new Promise(async (resolve, reject) => {
