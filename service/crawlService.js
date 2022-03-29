@@ -118,7 +118,7 @@ const crawlDetail = async (req, res) => {
             case 3:
             case 4:
             case 5:
-            case 7:
+            case 8:
                 try {
                     value = await esCtrl.Detail(_id);
                     const document = value.body.hits.hits[0];
@@ -134,10 +134,10 @@ const crawlDetail = async (req, res) => {
                 await workLogCtrl.addEditLog(req.uid,_id,statusCode,1);
                 break;
             case 6:
+            case 7:
                 try {
                     value = await esCtrl.Detail(_id);
                     const document = value.body.hits.hits[0];
-                    
                     result = {
                         docs: document._source,
                         _id: document._id
@@ -179,6 +179,7 @@ const crawlSearch = async (req, res) => {
             case 5:
             case 6:
             case 7:
+            case 8:
                 let filters = {
                     dc_keyword: req.query.dc_keyword || '',
                     dc_publisher: req.query.dc_publisher || '',
@@ -253,6 +254,7 @@ const crawlDelete = async (req, res) => {
             case 5:
             case 6:
             case 7:
+            case 8:
                 //es 부터는 삭제가 아닌, status 9 로 부여한 후 관리.
                 result = await esCtrl.Keep(_id, 9);
                 // addEditLog의 workType 5는 삭제.
@@ -316,9 +318,34 @@ const crawlStage = async (req, res) => {
                     }
                     break;
                 case 6:
+                    if(req.body.requested){
+                        value = await esCtrl.Detail(_id);
+                        const document = value.body.hits.hits[0]._source;
+                        result = await esCtrl.Index(document, 7, _id);
+                        if(result){
+                            await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
+                            res.send();
+                        }else{
+                            res.status(400).send({ message: "es error" });
+                        }
+                        break;
+                    }else{
+                        result = await esCtrl.Index(doc, 8, _id);
+                        if (result) {
+                            // addEditLog의 workType 2은 이관.
+                            await workLogCtrl.addEditLog(req.uid,_id,statusCode,2)
+                            await poliCtrl.modSubmitStat(doc.item_id);
+                            res.send();
+                        } else {
+                            res.status(400).send({ message: "es error" });
+                        }
+                        res.send();
+                        break;
+                    }
+                case 7:
                     // 테스트 모듈 수정 요망..
                     //const checked = await poliCtrl.checkStat(_id);
-                    result = await esCtrl.Index(doc, 7, _id);
+                    result = await esCtrl.Index(doc, 8, _id);
                     if (result) {
                         // addEditLog의 workType 2은 이관.
                         await workLogCtrl.addEditLog(req.uid,_id,statusCode,2)
@@ -329,8 +356,8 @@ const crawlStage = async (req, res) => {
                     }
                     res.send();
                     break;
-                case 7:
-                    result = await esCtrl.Index(doc, 7, _id);
+                case 8:
+                    result = await esCtrl.Index(doc, 8, _id);
                     if (result) {
                         // addEditLog의 workType 3은 수정. 기존 curation -> curation 의 경우임.
                         await workLogCtrl.addEditLog(req.uid,_id,statusCode,3)
@@ -380,8 +407,8 @@ const screenStage = async (req, res) => {
                 tempDocs["doc_publish_country"] = hostInfo.country.toString();
                 tempDocs["doc_language"] = hostInfo.lang.toString();
             }catch(e){
-                tempDocs.doc_host = null;
                 tempDocs["doc_publisher"] = tempDocs.doc_host;
+                tempDocs.doc_host = null;
                 tempDocs["doc_publish_country"] = null;
                 tempDocs["doc_language"] = null;
             }

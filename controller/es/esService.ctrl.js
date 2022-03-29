@@ -35,7 +35,11 @@ const esSearch = (size, from, stat, filters = {}, prefix = {}, regexp=[]) => new
         }
     }
     // stat은 별개로
-    filter.push({ term: { status: stat } });
+    if(Array.isArray(stat)){
+        filter.push({ terms: { status: stat } });
+    }else{
+        filter.push({ term: { status: stat } });
+    }
 
     // 기간 range   
     let range = {};
@@ -77,6 +81,7 @@ const esSearch = (size, from, stat, filters = {}, prefix = {}, regexp=[]) => new
         }
     };
     try{
+        console.log(must,filter);
         const value = await esDB.search(query);
         const result = {
             "dcCount": value.body.hits.total.value

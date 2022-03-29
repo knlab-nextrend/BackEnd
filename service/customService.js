@@ -114,7 +114,9 @@ const customSearch = async (req, res) => {
             }
             const size = req.query.listSize;
             const from = req.query.pageNo ? ((req.query.pageNo - 1) * size) : 0;
-            let result = await esServiceCtrl.Search(size, from, 7, filters, {}, regexp)
+            const reqCode= parseInt(req.query.statusCode);
+            let stat = (reqCode===6||reqCode===7)? [6,7]:8
+            let result = await esServiceCtrl.Search(size, from, stat, filters, {}, regexp)
             const document = [];
             for(let doc of result.docs){
                 doc = await crawlService.docCatViewer(doc);
