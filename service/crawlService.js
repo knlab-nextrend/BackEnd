@@ -34,6 +34,7 @@ const docCatViewer = (doc) => new Promise(async(resolve,reject)=>{
     for (const [key,catType] of Object.entries(fieldList)){
         try{
             let converted = [];
+            doc[key] = Array.isArray(doc[key])? doc[key]:[doc[key]];
             if(doc[key].length!==0){
                 for (let valueId of doc[key]) {
                     const valueInfo = await codeCtrl.getInfoById(valueId,catType);
@@ -45,6 +46,13 @@ const docCatViewer = (doc) => new Promise(async(resolve,reject)=>{
             }
         }catch(e){
             continue;
+        }
+    }
+    if(newDoc.doc_host){
+        try{
+            const data = await hostCtrl.read(newDoc.doc_host)
+            newDoc.doc_host = data;
+        }catch(e){
         }
     }
     resolve(newDoc);
@@ -364,8 +372,20 @@ const screenStage = async (req, res) => {
         const errorList = [];
         stageList.forEach(async (itemId) => {
             const doc = await solrCtrl.Detail(itemId);
-            console.log(doc);
-            const result = await esCtrl.Index(doc.docs, 2);
+            let tempDocs = doc.docs;
+            try{
+                const hostInfo = await hostCtrl.getInfo(tempDocs.doc_host);
+                tempDocs.doc_host = hostInfo.idx;
+                tempDocs["doc_publisher"] = hostInfo.name;
+                tempDocs["doc_publish_country"] = hostInfo.country.toString();
+                tempDocs["doc_language"] = hostInfo.lang.toString();
+            }catch(e){
+                tempDocs.doc_host = null;
+                tempDocs["doc_publisher"] = tempDocs.doc_host;
+                tempDocs["doc_publish_country"] = null;
+                tempDocs["doc_language"] = null;
+            }
+            const result = await esCtrl.Index(tempDocs, 2);
             if (result) {
                 //정상적으로 추가했을 때 solr 에서는 삭제 수행. (keep으로 stat=1 부여)
                 await solrCtrl.Keep(itemId);

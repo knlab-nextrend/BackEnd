@@ -40,21 +40,7 @@ const solrDetail = (itemId) => new Promise(async (resolve,reject)=> {
             resolve(false);
         }else{
             obj.response.id = obj.response.docs[0]['id'];
-            let tempDocs = convertCrawlDocTo(obj.response.docs[0],'solr');
-            try{
-                const hostInfo = await hostCtrl.getInfo(tempDocs.doc_host);
-                tempDocs.doc_host = hostInfo.idx;
-                tempDocs["doc_publisher"] = hostInfo.name;
-                tempDocs["doc_publish_country"] = hostInfo.country
-                tempDocs["doc_language"] = hostInfo.lang
-            }catch(e){
-                tempDocs.doc_host = null;
-                tempDocs["doc_publisher"] = tempDocs.doc_host;
-                tempDocs["doc_publish_country"] = null;
-                tempDocs["doc_language"] = null;
-            }
-            obj.response.docs = tempDocs;
-            console.log(obj.response.docs);
+            obj.response.docs = convertCrawlDocTo(obj.response.docs[0],'solr');
             obj.response.dcCount = obj.response.numFound;
             delete obj.response.numFound;
             resolve(obj.response);

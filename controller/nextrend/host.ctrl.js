@@ -2,11 +2,14 @@ const db = require("../../models/nextrend/index");
 
 const readQuery = (like=null) => new Promise((resolve, reject)=>{
     let query;
-    if(like){
-        query =  'select * from nt_hosts where host like '+'"%'+like+'%" or name like '+'"%'+like+'%"';
+    if(typeof param==='number'){
+        query =  'select * from nt_hosts where idx = '+param;
+    }else if(typeof param==='string'){
+        query =  'select * from nt_hosts where host like '+'"%'+param+'%" or name like '+'"%'+param+'%"';
     }else{
         query =  'select * from nt_hosts';
     }
+    
     db.query(query,(err,data)=>{
         if(err){
             reject(err)
