@@ -76,7 +76,6 @@ const esSearch = (size, from, stat, filters = {}, prefix = {}, regexp=[]) => new
             sort: sort,
         }
     };
-
     try{
         const value = await esDB.search(query);
         const result = {
@@ -91,6 +90,7 @@ const esSearch = (size, from, stat, filters = {}, prefix = {}, regexp=[]) => new
         result["docs"] = documents;
         resolve(result);
     }catch(e){
+        console.log(e);
         reject(e);
     }
 });

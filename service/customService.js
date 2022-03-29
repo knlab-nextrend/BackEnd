@@ -1,5 +1,7 @@
 const esServiceCtrl = require("../controller/es/esService.ctrl");
 const customCtrl = require("../controller/nextrend/customPage.ctrl");
+const { listeners } = require("../models/nextrend");
+const crawlService = require("./crawlService");
 
 const createSetting = async (req, res) => {
     if (req.body.xaxis && req.body.yaxis && req.body.uid) {
@@ -99,7 +101,6 @@ const customSearch = async (req, res) => {
         sortType: req.query.sortType || 'doc_collect_date'
     };
     if (req.query.axis) {
-
         try {
             let regexp = [];
             const reqAxis = JSON.parse(req.query.axis);
@@ -111,12 +112,16 @@ const customSearch = async (req, res) => {
                     regexp.push(tempDict);
                 })
             }
-
             const size = req.query.listSize;
             const from = req.query.pageNo ? ((req.query.pageNo - 1) * size) : 0;
-            const result = await esServiceCtrl.Search(size, from, 7, filters, {}, regexp)
+            let result = await esServiceCtrl.Search(size, from, 7, filters, {}, regexp)
+            const document = [];
+            for(let doc of result.docs){
+                doc = await crawlService.docCatViewer(doc);
+                document.push(doc);
+            }
+            result.docs = document;
             res.send(result);
-
         } catch (e) {
             console.log(e);
             res.status(400).send(e);

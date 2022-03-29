@@ -334,7 +334,7 @@ const crawlStage = async (req, res) => {
                     if (result) {
                         // addEditLog의 workType 3은 수정. 기존 curation -> curation 의 경우임.
                         await workLogCtrl.addEditLog(req.uid,_id,statusCode,3)
-                        await fileCtrl.deleteComparedContentImage(_id, doc.doc_thumbnail);
+                        await fileCtrl.deleteComparedContentImage(_id, doc.doc_content);
                         res.send();
                     } else {
                         res.status(400).send({ message: "some trouble in staging" });
@@ -469,5 +469,6 @@ module.exports = {
     screenStage: screenStage,
     screenDelete: screenDelete,
     screenKeep: screenKeep,
-    test: test
+    test: test,
+    docCatViewer:docCatViewer
 };
