@@ -1,6 +1,6 @@
 const db = require("../../models/nextrend/index");
 
-const readQuery = (like=null) => new Promise((resolve, reject)=>{
+const readQuery = (param) => new Promise((resolve, reject)=>{
     let query;
     if(typeof param==='number'){
         query =  'select * from nt_hosts where idx = '+param;

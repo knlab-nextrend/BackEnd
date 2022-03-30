@@ -81,7 +81,6 @@ const esSearch = (size, from, stat, filters = {}, prefix = {}, regexp=[]) => new
         }
     };
     try{
-        console.log(must,filter);
         const value = await esDB.search(query);
         const result = {
             "dcCount": value.body.hits.total.value

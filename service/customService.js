@@ -80,13 +80,13 @@ const loadPage = async (req, res) => {
 
 const customSearch = async (req, res) => {
     const fieldList = {
-        doc_country: 3,
+        //doc_country: 3,
         doc_publish_country: 3,
         doc_category: 1,
         doc_language: 4,
         doc_content_type: 2,
         doc_custom: 6,
-        doc_content_category: 2,
+        //doc_content_category: 2,
         doc_topic: 5,
     };
     let filters = {

@@ -54,7 +54,7 @@ const readCustomedPageSetting = (uid) => new Promise((resolve,reject) => {
 });
 
 const testAxis = (cid) => new Promise((resolve,reject)=>{
-    const query = 'select cat.type,cat.ct_nm,cat.code from nt_categorys cat inner join (select type,code from nt_categorys where idx = ?) tg on cat.type = tg.type and cat.code like concat(tg.code,"%") and cat.code!=tg.code;'
+    const query = 'select cat.type,cat.ct_nm,cat.code from nt_categorys cat inner join (select type,code from nt_categorys where idx = ?) tg on cat.type = tg.type and cat.code like concat(tg.code,"%") and length(cat.code)=length(tg.code)+2 and cat.code!=tg.code;'
     const params=[cid];
     db.query(query,params,(err,data)=>{
         if(err||data.length===0){
@@ -66,7 +66,7 @@ const testAxis = (cid) => new Promise((resolve,reject)=>{
 })
 
 const callUnderCatList = (uid,axis) => new Promise((resolve,reject)=>{
-    const query = 'select cat.type,cat.ct_nm,cat.code from nt_categorys cat inner join  (select a.type,a.code from nt_categorys a inner join nt_customed_cat b on a.idx = b.'+axis+' where b.uid = ?) tg on cat.type = tg.type and cat.code like concat(tg.code,"%") and cat.code!=tg.code;';
+    const query = 'select cat.type,cat.ct_nm,cat.code from nt_categorys cat inner join  (select a.type,a.code from nt_categorys a inner join nt_customed_cat b on a.idx = b.'+axis+' where b.uid = ?) tg on cat.type = tg.type and cat.code like concat(tg.code,"%") and length(cat.code)=length(tg.code)+2 and cat.code!=tg.code;';
     const params=[uid];
 
     db.query(query,params,(err,data)=>{

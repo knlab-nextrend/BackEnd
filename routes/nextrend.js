@@ -52,6 +52,7 @@ router.get("/multilingual/",multiService.read);
 router.post("/multilingual/",authJWT,multiService.create);
 router.put("/multilingual/",authJWT,multiService.update);
 router.delete("/multilingual/",authJWT,multiService.delete);
+router.post("/multilingual/upload",authJWT,multiService.uploadExcelFile);
 
 router.get("/host/poli",hostService.getHostListInfo);
 router.get("/host/",hostService.readHostInfo);

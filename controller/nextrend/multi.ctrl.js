@@ -47,9 +47,21 @@ const deleteQuery = (idx) => new Promise((resolve,reject)=>{
     })
 })
 
+const deleteAll = () => new Promise((resolve,reject)=>{
+    const query = 'delete from nt_multilingual where idx > 0';
+    db.query(query,(err,data)=>{
+        if(err){
+            reject(err)
+        }else{
+            resolve(data);
+        }
+    })
+})
+
 module.exports = {
     read : readQuery,
     update : updateQuery,
     create : createQuery,
-    delete : deleteQuery
+    delete : deleteQuery,
+    deleteAll:deleteAll
 }

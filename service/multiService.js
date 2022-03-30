@@ -36,9 +36,22 @@ const deleteMulti = async (req,res) => {
     }
 }
 
+const uploadExcelFile = async (req,res) => {
+    try{
+        await multiCtrl.deleteAll(); 
+        req.body.list.forEach(async (row)=>{
+            await multiCtrl.create(row.multi_text,req.uid); 
+        })
+        res.send();
+    }catch(e){
+        res.status(400).send({message:e});
+    }
+}
+
 module.exports = {
     read:readMulti,
     create:createMulti,
     update:updateMulti,
-    delete:deleteMulti
+    delete:deleteMulti,
+    uploadExcelFile:uploadExcelFile
 }
