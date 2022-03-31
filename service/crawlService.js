@@ -68,28 +68,32 @@ const crawlKeep = async (req, res) => {
     } else {
         let statusCode = parseInt(req.body.statusCode);
         let result;
-        switch (statusCode) {
-            case 0:
-            case 1:
-                result = await solrCtrl.Keep(_id);
-                break;
-            case 2:
-            case 3:
-                // 일단 직접 지정...
-                result = await esCtrl.Keep(_id, 3);
-                // addEditLog의 workType 4는 보류.
-                await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
-                break;
-            case 4:
-            case 5:
-                result = await esCtrl.Keep(_id, 5);
-                await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
-                break;
-        }
-        if (result) {
-            res.send(result);
-        } else {
-            res.status(400).send();
+        try{
+            switch (statusCode) {
+                case 0:
+                case 1:
+                    result = await solrCtrl.Keep(_id);
+                    break;
+                case 2:
+                case 3:
+                    // 일단 직접 지정...
+                    result = await esCtrl.Keep(_id, 3);
+                    // addEditLog의 workType 4는 보류.
+                    await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
+                    break;
+                case 4:
+                case 5:
+                    result = await esCtrl.Keep(_id, 5);
+                    await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
+                    break;
+            }
+            if (result) {
+                res.send(result);
+            } else {
+                res.status(400).send();
+            }
+        }catch(e){
+            res.status(400).send(e);
         }
     }
 }
@@ -180,40 +184,8 @@ const crawlSearch = async (req, res) => {
             case 6:
             case 7:
             case 8:
-                let filters = {
-                    dc_keyword: req.query.dc_keyword || '',
-                    dc_publisher: req.query.dc_publisher || '',
-                    dateGte: req.query.dateGte || '*',
-                    dateLte: req.query.dateLte || '*',
-                    pageGte: req.query.pageGte || '*',
-                    pageLte: req.query.pageLte || '*',
-                    is_crawled: req.query.is_crawled || '',
-                    sort: req.query.sort || 'desc',
-                    sortType: req.query.sortType || 'doc_collect_date'
-                };
-                let prefix = {};
-                if('dc_code' in req.query){
-                    prefix["dc_code"]=req.query.dc_code;
-                }
-                if('dc_type' in req.query){
-                    prefix["dc_type_doc"]=req.query.dc_type;
-                }
-                if('dc_country' in req.query){
-                    prefix["dc_country"]=req.query.dc_country;
-                }
-                if('dc_language' in req.query){
-                    prefix["dc_language"]=req.query.dc_language;
-                }
-                if('dc_topic' in req.query){
-                    prefix["dc_topic"]=req.query.dc_topic;
-                }
-                if('dc_custom' in req.query){
-                    prefix["dc_custom"]=req.query.dc_custom;
-                }
-
-                const size = req.query.listSize;
-                const from = req.query.pageNo ? ((req.query.pageNo - 1) * size) : 0;
-                result = await esCtrl.Search(size, from, stat = statusCode, filters = filters, prefix = prefix);
+                const searchQuery = libs.reqToEsFilters(req.query,statusCode);
+                result = await esCtrl.Search(searchQuery);
                 const document = [];
                 for(let doc of result.docs){
                     doc = await docCatViewer(doc);
@@ -300,7 +272,7 @@ const crawlStage = async (req, res) => {
                     result = await esCtrl.Index(doc, 4, _id);
                     if (result) {
                         // addEditLog의 workType 2은 이관.
-                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,2)
+                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,2,doc.doc_host)
                         res.send();
                     } else {
                         res.status(400).send({ message: "some trouble in staging" });
@@ -311,7 +283,7 @@ const crawlStage = async (req, res) => {
                     result = await esCtrl.Index(doc, 6, _id);
                     if (result) {
                         // addEditLog의 workType 2은 이관.
-                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,2)
+                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,2,doc.doc_host)
                         res.send();
                     } else {
                         res.status(400).send({ message: "some trouble in staging" });
@@ -323,7 +295,7 @@ const crawlStage = async (req, res) => {
                         const document = value.body.hits.hits[0]._source;
                         result = await esCtrl.Index(document, 7, _id);
                         if(result){
-                            await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
+                            await workLogCtrl.addEditLog(req.uid,_id,statusCode,4,doc.doc_host)
                             res.send();
                         }else{
                             res.status(400).send({ message: "es error" });
@@ -333,7 +305,7 @@ const crawlStage = async (req, res) => {
                         result = await esCtrl.Index(doc, 8, _id);
                         if (result) {
                             // addEditLog의 workType 2은 이관.
-                            await workLogCtrl.addEditLog(req.uid,_id,statusCode,2)
+                            await workLogCtrl.addEditLog(req.uid,_id,statusCode,2,doc.doc_host)
                             await poliCtrl.modSubmitStat(doc.item_id);
                             res.send();
                         } else {
@@ -348,7 +320,7 @@ const crawlStage = async (req, res) => {
                     result = await esCtrl.Index(doc, 8, _id);
                     if (result) {
                         // addEditLog의 workType 2은 이관.
-                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,2)
+                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,2,doc.doc_host)
                         await poliCtrl.modSubmitStat(doc.item_id);
                         res.send();
                     } else {
@@ -360,7 +332,7 @@ const crawlStage = async (req, res) => {
                     result = await esCtrl.Index(doc, 8, _id);
                     if (result) {
                         // addEditLog의 workType 3은 수정. 기존 curation -> curation 의 경우임.
-                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,3)
+                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,3,doc.doc_host)
                         await fileCtrl.deleteComparedContentImage(_id, doc.doc_content);
                         res.send();
                     } else {

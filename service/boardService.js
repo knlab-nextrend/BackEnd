@@ -2,16 +2,23 @@ const boardCtrl = require("../controller/nextrend/dashBoard.ctrl");
 const esServiceCtrl = require("../controller/es/esService.ctrl");
 const solrServiceCtrl = require("../controller/solr/solrService.ctrl");
 const dayjs = require("dayjs");
+const libs = require("../lib/libs");
 
 const crawlInfoPerCountry = async(req,res) => {
     if(req.query.status){
-        let countries = {};
+        let countriesName = {};
+        let countriesIdx = {};
         const hostWithCountry = await boardCtrl.selectHostNation();
         hostWithCountry.forEach(host => {
-            if(host.country in countries){
-                countries[host.country].push(host.host);
+            if(host.country in countriesName){
+                countriesName[host.country].push(host.host);
             }else{
-                countries[host.country]=[host.host];
+                countriesName[host.country]=[host.host];
+            }
+            if(host.host_idx in countriesIdx){
+                countriesIdx[host.country].push(host.host_idx);
+            }else{
+                countriesIdx[host.country]=[host.host_idx];
             }
         });
         switch(parseInt(req.query.status)){
@@ -21,8 +28,8 @@ const crawlInfoPerCountry = async(req,res) => {
                         listSize:1,
                         start:0
                     };
-                    let result = Object.assign({},countries);
-                    for (const [country, hosts] of Object.entries(countries)) {
+                    let result = Object.assign({},countriesName);
+                    for (const [country, hosts] of Object.entries(countriesName)) {
                         let host = '('+hosts.join(' OR ')+')';
                         condition.host = host;
                         const searchResult = await solrServiceCtrl.Search(condition,0)
@@ -35,24 +42,27 @@ const crawlInfoPerCountry = async(req,res) => {
                 break;
             case 2:
                 try{
+                    const now = dayjs().locale('se-kr').format().split('+')[0]
                     const monthBefore = dayjs().locale('se-kr').subtract(1, "month").format().split('+')[0];
-                    let filters = {
-                        dc_keyword: req.query.dc_keyword || '',
-                        dc_publisher: req.query.dc_publisher || '',
-                        dateGte: req.query.dateGte || '*',
-                        dateLte: req.query.dateLte || '*',
-                        pageGte: monthBefore,
-                        pageLte: req.query.pageLte || '*',
-                        is_crawled: req.query.is_crawled || '',
-                        sort: req.query.sort || 'desc',
-                        sortType: 'doc_register_date'
-                    };
-                    
-                    let result = Object.assign({},countries);
-                    for (const [country, hosts] of Object.entries(countries)) {
-                        let host = '('+hosts.join(' OR ')+')';
-                        filters['host'] = host;
-                        const searchResult = await esServiceCtrl.Search(10,0,2,filters,{},[])
+                    const query = {
+                        dateLte:now,
+                        dateGte:monthBefore,
+                        sortType:'doc_register_date'
+                    }
+                    let result = Object.assign({},countriesIdx);
+                    console.log(result);
+                    for (const [country, idxs] of Object.entries(countriesIdx)) {
+                        let should = [];
+                        if(Array.isArray(idxs)){
+                            idxs.forEach((idx)=>{
+                                should.push({match:{doc_host:idx}})
+                            })
+                        }else{
+                            should.push({match:{doc_host:idx}})
+                        }
+                        const searchQuery = libs.reqToEsFilters(query,null,[],should)
+                        const searchResult = await esServiceCtrl.Search(searchQuery)
+                        console.log(searchResult.dcCount)
                         result[country]=searchResult.dcCount;
                       }
                     res.send(result)

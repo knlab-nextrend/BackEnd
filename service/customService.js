@@ -1,5 +1,6 @@
 const esServiceCtrl = require("../controller/es/esService.ctrl");
 const customCtrl = require("../controller/nextrend/customPage.ctrl");
+const libs = require("../lib/libs");
 const { listeners } = require("../models/nextrend");
 const crawlService = require("./crawlService");
 
@@ -80,43 +81,39 @@ const loadPage = async (req, res) => {
 
 const customSearch = async (req, res) => {
     const fieldList = {
-        //doc_country: 3,
+        doc_country: 3,
         doc_publish_country: 3,
         doc_category: 1,
         doc_language: 4,
         doc_content_type: 2,
         doc_custom: 6,
-        //doc_content_category: 2,
+        doc_content_category: 2,
         doc_topic: 5,
-    };
-    let filters = {
-        dc_keyword: req.query.dc_keyword || '',
-        dc_publisher: req.query.dc_publisher || '',
-        dateGte: req.query.dateGte || '*',
-        dateLte: req.query.dateLte || '*',
-        pageGte: req.query.pageGte || '*',
-        pageLte: req.query.pageLte || '*',
-        is_crawled: req.query.is_crawled || '',
-        sort: req.query.sort || 'desc',
-        sortType: req.query.sortType || 'doc_collect_date'
     };
     if (req.query.axis) {
         try {
-            let regexp = [];
+            let should = [];
+            let must = [];
             const reqAxis = JSON.parse(req.query.axis);
             for (const [type, value] of Object.entries(reqAxis)) {
                 const keys = Object.keys(fieldList).filter(key => fieldList[key] === parseInt(type));
-                keys.forEach((field) => {
+                if(keys.length>1){
+                    keys.forEach((field) => {
+                        let tempDict = {};
+                        tempDict[field] = value + '.*';
+                        should.push({regexp:tempDict});
+                    })
+                }else{
                     let tempDict = {};
-                    tempDict[field] = value + '.*';
-                    regexp.push(tempDict);
-                })
+                    tempDict[keys[0]] = value + '.*';
+                    must.push({regexp:tempDict});
+                }
+                
             }
-            const size = req.query.listSize;
-            const from = req.query.pageNo ? ((req.query.pageNo - 1) * size) : 0;
             const reqCode= parseInt(req.query.statusCode);
             let stat = (reqCode===6||reqCode===7)? [6,7]:8
-            let result = await esServiceCtrl.Search(size, from, stat, filters, {}, regexp)
+            const searchQuery = libs.reqToEsFilters(req.query,stat,must,should);
+            let result = await esServiceCtrl.Search(searchQuery)
             const document = [];
             for(let doc of result.docs){
                 doc = await crawlService.docCatViewer(doc);

@@ -23,65 +23,9 @@ const esDetail = (_id) => new Promise(async (resolve, reject) => {
     }
 });
 
-const esSearch = (size, from, stat, filters = {}, prefix = {}, regexp=[]) => new Promise(async (resolve, reject) => {
-    // filters 내용들을 filter로 담아줌.
-    let filter = [];
-    for (const [key, value] of Object.entries(filters)) {
-        let term = {};
-        term[key] = value;
-        if ((key === 'dateGte') || (key === 'dateLte') || (value === '') || (key === 'sort') || (key === 'sortType') || (key === 'pageGte') || (key === 'pageLte')) {
-        } else {
-            filter.push({ term: term });
-        }
-    }
-    // stat은 별개로
-    if(Array.isArray(stat)){
-        filter.push({ terms: { status: stat } });
-    }else{
-        filter.push({ term: { status: stat } });
-    }
-
-    // 기간 range   
-    let range = {};
-    let temp = {};
-    if (filters.dateGte !== '*') {
-        temp['gte'] = filters.dateGte;
-    }
-    if (filters.dateLte !== '*') {
-        temp['lte'] = filters.dateLte;
-    }
-    range[filters.sortType] = temp;
-    let must = [];
-    must.push({range:range});
-    if(prefix.length){
-        must.push({prefix:prefix});
-    }
-    regexp.forEach((cond)=>{
-        must.push({regexp:cond})
-    })
-
-    // sort by
-    let sort = [];
-    let sortTemp = {};
-    sortTemp[filters.sortType] = filters.sort;
-    sort.push(sortTemp);
-
-    const query = {
-        from: from,
-        size: size,
-        index: 'politica_service',
-        body: {
-            query: {
-                bool: {
-                    must: must,
-                    filter: filter
-                },
-            },
-            sort: sort,
-        }
-    };
+const esSearch = (searchQuery) => new Promise(async (resolve, reject) => {
     try{
-        const value = await esDB.search(query);
+        const value = await esDB.search(searchQuery);
         const result = {
             "dcCount": value.body.hits.total.value
         };
