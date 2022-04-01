@@ -55,9 +55,34 @@ const getHostListInfo = () => new Promise((resolve,reject)=>{
     })
 })
 
+const getCrawlerLog = () => new Promise((resolve,reject)=>{
+    const query ='select sum(html) as html, sum(url) as url, sum(pdf) as pdf, sum(word) as word, sum(excel) as excel, sum(ppt) as ppt, sum(etc) as etc from crawler_log;'
+    db.query(query,(err, data) => {
+        if (err) {
+            reject(err);
+        } else {
+            resolve(data);
+        }
+    })
+})
+
+const getHostWorkLog = (hid) => new Promise((resolve,reject)=>{
+    const query ='select * from crawler_host h inner join crawler_log l on h.host = l.host where h.host_id = ?;'
+    const params = [hid]
+    db.query(query,params,(err, data) => {
+        if (err) {
+            reject(err);
+        } else {
+            resolve(data);
+        }
+    })
+})
+
 module.exports = {
     modSubmitStat:modSubmitStat,
     checkStat:checkStat,
     insertUploadData:insertUploadData,
-    getHostListInfo:getHostListInfo
+    getHostListInfo:getHostListInfo,
+    getCrawlerLog:getCrawlerLog,
+    getHostWorkLog:getHostWorkLog
 }

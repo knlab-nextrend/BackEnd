@@ -11,5 +11,6 @@ const db = mysql.createPool({
     database: config.database,
     multipleStatements: true
 });
+//pool.query() = pool.getConnection() + connection.query() + connection.release()
 
 module.exports = db;

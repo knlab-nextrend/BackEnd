@@ -4,6 +4,7 @@ const nationCtrl = require("../nextrend/nation.ctrl");
 const codeCtrl = require("../nextrend/subjectCode.ctrl");
 const libs = require("../../lib/libs");
 
+
 const esDetail = (_id) => new Promise(async (resolve, reject) => {
     const query = {
         index: 'politica_service',

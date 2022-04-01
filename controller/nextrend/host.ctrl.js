@@ -32,6 +32,19 @@ const createQuery = (host,name,category,country,lang,workCycle) => new Promise((
     });
 });
 
+const updateQuery = (host,name,category,country,lang,workCycle) => new Promise((resolve, reject)=>{
+    const query = 'update nt_hosts set `NAME`=?,`CATEGORY`=?,`COUNTRY`=?,`LANG`=?,`WORK_CYCLE`=? where host = ?';
+    const params = [name,category,country,lang,workCycle,host];
+
+    db.query(query,params,(err,data)=>{
+        if(err){
+            reject(err)
+        }else{
+            resolve(data);
+        }
+    });
+});
+
 const getInfo = (host) => new Promise((resolve,reject)=>{
     const query = 'select idx,name,lang, country from nt_hosts where host like "'+host+'"';
     db.query(query,(err,data)=>{
@@ -46,5 +59,6 @@ const getInfo = (host) => new Promise((resolve,reject)=>{
 module.exports={
     create:createQuery,
     read:readQuery,
-    getInfo:getInfo
+    getInfo:getInfo,
+    update:updateQuery
 }

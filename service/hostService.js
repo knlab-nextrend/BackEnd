@@ -11,14 +11,19 @@ const getHostListInfo = async (req,res) => {
 }
 
 const insertHostInfo = async(req,res) => {
-    try{
-        req.body.list.forEach(async(host)=>{
+    let errorList = [];
+    req.body.list.forEach(async(host)=>{
+        try{
             await hostCtrl.create(host.host,host.name,host.category,host.country,host.lang,host.workCycle);
-        })
-        res.send();
-    }catch(e){
-        res.status(400).send(e);
-    }
+        }catch(e){
+            if(e.errno===1062){
+                await hostCtrl.update(host.host,host.name,host.category,host.country,host.lang,host.workCycle)
+            }else{
+                errorList.push(host);
+            }
+        }
+    })
+    res.send(errorList);
 }
 
 const readHostInfo = async(req,res) => {
