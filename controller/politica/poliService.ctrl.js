@@ -66,8 +66,8 @@ const getCrawlerLog = () => new Promise((resolve,reject)=>{
     })
 })
 
-const getHostWorkLog = (hid) => new Promise((resolve,reject)=>{
-    const query ='select * from crawler_host h inner join crawler_log l on h.host = l.host where h.host_id = ?;'
+const getHostWorkLogById = (hid) => new Promise((resolve,reject)=>{
+    const query ='select h.host, l.* from crawler_host h inner join crawler_log l on h.host = l.host where h.host_id = ?;'
     const params = [hid]
     db.query(query,params,(err, data) => {
         if (err) {
@@ -84,5 +84,5 @@ module.exports = {
     insertUploadData:insertUploadData,
     getHostListInfo:getHostListInfo,
     getCrawlerLog:getCrawlerLog,
-    getHostWorkLog:getHostWorkLog
+    getHostWorkLogById:getHostWorkLogById
 }

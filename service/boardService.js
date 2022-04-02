@@ -3,6 +3,7 @@ const esServiceCtrl = require("../controller/es/esService.ctrl");
 const solrServiceCtrl = require("../controller/solr/solrService.ctrl");
 const dayjs = require("dayjs");
 const libs = require("../lib/libs");
+const poliServiceCtrl = require("../controller/politica/poliService.ctrl");
 
 const crawlInfoPerCountry = async (req, res) => {
     if (req.query.status) {
@@ -92,6 +93,34 @@ const crawlInfoPerCountry = async (req, res) => {
 
 }
 
+const crawlHostInfo = async(req,res) => {
+    try{
+        let result;
+        if(req.params.host_id){
+            result = await poliServiceCtrl.getHostWorkLogById(parseInt(req.params.host_id));
+        }else{
+            result = await poliServiceCtrl.getHostListInfo();
+        }
+            res.send(result)
+    }catch(e){
+        console.log(e)
+        res.status(400).send(e);
+    }
+}
+
+const crawlerSummationLog = async (req,res) => {
+    try{
+        const result = await poliServiceCtrl.getCrawlerLog();
+        res.send(result);
+    }catch(e){
+        console.log(e)
+        res.status(400).send(e);
+    }
+}
+
 module.exports = {
-    crawlInfoPerCountry: crawlInfoPerCountry
+    crawlInfoPerCountry: crawlInfoPerCountry,
+    crawlHostInfo:crawlHostInfo,
+    crawlerSummationLog:crawlerSummationLog,
+
 }

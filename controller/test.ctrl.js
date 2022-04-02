@@ -19,6 +19,7 @@ const esConfig = require("../models/es/index").config;
 
 const NasFTP = require("../models/nas/index");
 const { truncate } = require("fs/promises");
+const customErrors = require("../modules/error");
 const thumbRoute = NasFTP.thumbRoute;
 const pdfRoute = NasFTP.pdfRoute;
 const uploadRoute = NasFTP.uploadRoute;
@@ -28,7 +29,7 @@ const nasConfig = NasFTP.config;
 const nextrendPing = () => new Promise(async (resolve, reject) => {
     nextrendDB.getConnection((err, connection) => {
         if (err) {
-            reject(err)
+            reject(customErrors(err,422))
         } else {
             connection.ping()
             connection.release()
@@ -43,19 +44,18 @@ const esPing = () => new Promise(async (resolve, reject) => {
         await esDB.ping();
         resolve(true);
     } catch (e) {
-        reject(e)
-    }
+        reject(customErrors(e,420))
+    }   
 })
 
 
 const nasPing = () => new Promise(async (resolve, reject) => {
-    const client = new ftp.Client();
+    const client = new ftp.Client(timeout = 5000);
     try {
         await client.access(nasConfig);
-        console.log(await client.list('.'))
         resolve(true);
     } catch (e) {
-        reject(e)
+        reject(customErrors(e,424))
     }
     client.close();
 })
@@ -64,7 +64,7 @@ const nasPing = () => new Promise(async (resolve, reject) => {
 const poliPing = () => new Promise(async (resolve, reject) => {
     poliDB.getConnection((err, connection) => {
         if (err) {
-            reject(err)
+            reject(customErrors(err,423))
         } else {
             connection.ping()
             connection.release()
@@ -78,7 +78,7 @@ const solrPing = () => new Promise(async (resolve, reject) => {
         await solrDB.ping()
         resolve(true)
     } catch (e) {
-        reject(e)
+        reject(customErrors(e,421))
     }
 })
 
