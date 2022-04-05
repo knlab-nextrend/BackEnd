@@ -4,6 +4,7 @@ const solrServiceCtrl = require("../controller/solr/solrService.ctrl");
 const dayjs = require("dayjs");
 const libs = require("../lib/libs");
 const poliServiceCtrl = require("../controller/politica/poliService.ctrl");
+const workingLogCtrl = require("../controller/nextrend/workingLog.ctrl");
 
 const crawlInfoPerCountry = async (req, res) => {
     if (req.query.status) {
@@ -118,9 +119,33 @@ const crawlerSummationLog = async (req,res) => {
     }
 }
 
+const getWorkingLog = async (req,res) => {
+    try{
+        const screening = req.query.status===0?true:false;
+        const wid = req.query.wid;
+        let result;
+        const dateGte = req.query.dateGte||'2022-01-01';
+        const dateLte = req.query.dateLte||dayjs().locale('se-kr').format().split('+')[0];
+        switch(req.query.duration){
+            case 'month':
+                result = await workingLogCtrl.getMonthlyLog(wid,dateGte,dateLte,1,req.query.status,screening);
+                break;
+            case 'daily':
+                result = await workingLogCtrl.getDailyLog(wid,dateGte,dateLte,1,req.query.status,screening);
+                break;
+            case 'weekly':
+                result = await workingLogCtrl.getWeeklyLog(wid,dateGte,dateLte,1,req.query.status,screening);
+                break;
+        }
+        res.send(result);
+    }catch(e){
+        res.status(400).send(e);
+    }
+}
+
 module.exports = {
     crawlInfoPerCountry: crawlInfoPerCountry,
     crawlHostInfo:crawlHostInfo,
     crawlerSummationLog:crawlerSummationLog,
-
+    getWorkingLog:getWorkingLog
 }

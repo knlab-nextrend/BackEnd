@@ -59,6 +59,7 @@ router.get("/host/",hostService.readHostInfo);
 router.post("/host/",hostService.insertHostInfo);
 
 router.get("/board/",boardService.crawlInfoPerCountry);
+router.get("/board/work",boardService.getWorkingLog);
 
 router.get('/viewPage/');
 // 해당 엔드포인트를 사용하여 view 페이지 렌더링.
