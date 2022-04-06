@@ -121,22 +121,55 @@ const crawlerSummationLog = async (req,res) => {
 
 const getWorkingLog = async (req,res) => {
     try{
-        const screening = req.query.status===0?true:false;
-        const wid = req.query.wid;
-        let result;
-        const dateGte = req.query.dateGte||'2022-01-01';
-        const dateLte = req.query.dateLte||dayjs().locale('se-kr').format().split('+')[0];
-        switch(req.query.duration){
-            case 'month':
-                result = await workingLogCtrl.getMonthlyLog(wid,dateGte,dateLte,1,req.query.status,screening);
+        let screening;
+        let status=null;
+        switch(parseInt(req.query.status)){
+            case 0:
+            case 1:
+                screening = true;
                 break;
-            case 'daily':
-                result = await workingLogCtrl.getDailyLog(wid,dateGte,dateLte,1,req.query.status,screening);
+            case 2:
+            case 3:
+                screening = false;
+                status = '(2,3)'
                 break;
-            case 'weekly':
-                result = await workingLogCtrl.getWeeklyLog(wid,dateGte,dateLte,1,req.query.status,screening);
+            case 4:
+            case 5:
+                screening = false;
+                status = '(4,5)'
+                break;
+            case 6:
+            case 7:
+                screening = false;
+                status = '(6,7)'
                 break;
         }
+        const wid = req.query.wid;
+        const dateGte = req.query.dateGte||'2022-01-01';
+        const dateLte = req.query.dateLte||dayjs().locale('se-kr').format().split('+')[0];
+        let result;
+        switch(req.query.duration){
+            case 'month':
+                result = await workingLogCtrl.getMonthlyLog(wid,dateGte,dateLte,1,status,screening);
+                break;
+            case 'daily':
+                result = await workingLogCtrl.getDailyLog(wid,dateGte,dateLte,1,status,screening);
+                break;
+            case 'weekly':
+                result = await workingLogCtrl.getWeeklyLog(wid,dateGte,dateLte,1,status,screening);
+                break;
+        }
+        res.send(result);
+    }catch(e){
+        res.status(400).send(e);
+    }
+}
+
+const getCurationLog = async(req,res) => {
+    try{
+        const dateGte = req.query.dateGte||'2022-01-01';
+        const dateLte = req.query.dateLte||dayjs().locale('se-kr').format().split('+')[0];
+        const result = await workingLogCtrl.getCurationLog(req.query.wid,dateGte,dateLte);
         res.send(result);
     }catch(e){
         res.status(400).send(e);
@@ -147,5 +180,6 @@ module.exports = {
     crawlInfoPerCountry: crawlInfoPerCountry,
     crawlHostInfo:crawlHostInfo,
     crawlerSummationLog:crawlerSummationLog,
-    getWorkingLog:getWorkingLog
+    getWorkingLog:getWorkingLog,
+    getCurationLog:getCurationLog
 }

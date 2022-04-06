@@ -331,22 +331,16 @@ const crawlStage = async (req, res) => {
                         res.send();
                         break;
                     case 8:
-                        console.time('detail')
                         const detailDoc  = await esCtrl.Detail(_id)
-                        console.timeEnd('detail')
                         const docsBef = detailDoc.body.hits.hits[0]._source;
                         result = await esCtrl.Index(doc, 8, _id);
                         if (result) {
                             // addEditLog의 workType 3은 수정. 기존 curation -> curation 의 경우임.
-                        console.time('edit')
                         await workLogCtrl.addEditLog(req.uid,_id,statusCode,3,doc.doc_host)
-                        console.timeEnd('edit')
-                        // if(docsBef.doc_content!==doc.doc_content){
-                            //     await workLogCtrl.addCurationLog(req.uid,_id,null,docsBef.doc_content,doc.doc_content)
-                        console.time('img')
-                        // }
-                            await fileCtrl.deleteComparedContentImage(_id, doc.doc_content);
-                        console.timeEnd('img')
+                        if(docsBef.doc_content!==doc.doc_content){
+                                await workLogCtrl.addCurationLog(req.uid,_id,null,docsBef.doc_content,doc.doc_content)
+                        }
+                        await fileCtrl.deleteComparedContentImage(_id, doc.doc_content);
                         res.send();
                         } else {
                             res.status(400).send({ message: "some trouble in staging" });

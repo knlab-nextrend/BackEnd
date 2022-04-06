@@ -48,7 +48,7 @@ const getDailyLog = (wid,dateGte,dateLte,workType,docStat=null,screening=false) 
         where = ', count(b.idx) as cnt from nt_date a left join (select * from nt_edit_log c where c.wid=? and WORK_TYPE=? ) b';
         params = [wid,workType];
     }else{
-        where = ', sum(b.quantity) as cnt from nt_date a left join (select * from nt_screen_log c where c.wid=? and WORK_TYPE=? and DOC_STAT=?) b';
+        where = ', sum(b.quantity) as cnt from nt_date a left join (select * from nt_screen_log c where c.wid=? and WORK_TYPE=? and DOC_STAT in ?) b';
         params = [wid,workType,docStat];
     }
     let query = "select DATE_FORMAT(a.`date`, '%Y-%m-%d') as start,null as end,null as `date` "+where+" on date_format(a.date,'%Y-%m-%d')=date_format(b.dt,'%Y-%m-%d') where a.date>='"+dateGte+"' and a.date<='"+dateLte+"' group by start;"
@@ -68,7 +68,7 @@ const getWeeklyLog = (wid,dateGte,dateLte,workType,docStat=null,screening=false)
         where = ', count(b.idx) as cnt from nt_date a left join (select * from nt_edit_log c where c.wid=? and WORK_TYPE=? ) b';
         params = [wid,workType];
     }else{
-        where = ', sum(b.quantity) as cnt from nt_date a left join (select * from nt_screen_log c where c.wid=? and WORK_TYPE=? and DOC_STAT=?) b';
+        where = ', sum(b.quantity) as cnt from nt_date a left join (select * from nt_screen_log c where c.wid=? and WORK_TYPE=? and DOC_STAT in ?) b';
         params = [wid,workType,docStat];
     }
     let query = "select DATE_FORMAT(DATE_SUB(a.`date`, INTERVAL (DAYOFWEEK(a.`date`)-1) DAY), '%Y-%m-%d') as start, DATE_FORMAT(DATE_SUB(a.`date`, INTERVAL (DAYOFWEEK(a.`date`)-7) DAY), '%Y-%m-%d') as end, DATE_FORMAT(a.`date`, '%u')+1 AS `date` "+where+" on date_format(a.date,'%Y-%m-%d')=date_format(b.dt,'%Y-%m-%d') where a.date>='"+dateGte+"' and a.date<='"+dateLte+"' group by start;"
@@ -88,11 +88,23 @@ const getMonthlyLog = (wid,dateGte,dateLte,workType,docStat=null,screening=false
         where = ', count(b.idx) as cnt from nt_date a left join (select * from nt_edit_log c where c.wid=? and WORK_TYPE=? ) b'
         params = [wid,workType];
     }else{
-        where = ', sum(b.quantity) as cnt from nt_date a left join (select * from nt_screen_log c where c.wid=? and WORK_TYPE=? and DOC_STAT=?) b';
+        where = ', sum(b.quantity) as cnt from nt_date a left join (select * from nt_screen_log c where c.wid=? and WORK_TYPE=? and DOC_STAT in ?) b';
         params = [wid,workType,docStat];
     }
     let query = "select DATE_FORMAT(DATE_SUB(a.`date`, INTERVAL (dayofmonth(a.`date`)-1) DAY), '%Y-%m-%d') as start, last_day(a.`date`) as end, month(a.`date`) as `date` "+where+" on date_format(a.date,'%Y-%m-%d')=date_format(b.dt,'%Y-%m-%d') where a.date>='"+dateGte+"' and a.date<='"+dateLte+"' group by start;"
     
+    db.query(query,params,(err,data)=>{
+        if(err){
+            reject(err)
+        }else{
+            resolve(data);
+        }
+    });
+})
+
+const getCurationLog = (wid,dateGte,dateLte) => new Promise((resolve,reject)=>{
+    const query = 'select * from nt_curation_log where wid = ? and dt>="'+dateGte+'" and dt<="'+dateLte+'"';
+    const params = [wid];
     db.query(query,params,(err,data)=>{
         if(err){
             reject(err)
@@ -108,6 +120,7 @@ module.exports = {
     addCurationLog : addCurationLog,
     getDailyLog:getDailyLog,
     getWeeklyLog:getWeeklyLog,
-    getMonthlyLog:getMonthlyLog
+    getMonthlyLog:getMonthlyLog,
+    getCurationLog:getCurationLog
 }
 
