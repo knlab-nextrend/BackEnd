@@ -32,13 +32,17 @@ const crawlInfoPerCountry = async (req, res) => {
                         listSize: 1,
                         start: 0
                     };
+                    const allResult = await solrServiceCtrl.Search(condition, 0);
+                    let countryCount = 0;
                     let result = Object.assign({}, countriesName);
                     for (const [country, hosts] of Object.entries(countriesName)) {
                         let host = '(' + hosts.join(' OR ') + ')';
                         condition.host = host;
                         const searchResult = await solrServiceCtrl.Search(condition, 0)
                         result[country] = searchResult.dcCount;
+                        countryCount+=searchResult.dcCount;
                     }
+                    result['기타'] = allResult.dcCount-countryCount; 
                     res.send(result);
                 } catch (e) {
                     res.status(400).send(e);
@@ -122,7 +126,7 @@ const crawlerSummationLog = async (req,res) => {
 const getWorkingLog = async (req,res) => {
     try{
         let screening;
-        let status=null;
+        let status;
         switch(parseInt(req.query.status)){
             case 0:
             case 1:
@@ -144,19 +148,19 @@ const getWorkingLog = async (req,res) => {
                 status = '(6,7)'
                 break;
         }
-        const wid = req.query.wid;
+        const wid = req.query.wid||null;
         const dateGte = req.query.dateGte||'2022-01-01';
         const dateLte = req.query.dateLte||dayjs().locale('se-kr').format().split('+')[0];
         let result;
         switch(req.query.duration){
             case 'month':
-                result = await workingLogCtrl.getMonthlyLog(wid,dateGte,dateLte,1,status,screening);
+                result = await workingLogCtrl.getMonthlyLog(wid,dateGte,dateLte,2,status,screening);
                 break;
             case 'daily':
-                result = await workingLogCtrl.getDailyLog(wid,dateGte,dateLte,1,status,screening);
+                result = await workingLogCtrl.getDailyLog(wid,dateGte,dateLte,2,status,screening);
                 break;
             case 'weekly':
-                result = await workingLogCtrl.getWeeklyLog(wid,dateGte,dateLte,1,status,screening);
+                result = await workingLogCtrl.getWeeklyLog(wid,dateGte,dateLte,2,status,screening);
                 break;
         }
         res.send(result);
@@ -176,10 +180,26 @@ const getCurationLog = async(req,res) => {
     }
 }
 
+const getAllLog = async(req,res) => {
+    try{
+        let condition = {
+            listSize: 1,
+            start: 0
+        };
+        const result = await workingLogCtrl.getAllLog();
+        const searchResult = await solrServiceCtrl.Search(condition, 0)
+        result['collect'] = searchResult.dcCount;
+        res.send(result);
+    }catch(e){
+        res.status(400).send(e);
+    }
+}
+
 module.exports = {
     crawlInfoPerCountry: crawlInfoPerCountry,
     crawlHostInfo:crawlHostInfo,
     crawlerSummationLog:crawlerSummationLog,
     getWorkingLog:getWorkingLog,
-    getCurationLog:getCurationLog
+    getCurationLog:getCurationLog,
+    getAllLog:getAllLog
 }

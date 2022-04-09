@@ -61,6 +61,7 @@ router.post("/host/",hostService.insertHostInfo);
 router.get("/board/",boardService.crawlInfoPerCountry);
 router.get("/board/work/",boardService.getWorkingLog);
 router.get("/board/curation/",boardService.getCurationLog);
+router.get("/board/all/",boardService.getAllLog);
 // 시간이 너무 오래걸릴 경우, 본문 내용 분리 고려
 
 router.get('/viewPage/');
