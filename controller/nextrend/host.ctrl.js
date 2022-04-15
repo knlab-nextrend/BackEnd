@@ -19,6 +19,21 @@ const readQuery = (param) => new Promise((resolve, reject)=>{
     });
 });
 
+
+
+const deleteQuery = (host) => new Promise((resolve, reject)=>{
+    const query = 'delete from nt_hosts where host = ?';
+    const params = [host];
+
+    db.query(query,params,(err,data)=>{
+        if(err){
+            reject(err)
+        }else{
+            resolve(data);
+        }
+    });
+});
+
 const createQuery = (host,name,category,country,lang,workCycle) => new Promise((resolve, reject)=>{
     const query = 'insert into nt_hosts (`HOST`,`NAME`,`CATEGORY`,`COUNTRY`,`LANG`,`WORK_CYCLE`) values (?,?,?,?,?,?)';
     const params = [host,name,category,country,lang,workCycle];
@@ -46,7 +61,7 @@ const updateQuery = (host,name,category,country,lang,workCycle) => new Promise((
 });
 
 const getInfo = (host) => new Promise((resolve,reject)=>{
-    const query = 'select idx,name,lang, country from nt_hosts where host like "'+host+'"';
+    const query = 'select idx,name,lang, country from nt_hosts where host like "%'+host+'%"';
     db.query(query,(err,data)=>{
         if(err||data.length==0){
             reject(err)
@@ -60,5 +75,6 @@ module.exports={
     create:createQuery,
     read:readQuery,
     getInfo:getInfo,
-    update:updateQuery
+    update:updateQuery,
+    delete:deleteQuery
 }

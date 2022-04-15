@@ -54,9 +54,14 @@ router.put("/multilingual/",authJWT,multiService.update);
 router.delete("/multilingual/",authJWT,multiService.delete);
 router.post("/multilingual/upload",authJWT,multiService.uploadExcelFile);
 
-router.get("/host/poli",hostService.getHostListInfo);
+router.put("/host/sync",hostService.syncHostTables);
 router.get("/host/",hostService.readHostInfo);
 router.post("/host/",hostService.insertHostInfo);
+router.post("/host/test",hostService.insertTestingHost);
+router.get("/host/test",hostService.getTestingHostList);
+router.put("/host/test",hostService.stageTestingHost);
+router.delete("/host/test",hostService.deleteTestingHost);
+
 
 router.get("/board/",boardService.crawlInfoPerCountry);
 router.get("/board/work/",boardService.getWorkingLog);

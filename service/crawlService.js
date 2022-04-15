@@ -20,7 +20,7 @@ const test = async (req, res) => {
 }
 
 const docCatViewer = (doc) => new Promise(async(resolve,reject)=>{
-    let newDoc = doc;
+    let newDoc = Object.assign({},doc);
     const fieldList = {
         doc_country:3,
         doc_publish_country:3,
@@ -30,6 +30,9 @@ const docCatViewer = (doc) => new Promise(async(resolve,reject)=>{
         doc_custom:6,
         doc_content_category:2,
         doc_topic:5,
+        CATEGORY:1,
+        COUNTRY:3,
+        LANG:4,
     };
     for (const [key,catType] of Object.entries(fieldList)){
         try{
@@ -42,17 +45,21 @@ const docCatViewer = (doc) => new Promise(async(resolve,reject)=>{
                         converted.push(valueInfo[0]);
                     }
                 };
-                newDoc[key] = converted;
+                if(key in newDoc){
+                    newDoc[key] = converted;
+                }
             }
         }catch(e){
             continue;
         }
     }
-    if(newDoc.doc_host){
-        try{
-            const data = await hostCtrl.read(newDoc.doc_host)
-            newDoc.doc_host = data;
-        }catch(e){
+    if('doc_host' in newDoc){
+        if(newDoc.doc_host){
+            try{
+                const data = await hostCtrl.read(newDoc.doc_host)
+                newDoc.doc_host = data;
+            }catch(e){
+            }
         }
     }
     resolve(newDoc);
@@ -363,7 +370,8 @@ const crawlStage = async (req, res) => {
 Detail 에서는 es 에서만 작업되기에 solr인 스크리닝은 분리.
  */
 const screenGet = async (req, res) => {
-    const condition = req.query;
+    let condition = req.query;
+    condition.host = condition.host?'*'+condition.host+'*':'*';
     let stat;
     stat = req.query.keep ? 3 : 0;
     let result = await solrCtrl.Search(condition, stat = stat, restrict = true)

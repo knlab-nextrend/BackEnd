@@ -1,5 +1,34 @@
 const poliCtrl = require("../controller/politica/poliService.ctrl");
 const hostCtrl = require("../controller/nextrend/host.ctrl");
+const { docCatViewer } = require("./crawlService");
+
+const syncHostTables = async (req,res) =>{  
+    try{
+        const poliHost = await poliCtrl.getHostListInfo();
+        const nextHost = await hostCtrl.read();
+        let poliArray=[];
+        poliHost.forEach((host)=>{
+            poliArray.push(host.host)
+        })
+        let nextArray=[];
+        nextHost.forEach((host)=>{
+            nextArray.push(host.HOST)
+        })
+        let deleteList = nextArray.filter(x => !poliArray.includes(x));
+        let insertList = poliArray.filter(x => !nextArray.includes(x));
+        
+        deleteList.forEach(async(host)=>{
+            await hostCtrl.delete(host);
+        })
+
+        insertList.forEach(async(host)=>{
+            await hostCtrl.create(host,null,null,null,null,1);
+        })
+        res.send({deleted:deleteList.length,inserted:insertList.length});
+    }catch(e){
+        res.statuts(400).send(e)
+    }
+}
 
 const getHostListInfo = async (req,res) => {
     try{
@@ -7,6 +36,28 @@ const getHostListInfo = async (req,res) => {
         res.send(hostResult);
     }catch(e){
         res.status(400).send(e);
+    }
+}
+
+const insertTestingHost = async(req,res)=>{
+    try{
+        let errList = [];
+        req.body.list.forEach(async(host)=>{
+            try{
+                const available = await poliCtrl.availableHost(host);
+                const result = host.match(/http/i);
+                if(result&&available){
+                    await poliCtrl.insertTestingHost(host);
+                }else{
+                    errList.push(host);
+                }
+            }catch(e){
+                errList.push(host);
+            }
+        })
+        res.send();
+    }catch(e){
+        res.status(400).send(e)
     }
 }
 
@@ -28,15 +79,48 @@ const insertHostInfo = async(req,res) => {
 
 const readHostInfo = async(req,res) => {
     try{
-        let hostResult;
         if(req.query.like){
-            hostResult = await hostCtrl.read(req.query.like)
+            const hostResult = await hostCtrl.read(req.query.like)
+            res.send(hostResult);
         }else{
-            hostResult = await hostCtrl.read()
+            const hostResult = await hostCtrl.read()
+            let converted = [];
+            for(let host of hostResult){
+                doc = await docCatViewer(host);
+                converted.push(doc);
+            }
+            res.send(converted);
         }
-        res.send(hostResult);
     }catch(e){
         res.status(400).send(e);
+    }
+}
+
+const stageTestingHost = async(req,res) => {
+    try{
+        //await poliCtrl.deleteTestingHost(req.body.host);
+        //await poliCtrl.insertCralwerHost();
+        res.send({message:'api 활성화 필요'})
+    }catch(e){
+        res.status(400).send(e)
+    }
+}
+
+const deleteTestingHost = async(req,res) => {
+    try{
+        //await poliCtrl.deleteTestingHost(req.body.host);
+        res.send({message:'api 활성화 필요'})
+    }catch(e){
+        res.status(400).send(e)
+    }
+}
+
+const getTestingHostList = async(req,res) => {
+    try{
+        const result = await poliCtrl.getTestingHostList();
+        res.send(result)
+    }catch(e){
+        res.status(400).send(e)
     }
 }
 
@@ -44,4 +128,9 @@ module.exports ={
     getHostListInfo:getHostListInfo,
     insertHostInfo,insertHostInfo,
     readHostInfo:readHostInfo,
+    syncHostTables:syncHostTables,
+    insertTestingHost:insertTestingHost,
+    getTestingHostList:getTestingHostList,
+    stageTestingHost:stageTestingHost,
+    deleteTestingHost:deleteTestingHost
 }

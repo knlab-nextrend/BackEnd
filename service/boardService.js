@@ -13,9 +13,9 @@ const crawlInfoPerCountry = async (req, res) => {
         const hostWithCountry = await boardCtrl.selectHostNation();
         hostWithCountry.forEach(host => {
             if (host.country in countriesName) {
-                countriesName[host.country].push(host.host);
+                countriesName[host.country].push(host.host.replace(/https*:\/\/|\//g,""));
             } else {
-                countriesName[host.country] = [host.host];
+                countriesName[host.country] = [host.host.replace(/https*:\/\/|\//g,"")];
             }
             if (host.host_idx in countriesIdx) {
                 countriesIdx[host.country].push(host.host_idx);

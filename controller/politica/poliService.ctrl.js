@@ -78,11 +78,79 @@ const getHostWorkLogById = (hid) => new Promise((resolve,reject)=>{
     })
 })
 
+const availableHost = (host) => new Promise((resolve,reject)=>{
+    const q1= 'select * from crawler_host where host = "'+host+'";';
+    const q2 = 'select * from crawler_host_test where host = "'+host+'";';
+    db.query(q1+q2,(err, data) => {
+        if (err) {
+            reject(err);
+        }else if(data[0].length>0||data[1].length>0){
+            resolve(false);
+        }else{
+            resolve(true)
+        }
+    })
+});
+
+const insertTestingHost = (host) => new Promise((resolve,reject)=>{
+    const date = dayjs().locale('se-kr').format().split('+')[0];
+    const query ='insert into crawler_host_test (crawler_num,job_id,host,work_cycle,worked_at,schedule_at,created_at) values (0,0,?,1,?,?,?);'
+    const params = [host,date,date,date]
+    db.query(query,params,(err, data) => {
+        if (err) {
+            reject(err);
+        } else {
+            resolve(data);
+        }
+    })
+})
+
+const getTestingHostList = () => new Promise((resolve,reject)=>{
+    const query ='select b.*,a.created_at from crawler_host_test a join crawler_log_test b on a.host=b.host'
+    db.query(query,(err, data) => {
+        if (err) {
+            reject(err);
+        } else {
+            resolve(data);
+        }
+    })
+})
+
+const deleteTestingHost = (host) => new Promise((resolve,reject)=>{
+    const query = 'delete from crawler_host_test where host = ?;';
+    const params = [host];
+    db.query(query,params,(err, data) => {
+        if (err) {
+            reject(err);
+        } else {
+            resolve(data);
+        }
+    })
+})
+
+const insertCralwerHost = (host) => new Promise((resolve,reject)=>{
+    const date = dayjs().locale('se-kr').format().split('+')[0];
+    const query ='insert into crawler_host_test (crawler_num,job_id,host,work_cycle,worked_at,schedule_at,created_at) values (0,0,?,1,?,?,?);'
+    const params = [host,date,date,date]
+    db.query(query,params,(err, data) => {
+        if (err) {
+            reject(err);
+        } else {
+            resolve(data);
+        }
+    })
+})
+
 module.exports = {
     modSubmitStat:modSubmitStat,
     checkStat:checkStat,
     insertUploadData:insertUploadData,
     getHostListInfo:getHostListInfo,
     getCrawlerLog:getCrawlerLog,
-    getHostWorkLogById:getHostWorkLogById
+    getHostWorkLogById:getHostWorkLogById,
+    insertTestingHost:insertTestingHost,
+    availableHost:availableHost,
+    getTestingHostList:getTestingHostList,
+    deleteTestingHost:deleteTestingHost,
+    insertCralwerHost:insertCralwerHost
 }
