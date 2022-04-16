@@ -85,6 +85,7 @@ const crawlKeep = async (req, res) => {
                 case 3:
                     // 일단 직접 지정...
                     result = await esCtrl.Keep(_id, 3);
+                    console.log(result);
                     // addEditLog의 workType 4는 보류.
                     await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
                     break;
@@ -392,11 +393,11 @@ const screenStage = async (req, res) => {
             const doc = await solrCtrl.Detail(itemId);
             let tempDocs = doc.docs;
             try{
-                const hostInfo = await hostCtrl.getInfo(tempDocs.doc_host);
+                const hostInfo = await hostCtrl.getInfo(tempDocs.doc_url_intro);
                 tempDocs.doc_host = hostInfo.idx;
                 tempDocs["doc_publisher"] = hostInfo.name;
-                tempDocs["doc_publish_country"] = hostInfo.country.toString();
-                tempDocs["doc_language"] = hostInfo.lang.toString();
+                tempDocs["doc_publish_country"] = hostInfo.country ? hostInfo.country.toString():null;
+                tempDocs["doc_language"] = hostInfo.lang ? hostInfo.lang.toString():null;
             }catch(e){
                 tempDocs["doc_publisher"] = tempDocs.doc_host;
                 tempDocs.doc_host = null;

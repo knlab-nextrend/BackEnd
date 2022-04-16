@@ -12,8 +12,14 @@ const selectHostNation = () => new Promise((resolve,reject)=>{
 });
 
 const selectWorkLog = (docStat,workType,host,range) => new Promise((resolve,reject)=>{
-    const query = 'select count(*) as dcCount from nt_edit_log where doc_stat in '+docStat+' and work_type=? and host in '+host+' and '+range;
+    let query;
+    if(host){
+        query = 'select count(*) as dcCount from nt_edit_log where doc_stat in '+docStat+' and work_type=? and host in '+host+' and '+range;
+    }else{
+        query = 'select count(*) as dcCount from nt_edit_log where doc_stat in '+docStat+' and work_type=? and '+range;
+    }
     const params = [workType];
+    console.log(query);
     db.query(query,params,(err,data)=>{
         if(err){
             reject(err)

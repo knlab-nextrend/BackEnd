@@ -60,8 +60,8 @@ const updateQuery = (host,name,category,country,lang,workCycle) => new Promise((
     });
 });
 
-const getInfo = (host) => new Promise((resolve,reject)=>{
-    const query = 'select idx,name,lang, country from nt_hosts where host like "%'+host+'%"';
+const getInfo = (url) => new Promise((resolve,reject)=>{
+    const query = 'select idx,name,lang, country from nt_hosts where instr("'+url+'",host)';
     db.query(query,(err,data)=>{
         if(err||data.length==0){
             reject(err)

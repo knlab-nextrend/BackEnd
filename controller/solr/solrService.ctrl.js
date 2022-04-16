@@ -73,7 +73,7 @@ const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve
     query=query+' AND pages:['+paramsDict["pageGte"]+' TO '+paramsDict["pageLte"]+']';
     
     if(paramsDict["host"]!==undefined){
-        query=query+' AND host:'+paramsDict["host"];
+        query=query+' AND intro_url:'+paramsDict["host"];
     }
 
     if(paramsDict["keyword"]===undefined){
@@ -107,7 +107,7 @@ const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve
 
     if((paramsDict["toDate"]==undefined)&&(paramsDict["fromDate"]==undefined)){
     }else{
-        query=query+' AND lastmodified:['+toDate+' TO '+fromDate+']';
+        query=query+' AND recentWorkDate:['+toDate+' TO '+fromDate+']';
     }
     //keyword, date는 쿼리에 항상 들어감.
 
@@ -135,10 +135,11 @@ const solrSearch = (condition,stat,restrict=false) => new Promise(async (resolve
         start = 0;
     }
 
-    let solrQuery = solrDB.createQuery().q(query).start(start).rows(paramsDict["listSize"]).sort({lastmodified:paramsDict["sort"]});
+    let solrQuery = solrDB.createQuery().q(query).start(start).rows(paramsDict["listSize"]).sort({recentWorkDate:paramsDict["sort"]});
     //query=query+'&sort=creationdate '+paramsDict["sort"];
     // 띄어쓰기--> %20
     // solrDB.search(query, function(err, obj){
+        
     solrDB.search(solrQuery, function(err, obj){
         if(err){
             resolve(false);

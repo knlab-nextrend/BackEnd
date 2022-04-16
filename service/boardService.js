@@ -13,11 +13,11 @@ const crawlInfoPerCountry = async (req, res) => {
         const hostWithCountry = await boardCtrl.selectHostNation();
         hostWithCountry.forEach(host => {
             if (host.country in countriesName) {
-                countriesName[host.country].push(host.host.replace(/https*:\/\/|\//g,""));
+                countriesName[host.country].push(host.host.replace(/https*:\/\//g,""));
             } else {
-                countriesName[host.country] = [host.host.replace(/https*:\/\/|\//g,"")];
+                countriesName[host.country] = [host.host.replace(/https*:\/\//g,"")];
             }
-            if (host.host_idx in countriesIdx) {
+            if (host.country in countriesIdx) {
                 countriesIdx[host.country].push(host.host_idx);
             } else {
                 countriesIdx[host.country] = [host.host_idx];
@@ -38,7 +38,7 @@ const crawlInfoPerCountry = async (req, res) => {
                     for (const [country, hosts] of Object.entries(countriesName)) {
                         let host = '(' + hosts.join(' OR ') + ')';
                         condition.host = host;
-                        const searchResult = await solrServiceCtrl.Search(condition, 0)
+                        const searchResult = await solrServiceCtrl.Search(condition, '*')
                         result[country] = searchResult.dcCount;
                         countryCount+=searchResult.dcCount;
                     }
@@ -54,6 +54,7 @@ const crawlInfoPerCountry = async (req, res) => {
                         sortType: 'doc_register_date'
                     }
                     let result = Object.assign({}, countriesIdx);
+                    let count = 0;
                     for (const [country, idxs] of Object.entries(countriesIdx)) {
                         let should = [];
                         if (Array.isArray(idxs)) {
@@ -66,7 +67,11 @@ const crawlInfoPerCountry = async (req, res) => {
                         const searchQuery = libs.reqToEsFilters(query, null, [], should)
                         const searchResult = await esServiceCtrl.Search(searchQuery)
                         result[country] = searchResult.dcCount;
+                        count+=searchResult.dcCount;
                     }
+                    const entireQuery = libs.reqToEsFilters(query, null, [], []);
+                    const entireResult = await esServiceCtrl.Search(entireQuery)
+                    result["기타"] = entireResult.dcCount-count;
                     res.send(result)
                 } catch (e) {
                     console.log(e)
@@ -81,11 +86,17 @@ const crawlInfoPerCountry = async (req, res) => {
                 const range = '(DT between "'+monthBefore+'" and "'+now+'")';
                 try {
                     let result = Object.assign({}, countriesIdx);
+                    const entireLog = await boardCtrl.selectWorkLog(docStat, 2, null,range);
+                    let count = 0;
+                    console.log(countriesIdx);
                     for (const [country, idxs] of Object.entries(countriesIdx)) {
                         let hostIdx = '(' + idxs.join(',') + ')';
                         const searchResult = await boardCtrl.selectWorkLog(docStat, 2, hostIdx,range)
                         result[country] = searchResult[0].dcCount;
+                        count+=searchResult[0].dcCount;
                     }
+                    console.log(result,entireLog);
+                    result["기타"]=entireLog[0].dcCount-count;
                     res.send(result);
                 } catch (e) {
                     console.log(e)
@@ -187,7 +198,7 @@ const getAllLog = async(req,res) => {
             start: 0
         };
         const result = await workingLogCtrl.getAllLog();
-        const searchResult = await solrServiceCtrl.Search(condition, 0)
+        const searchResult = await solrServiceCtrl.Search(condition, '*')
         result['collect'] = searchResult.dcCount;
         res.send(result);
     }catch(e){
