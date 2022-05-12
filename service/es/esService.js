@@ -1,7 +1,5 @@
 const esDB = require("../../models/es/index").esDB;
 const config = require("../../models/es/index").config;
-const nationCtrl = require("../nextrend/nation.ctrl");
-const codeCtrl = require("../nextrend/subjectCode.ctrl");
 const libs = require("../../lib/libs");
 
 

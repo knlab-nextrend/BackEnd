@@ -1,4 +1,4 @@
-const loginCtrl = require("../controller/nextrend/login.ctrl");
+const loginCtrl = require("../service/nextrend/login");
 
 // 따로 해쉬 하는 api를 요청하는 필요성..? 없을 듯으로 보임.
 const getHash = async (req,res) => {

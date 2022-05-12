@@ -1,6 +1,6 @@
-const poliCtrl = require("../controller/politica/poliService.ctrl");
-const hostCtrl = require("../controller/nextrend/host.ctrl");
-const { docCatViewer } = require("./crawlService");
+const poliCtrl = require("../service/politica/poliService");
+const hostCtrl = require("../service/nextrend/host");
+const { docCatViewer } = require("./crawl.ctrl");
 
 const syncHostTables = async (req,res) =>{  
     try{

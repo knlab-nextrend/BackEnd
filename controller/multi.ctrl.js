@@ -1,4 +1,4 @@
-const multiCtrl = require("../controller/nextrend/multi.ctrl");
+const multiCtrl = require("../service/nextrend/multi");
 
 const readMulti = async (req,res) => {
     try{

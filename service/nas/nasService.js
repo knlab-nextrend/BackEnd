@@ -1,11 +1,9 @@
 const jsftp = require("jsftp");
-const path = require('path');
 const fs = require('fs');
 const ftp = require('basic-ftp');
 
 const NasFTP = require("../../models/nas/index");
 const thumbRoute = NasFTP.thumbRoute;
-const pdfRoute = NasFTP.pdfRoute;
 const uploadRoute = NasFTP.uploadRoute;
 const webServer = NasFTP.webServer;
 const config = NasFTP.config;

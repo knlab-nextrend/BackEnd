@@ -1,5 +1,5 @@
-const userCtrl = require("../controller/nextrend/user.ctrl");
-const loginCtrl = require("../controller/nextrend/login.ctrl");
+const userCtrl = require("../service/nextrend/user");
+const loginCtrl = require("../service/nextrend/login");
 
 const infoProcess = (body) => {
     const userInfo = {

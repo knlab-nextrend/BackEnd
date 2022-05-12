@@ -1,4 +1,4 @@
-const testCtrl = require("../controller/test.ctrl")
+const testCtrl = require("../service/test")
 
 const ping = async(req,res,next) => {
     try{

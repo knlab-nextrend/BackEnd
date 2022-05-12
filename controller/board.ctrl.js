@@ -1,10 +1,10 @@
-const boardCtrl = require("../controller/nextrend/dashBoard.ctrl");
-const esServiceCtrl = require("../controller/es/esService.ctrl");
-const solrServiceCtrl = require("../controller/solr/solrService.ctrl");
+const boardCtrl = require("../service/nextrend/dashBoard");
+const esServiceCtrl = require("../service/es/esService");
+const solrServiceCtrl = require("../service/solr/solrService");
 const dayjs = require("dayjs");
 const libs = require("../lib/libs");
-const poliServiceCtrl = require("../controller/politica/poliService.ctrl");
-const workingLogCtrl = require("../controller/nextrend/workingLog.ctrl");
+const poliServiceCtrl = require("../service/politica/poliService");
+const workingLogCtrl = require("../service/nextrend/workingLog");
 
 const crawlInfoPerCountry = async (req, res) => {
     if (req.query.status) {

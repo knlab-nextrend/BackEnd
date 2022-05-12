@@ -1,5 +1,5 @@
-const subjectCodeCtrl = require("../controller/nextrend/subjectCode.ctrl");
-const categoryCtrl = require("../controller/nextrend/categorys.ctrl");
+const subjectCodeCtrl = require("../service/nextrend/subjectCode");
+const categoryCtrl = require("../service/nextrend/categorys");
 
 const readCat = async (req,res) => {
     if(!req.query.type){

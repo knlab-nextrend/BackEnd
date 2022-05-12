@@ -1,13 +1,13 @@
-const solrCtrl = require("../controller/solr/solrService.ctrl");
-const esCtrl = require("../controller/es/esService.ctrl");
-const nasCtrl = require("../controller/nas/nasService.ctrl");
-const poliCtrl = require("../controller/politica/poliService.ctrl");
-const codeCtrl = require("../controller/nextrend/subjectCode.ctrl");
+const solrCtrl = require("../service/solr/solrService");
+const esCtrl = require("../service/es/esService");
+const nasCtrl = require("../service/nas/nasService");
+const poliCtrl = require("../service/politica/poliService");
+const codeCtrl = require("../service/nextrend/subjectCode");
 const libs = require("../lib/libs");
-const fileCtrl = require("../controller/file.ctrl");
-const workLogCtrl = require("../controller/nextrend/workingLog.ctrl");
-const hostCtrl = require("../controller/nextrend/host.ctrl");
-const testCtrl = require("../controller/test.ctrl");
+const fileCtrl = require("../service/file");
+const workLogCtrl = require("../service/nextrend/workingLog");
+const hostCtrl = require("../service/nextrend/host");
+const testCtrl = require("../service/test");
 
 /*
 Document Status Code list

@@ -1,8 +1,8 @@
-const esServiceCtrl = require("../controller/es/esService.ctrl");
-const customCtrl = require("../controller/nextrend/customPage.ctrl");
+const esServiceCtrl = require("../service/es/esService");
+const customCtrl = require("../service/nextrend/customPage");
 const libs = require("../lib/libs");
 const { listeners } = require("../models/nextrend");
-const crawlService = require("./crawlService");
+const crawlCtrl = require("./crawl.ctrl");
 
 const createSetting = async (req, res) => {
     if (req.body.xaxis && req.body.yaxis && req.body.uid) {
@@ -116,7 +116,7 @@ const customSearch = async (req, res) => {
             let result = await esServiceCtrl.Search(searchQuery)
             const document = [];
             for(let doc of result.docs){
-                doc = await crawlService.docCatViewer(doc);
+                doc = await crawlCtrl.docCatViewer(doc);
                 document.push(doc);
             }
             result.docs = document;
