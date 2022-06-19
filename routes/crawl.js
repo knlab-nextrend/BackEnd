@@ -19,7 +19,7 @@ router.delete('/screening/',authJWT,crawlCtrl.screenDelete); //스크리닝 데�
 router.post('/screening/',authJWT,crawlCtrl.screenKeep);
 
 router.get('/host/',boardCtrl.crawlHostInfo);
-router.get('/host/:host_id',boardCtrl.crawlHostInfo);
+router.get('/host/:job_id',boardCtrl.crawlHostInfo);
 router.get('/sum/',boardCtrl.crawlerSummationLog);
 
 module.exports = router;

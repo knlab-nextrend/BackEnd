@@ -112,8 +112,8 @@ const crawlInfoPerCountry = async (req, res) => {
 const crawlHostInfo = async(req,res) => {
     try{
         let result;
-        if(req.params.host_id){
-            result = await poliServiceCtrl.getHostWorkLogById(parseInt(req.params.host_id));
+        if(req.params.job_id){
+            result = await poliServiceCtrl.getHostWorkLogByJobId(parseInt(req.params.job_id));
         }else{
             result = await poliServiceCtrl.getHostListInfo();
         }

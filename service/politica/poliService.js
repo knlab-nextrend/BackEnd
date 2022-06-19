@@ -45,7 +45,7 @@ const insertUploadData = (itemId,dc_page) => new Promise((resolve, reject) => {
 })
 
 const getHostListInfo = () => new Promise((resolve,reject)=>{
-    const query = "select * from crawler_host";
+    const query = "SELECT * FROM crawler_info order by url desc;";
     db.query(query,(err, data) => {
         if (err) {
             reject(err);
@@ -66,9 +66,9 @@ const getCrawlerLog = () => new Promise((resolve,reject)=>{
     })
 })
 
-const getHostWorkLogById = (hid) => new Promise((resolve,reject)=>{
-    const query ='select h.host, l.* from crawler_host h inner join crawler_log l on h.host = l.host where h.host_id = ?;'
-    const params = [hid]
+const getHostWorkLogByJobId = (jobId) => new Promise((resolve,reject)=>{
+    const query ='select h.host, l.* from crawler_host h inner join crawler_log l on h.host = l.host where h.job_id = ?;'
+    const params = [jobId]
     db.query(query,params,(err, data) => {
         if (err) {
             reject(err);
@@ -147,7 +147,7 @@ module.exports = {
     insertUploadData:insertUploadData,
     getHostListInfo:getHostListInfo,
     getCrawlerLog:getCrawlerLog,
-    getHostWorkLogById:getHostWorkLogById,
+    getHostWorkLogByJobId:getHostWorkLogByJobId,
     insertTestingHost:insertTestingHost,
     availableHost:availableHost,
     getTestingHostList:getTestingHostList,
