@@ -1,0 +1,8 @@
+
+DROP DATABASE IF EXISTS `login`;
+
+CREATE DATABASE `login`;
+
+DROP DATABASE IF EXISTS `nexteli`;
+
+CREATE DATABASE `nexteli`;

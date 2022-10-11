@@ -1,0 +1,28 @@
+{
+  "permission": [
+    {
+      "permission_code": 0,
+      "permission_name": "사용자"
+    },
+    {
+      "permission_code": 1,
+      "permission_name": "스크리닝 작업자"
+    },
+    {
+      "permission_code": 2,
+      "permission_name": "정제 작업자"
+    },
+    {
+      "permission_code": 3,
+      "permission_name": "등록 작업자"
+    },
+    {
+      "permission_code": 4,
+      "permission_name": "큐레이션 작업자"
+    },
+    {
+      "permission_code": 9,
+      "permission_name": "관리자"
+    }
+  ]
+}
