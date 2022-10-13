@@ -4,8 +4,8 @@ const dbtype = process.env.NODE_ENV || 'legacyDB';
 const env = process.env.NODE_ENV || 'development';
 const config = require(path.join(__dirname, '..','..', 'configs', 'db.json'))[dbtype][env];
 
-const mysql = require('mysql2');
-const db = mysql.createConnection({
+const mysql = require('mysql2/promise');
+const db = mysql.createPool({
     host: config.host,
     user: config.username,
     password: config.password,

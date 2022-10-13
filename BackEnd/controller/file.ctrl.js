@@ -128,10 +128,20 @@ const getExcelData = async (req, res)=>{
     res.send(result)
 }
 
+const getExcelDetail = async(req,res)=>{
+    const pid = parseInt(req.query.PID);
+
+    const result = await fileService.getExcelDataDetail(pid);
+
+    res.send(result);
+}
+
+
 
 module.exports = {
     docImageAttach: docImageAttach,
     docImageDetach: docImageDetach,
     uploadExcelData: uploadExcelData,
-    getExcelData : getExcelData
+    getExcelData : getExcelData,
+    getExcelDetail : getExcelDetail
 }

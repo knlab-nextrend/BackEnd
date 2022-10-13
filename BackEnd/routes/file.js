@@ -16,5 +16,5 @@ router.post('/docImageAttach/',imageUpload.single('file'),fileCtrl.docImageAttac
 router.post('/uploadExcelData/',pdfUpload.array('files'),authJWT,fileCtrl.uploadExcelData);
 
 router.get('/getExcelData', fileCtrl.getExcelData)
-
+router.get('/getExcelDetail', fileCtrl.getExcelDetail)
 module.exports = router;

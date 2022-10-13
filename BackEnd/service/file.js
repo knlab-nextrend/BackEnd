@@ -72,7 +72,7 @@ const deleteComparedContentImage = (_id,target=null) => new Promise(async (resol
 });
 
 
-const getExcelDataList = (params)=>new Promise((resolve, reject)=>{
+const getExcelDataList = (params)=>new Promise(async (resolve, reject)=>{
     const page = (parseInt(params.page || "1")-1) * 20;
     const country = params.country ? ` and DC_COUNTRY like '%${params.country}%'`  : "";
     const originalTitle = params.orgtitle? ` and DC_TITLE_OR like '%${params.orgtitle}%'` : "";
@@ -82,21 +82,60 @@ const getExcelDataList = (params)=>new Promise((resolve, reject)=>{
     const summary = params.summary ? ` and DC_CONTENT like '%${params.summary}%'` : ""
 
 
-    let query = `select DISTINCT(a.IDX) as idxss, a.DC_COUNTRY, a.DC_TYPE, a.DC_AGENCY, a.DC_TITLE_OR, \
-    a.DC_TITLE_KR, a.DC_PAGE, a.DC_MEMO1, a.DC_URL_LOC from nt_document_list a \
+    let query = `select DISTINCT(a.IDX) as IDX, a.DC_COUNTRY as country, a.DC_TYPE as doc_type, a.DC_AGENCY as agency, a.DC_TITLE_OR as original_title, \
+    a.DC_TITLE_KR as kr_title, a.DC_PAGE as page, a.DC_MEMO1 as attatchment, a.DC_URL_LOC as link from nt_document_list a \
     where a.STAT < 9${country}${originalTitle}${krTitle}${agencyTitle}${dcType}${summary}\
     ORDER BY a.IDX DESC LIMIT ${page},20;`
     
-    phpDB.query(query, (err, results, fields)=>{
-        if(err) reject(err)
-        
+    try{
+        let [ results ]  = await phpDB.query(query);
+
         results = results.map((row, idx)=>{
             return {index : idx+1+page, ...row}
-        })
-        resolve(results)
-    });
+        });
+        resolve(results);
+    }catch(err) {reject(err);}
+    
+})
 
+const getExcelDataDetail = (pid)=>new Promise(async (resolve, reject)=>{
+    try{
+        const query = `select a.DC_TITLE_OR as original_title, a.DC_AGENCY as agency, \
+        a.DC_DT_WRITE as writed_time ,a.DC_PAGE as page, a.DC_COUNTRY as country, \
+        a.DC_TYPE as doc_type, a.DC_CODE as ct_name, a.DC_KEYWORD as keyword, a.DC_URL_LOC as url, \
+        a.DC_SMRY_KR as kr_summary, a.DC_CONTENT as content, a.DC_LINK as link from nt_document_list a where IDX=${pid};`
+    
+        let [ results ] = await phpDB.query(query);
 
+        let result = results[0];
+
+        const codeQuery = `select CT_NM from nt_categorys where CODE like ${result.ct_name} and TYPE=1;`;
+        
+        //주제분류 코드로 한글 값 조회 후 result 객체에 넣기
+        
+        let [ ctNameResult ]= await phpDB.query(codeQuery);
+        
+        result.ct_name = ctNameResult[0].CT_NM;
+
+        //연관 링크의 PID(IDX) 리스트, 없으면 패스
+        if([null, '', ' '].includes(result.link)){
+            result.link = [];
+            resolve(result);
+        }
+
+        let links = result.link.split(" ");
+        
+        links = links.map(async (link)=>{
+                const [ linkResult ] = await phpDB.query(`select DC_TITLE_KR,DC_DT_WRITE from nt_document_list where idx like ${link};`[0])
+                link.kr_title = linkResult.DC_TITLE_KR;
+                link.writed_time = linkResult.DC_DT_WRITE;
+        });
+
+        result.link = links;
+
+        resolve(result);
+
+    }catch(err){reject(err);}
 })
 
 
@@ -104,5 +143,6 @@ const getExcelDataList = (params)=>new Promise((resolve, reject)=>{
 module.exports={
     unlinkFile:unlinkFile,
     deleteComparedContentImage:deleteComparedContentImage,
-    getExcelDataList : getExcelDataList
+    getExcelDataList : getExcelDataList,
+    getExcelDataDetail : getExcelDataDetail
 }

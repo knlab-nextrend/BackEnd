@@ -6,6 +6,16 @@ services:
     command : --default-authentication-plugin=mysql_native_password
     ports : 
       - "3306:3306"
+  solr-db:
+    image: solr
+    ports :
+      - "8983:8983"
+  es-db:
+    image: elasticsearch:7.17.6
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
   redis-server :
     image: redis
     ports:
