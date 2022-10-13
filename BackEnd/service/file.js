@@ -73,6 +73,8 @@ const deleteComparedContentImage = (_id,target=null) => new Promise(async (resol
 
 
 const getExcelDataList = (params)=>new Promise(async (resolve, reject)=>{
+
+    //쿼리문 생성, 조건 검색시 WHERE 문을 추가함.
     const page = (parseInt(params.page || "1")-1) * 20;
     const country = params.country ? ` and DC_COUNTRY like '%${params.country}%'`  : "";
     const originalTitle = params.orgtitle? ` and DC_TITLE_OR like '%${params.orgtitle}%'` : "";
@@ -102,20 +104,13 @@ const getExcelDataDetail = (pid)=>new Promise(async (resolve, reject)=>{
     try{
         const query = `select a.DC_TITLE_OR as original_title, a.DC_AGENCY as agency, \
         a.DC_DT_WRITE as writed_time ,a.DC_PAGE as page, a.DC_COUNTRY as country, \
-        a.DC_TYPE as doc_type, a.DC_CODE as ct_name, a.DC_KEYWORD as keyword, a.DC_URL_LOC as url, \
-        a.DC_SMRY_KR as kr_summary, a.DC_CONTENT as content, a.DC_LINK as link from nt_document_list a where IDX=${pid};`
+        a.DC_TYPE as doc_type, b.CT_NM as ct_name, a.DC_KEYWORD as keyword, a.DC_URL_LOC as url, \
+        a.DC_SMRY_KR as kr_summary, a.DC_CONTENT as content, a.DC_LINK as link from nt_document_list a\
+        join nt_categorys b on a.DC_CODE = b.CODE where a.IDX=${pid};`
     
         let [ results ] = await phpDB.query(query);
 
         let result = results[0];
-
-        const codeQuery = `select CT_NM from nt_categorys where CODE like ${result.ct_name} and TYPE=1;`;
-        
-        //주제분류 코드로 한글 값 조회 후 result 객체에 넣기
-        
-        let [ ctNameResult ]= await phpDB.query(codeQuery);
-        
-        result.ct_name = ctNameResult[0].CT_NM;
 
         //연관 링크의 PID(IDX) 리스트, 없으면 패스
         if([null, '', ' '].includes(result.link)){

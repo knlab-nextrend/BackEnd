@@ -9,7 +9,6 @@ RUN npm install
 COPY configs ./configs
 COPY controller ./controller
 COPY lib ./lib
-COPY logs ./logs
 COPY middlewares ./middlewares
 COPY models ./models
 COPY modules ./modules
