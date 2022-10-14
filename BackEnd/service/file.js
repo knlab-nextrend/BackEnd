@@ -121,9 +121,9 @@ const getExcelDataDetail = (pid)=>new Promise(async (resolve, reject)=>{
         let links = result.link.split(" ");
         
         links = links.map(async (link)=>{
-                const [ linkResult ] = await phpDB.query(`select DC_TITLE_KR,DC_DT_WRITE from nt_document_list where idx like ${link};`[0])
-                link.kr_title = linkResult.DC_TITLE_KR;
-                link.writed_time = linkResult.DC_DT_WRITE;
+                const [ linkResult ] = await phpDB.query(`select DC_TITLE_KR,DC_DT_WRITE from nt_document_list where idx like ${link};`);
+                link.kr_title = linkResult[0].DC_TITLE_KR;
+                link.writed_time = linkResult[0].DC_DT_WRITE;
         });
 
         result.link = links;
