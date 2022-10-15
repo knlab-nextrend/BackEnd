@@ -27,8 +27,11 @@ services:
     depends_on:
       - mysql-db
       - redis-server
-    command: ["./wait-for-it/wait-for-it.sh","-t","30" ,"mysql-db:3306", "--", "node", "server.js"]
+    command: ["./wait-for-it/wait-for-it.sh","-t","60" ,"mysql-db:3306", "--", "node", "server.js"]
   frontend :
     build : ./Frontend/.
+    volumes : 
+      - ./Frontend/src:/usr/src/app/src
     ports :
       - "3000:3000"
+    stdin_open : true
