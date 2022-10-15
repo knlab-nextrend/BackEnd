@@ -91,99 +91,48 @@ function ExcelDataRegisterContainer() {
       let data = reader.result;
       const excelFile = XLSX.read(data, {
         type: "binary",
-        // cellDates: true,
+        cellDates: true,
       });
       const sheetName = excelFile.SheetNames[0];
       const firstSheet = excelFile.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(firstSheet, { defval: null });
-      console.log(jsonData);
+
+      console.log(firstSheet);
+      const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
+        defval: null,
+      });
       const _exelData = jsonData.map((item) => {
         return {
+          ...item,
           is_crawled: false,
           status: 6, //아카이브
-          pdf_file_name: item["pdf_file_name"],
-          thumbnail_file_name: item["thumbnail_file_name"],
-          item_id: item["item_id"],
-          doc_thumbnail: item["doc_thumbnail"],
-          doc_file: item["doc_file"],
-          doc_origin_title: item["doc_origin_title"],
-          doc_kor_title: item["doc_kor_title"],
-          doc_kor_summary: item["doc_kor_summary"],
-          // doc_publish_date: item["doc_publish_date"]
-          //   ? item["doc_publish_date"]
-          //       .split(".")
-          //       .filter((item) => item !== "")
-          //       .join("-")
-          //   : null, // 날짜형식 수정
-          // doc_write_date: item["doc_write_date"]
-          //   ? item["doc_write_date"]
-          //       .split(".")
-          //       .filter((item) => item !== "")
-          //       .join("-")
-          //   : null,
-          //     doc_collect_date:
-          //       item["doc_collect_date"] === ""
-          //         ? null
-          //         : item["doc_collect_date"]
-          //             .split(".")
-          //             .filter((item) => item !== "")
-          //             .join("-"),
-          //     doc_url: item["doc_url"] === "" ? null : item["doc_url"],
-          //     doc_url_intro:
-          //       item["doc_url_intro"] === "" ? null : item["doc_url_intro"],
-          //     doc_bundle_title:
-          //       item["doc_bundle_title"] === "" ? null : item["doc_bundle_title"],
-          //     doc_bundle_url:
-          //       item["doc_bundle_url"] === "" ? null : item["doc_bundle_url"],
-          //     doc_relate_title:
-          //       item["doc_relate_title"] === "" ? null : item["doc_relate_title"],
-          //     doc_relate_url: item["doc_relate_url"] === "" ? null : item["17"],
-          //     doc_publisher: item["doc_publisher"] === "" ? null : item["18"],
-          //     doc_page: item["doc_page"] === "" ? null : item["19"],
-          //     doc_biblio: item["doc_biblio"] === "" ? null : item["20"],
-          //     doc_content_type:
-          //       item["doc_content_type"] === "" ? null : item["21"].split(", "),
-          //     doc_content_category:
-          //       item["doc_content_category"] === "" ? null : item["22"].split(", "),
-          //     doc_language:
-          //       item["doc_language"] === "" ? null : item["23"].split(", "),
-          //     doc_publish_country:
-          //       item["doc_publish_country"] === "" ? null : item["24"].split(", "),
-          //     doc_country:
-          //       item["doc_country"] === "" ? null : item["25"].split(", "),
-          //     doc_keyowrd:
-          //       item["doc_keyowrd"] === "" ? null : item["26"].split(", "),
-          //     doc_content: item["doc_content"] === "" ? null : item["27"],
-          //     doc_hit: item["doc_hit"] === "" ? null : item["28"],
-          //     doc_host: item["doc_host"] === "" ? null : item["29"],
-          //     doc_register_date:
-          //       item["doc_register_date"] === ""
-          //         ? null
-          //         : item["30"]
-          //             .split(".")
-          //             .filter((item) => item !== "")
-          //             .join("-"),
-          //     doc_modify_date:
-          //       item["doc_modify_date"] === ""
-          //         ? null
-          //         : item["31"]
-          //             .split(".")
-          //             .filter((item) => item !== "")
-          //             .join("-"),
-          //     doc_origin_summary:
-          //       item["doc_origin_summary"] === "" ? null : item["32"],
-          //     doc_category:
-          //       item["doc_category"] === ""
-          //         ? null
-          //         : item["33"].replaceAll('"', "").split(", "), // 쌍따옴표 제거
-          //     doc_topic: item["doc_topic"] === "" ? null : item["34"].split(", "),
-          //     doc_project: item["doc_project"] === "" ? null : item["35"],
-          //     doc_custom: item["doc_custom"] === "" ? null : item["36"].split(", "),
-          //     doc_publishing: item["doc_publishing"] === "" ? null : item["37"],
-          //     doc_recomment: item["doc_recomment"] === "" ? null : item["38"],
-          //     doc_memo: item["doc_memo"] === "" ? null : item["39"],
+          doc_content_type: item["doc_content_type"]
+            ? item["doc_content_type"].split(", ")
+            : null,
+          doc_content_category: item["doc_content_category"]
+            ? item["doc_content_category"].split(", ")
+            : null,
+          doc_language: item["doc_language"]
+            ? item["doc_language"].split(", ")
+            : null,
+          doc_publish_country: item["doc_publish_country"]
+            ? item["doc_publish_country"].split(", ")
+            : null,
+          doc_country: item["doc_country"]
+            ? item["doc_country"].split(", ")
+            : null,
+          doc_keyowrd: item["doc_keyowrd"]
+            ? item["doc_keyowrd"].split(", ")
+            : null,
+          doc_category: item["doc_category"]
+            ? item["doc_category"].replaceAll('"', "").split(", ") //쌍따옴표제거
+            : null,
+          doc_topic: item["doc_topic"] ? item["doc_topic"].split(", ") : null,
+          doc_custom: item["doc_custom"]
+            ? item["doc_custom"].split(", ")
+            : null,
         };
       });
+      console.log(_exelData);
       setExcelData(_exelData);
     };
     reader.readAsBinaryString(input.files[0]);
@@ -329,3 +278,7 @@ function ExcelDataRegisterContainer() {
   );
 }
 export default ExcelDataRegisterContainer;
+
+const dateToDashStyle = (target) => {
+  if (!target) return null;
+};
