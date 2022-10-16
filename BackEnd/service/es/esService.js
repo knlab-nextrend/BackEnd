@@ -44,8 +44,8 @@ const esSearch = (searchQuery) => new Promise(async (resolve, reject) => {
 
 const esIndex = (doc, stat, id = false, ret = false) => new Promise(async (resolve, reject) => {
     let body = libs.nullProcessing(doc);
-
     body.status = stat;
+
     let query = {
         index: 'politica_service',
         refresh: true,
@@ -56,7 +56,7 @@ const esIndex = (doc, stat, id = false, ret = false) => new Promise(async (resol
     }
     const result = await esDB.index(query);
     if (result.statusCode == 200 || result.statusCode == 201) {
-        resolve(true);
+        resolve(result._id);
     } else if (ret) {
         resolve(result._id);
     } else {
