@@ -148,7 +148,7 @@ function ExcelDataRegisterContainer() {
   const upload = () => {
     const files = new FormData();
     pdfData.forEach((pdf) => {
-      files.append("files", pdf);
+      files.append("pdfs", pdf);
     });
     thumbnails.forEach((thumbnaiil) => files.append("thumbnails", thumbnaiil));
     files.append("meta", JSON.stringify(excelData));
