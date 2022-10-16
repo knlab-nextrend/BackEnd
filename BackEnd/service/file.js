@@ -71,9 +71,9 @@ const deleteComparedContentImage = (_id,target=null) => new Promise(async (resol
     }
 });
 
-
+/*
 const getExcelDataList = (params)=>new Promise(async (resolve, reject)=>{
-
+    
     //쿼리문 생성, 조건 검색시 WHERE 문을 추가함.
     const page = (parseInt(params.page || "1")-1) * 20;
     const country = params.country ? ` and DC_COUNTRY like '%${params.country}%'`  : "";
@@ -98,7 +98,9 @@ const getExcelDataList = (params)=>new Promise(async (resolve, reject)=>{
         resolve(results);
     }catch(err) {reject(err);}
     
-})
+
+});
+
 
 const getExcelDataDetail = (pid)=>new Promise(async (resolve, reject)=>{
     try{
@@ -134,10 +136,10 @@ const getExcelDataDetail = (pid)=>new Promise(async (resolve, reject)=>{
 })
 
 
-
+*/
 module.exports={
     unlinkFile:unlinkFile,
     deleteComparedContentImage:deleteComparedContentImage,
-    getExcelDataList : getExcelDataList,
-    getExcelDataDetail : getExcelDataDetail
+    //getExcelDataList : getExcelDataList,
+    //getExcelDataDetail : getExcelDataDetail
 }
