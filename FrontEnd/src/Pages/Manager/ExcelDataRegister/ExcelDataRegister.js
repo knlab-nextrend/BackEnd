@@ -16,7 +16,7 @@ function ExcelDataRegister({
   nextStep,
   prevStep,
   step,
-  setExcelData,
+  deleteExcelData,
   readPdf,
   pdfMetaData,
   deletePdf,
@@ -24,6 +24,7 @@ function ExcelDataRegister({
   deleteImage,
   imageMetaData,
   excelData,
+  errorList,
 }) {
   const [excelFilename, setExcelFilename] = useState(null);
   const [pdfFilename, setPdfFilename] = useState(null);
@@ -58,7 +59,7 @@ function ExcelDataRegister({
 
   const excelFileDelete = (e) => {
     setExcelFilename(null);
-    setExcelData([]);
+    deleteExcelData();
   };
   return (
     <>
@@ -98,6 +99,21 @@ function ExcelDataRegister({
                   삭제
                 </button>
               </div>
+              {errorList.length > 0 && (
+                <ErrorListWrapper>
+                  <h3>잘못된 입력 목록</h3>
+                  <ErrorListHeader>
+                    <div>셀번호</div>
+                    <div>내용</div>
+                  </ErrorListHeader>
+                  {errorList.map((err, i) => (
+                    <ErrorListRow key={i}>
+                      <div>{err.cellInfo}</div>
+                      <div>{err.message}</div>
+                    </ErrorListRow>
+                  ))}
+                </ErrorListWrapper>
+              )}
             </BodyContainer>
           </UploadContainer>
         )}
@@ -260,7 +276,7 @@ function ExcelDataRegister({
                           <div>{file.size}</div>
                         </div>
                       </div>
-                      {imageMetaData.available ? (
+                      {file.available ? (
                         <div className="file-availability">
                           <AiOutlineCheckCircle size="24" color="#6DAF44" />
                           <div>작업 가능</div>
@@ -273,7 +289,7 @@ function ExcelDataRegister({
                       )}
                       <button
                         onClick={() => {
-                          deletePdf(file.name);
+                          deleteImage(file.name);
                         }}
                         className="file-delete-button"
                       >
@@ -291,7 +307,9 @@ function ExcelDataRegister({
           {step !== 1 && <button onClick={prevStep}>{"< 이전 단계"}</button>}
           <button onClick={nextStep}>{"다음 단계 >"}</button>
         </ButtonContainer>
-        <UploadContainer>
+
+        {/* 아래쪽 컨테이너 아직 사용안함 */}
+        {/* <UploadContainer>
           <HeaderContainer color="#565656">
             <div className="title">
               <HiOutlineDocumentReport size="30" color="#fff" />
@@ -306,7 +324,7 @@ function ExcelDataRegister({
               </span>
             </div>
           </BodyContainer>
-        </UploadContainer>
+        </UploadContainer> */}
       </Wrapper>
     </>
   );
@@ -495,6 +513,79 @@ const BodyContainer = styled.div`
     input[type="file"] {
       display: none;
     }
+  }
+`;
+
+const ErrorListHeader = styled.div`
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: #d0021b;
+  color: #ffffff;
+  font-weight: bold;
+
+  & > div {
+    padding: 0.5rem;
+  }
+
+  & > div:nth-of-type(1) {
+    width: 30%;
+  }
+
+  & > div:nth-of-type(2) {
+    width: 70%;
+  }
+`;
+const ErrorListRow = styled.div`
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid #dfdfdf;
+  border-left: 1px solid #dfdfdf;
+  border-right: 1px solid #dfdfdf;
+
+  & > * + * {
+    border-left: 1px solid #dfdfdf;
+  }
+
+  & > div {
+    padding: 0.5rem;
+  }
+
+  & > div:nth-of-type(1) {
+    width: 30%;
+  }
+
+  & > div:nth-of-type(2) {
+    width: 70%;
+  }
+`;
+
+const ErrorListWrapper = styled.div`
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding-bottom: 4rem;
+  text-align: center;
+  & > h3 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+  }
+
+  & > ${ErrorListRow}:nth-of-type(2n) {
+    background-color: #fafafa;
   }
 `;
 
