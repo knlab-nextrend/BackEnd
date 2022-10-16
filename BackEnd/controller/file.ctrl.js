@@ -91,7 +91,7 @@ const uploadExcelData = async (req, res) => {
             req.files.forEach(async (file) => {
                 let fileMeta = metaDict[file.originalname];
                 pdfFolderPath = folderDate + '/' + fileMeta.dc_domain + '/';
-                /*
+                
                 const existError = await nasCtrl.checkThenMakeFolder(pdfFolderPath, type = 'pdf');
                 if (existError) {
                     throw 'error occured during access to nas';
@@ -112,9 +112,6 @@ const uploadExcelData = async (req, res) => {
                 const _id = await esCtrl.Index(fileMeta, 8);
                 await uploadCtrl.updateId(_id, itemId);
 
-                */
-               console.log("meta data : " + metaData)
-               console.log("meta dict : " + metaDict)
             })
             res.send();
         } catch (e) {
@@ -126,26 +123,31 @@ const uploadExcelData = async (req, res) => {
 }
 
 const getExcelData = async (req, res)=>{
-    const page = parseInt(req.query.page-1 || "0");
+    try{
+        const page = parseInt(req.query.page || "1");
+        const query = libs.reqToEsFilters({
+            is_crawled : false,
+            pageNo : page,
+            listSize : 20
+        })
+
+        let result = await esCtrl.Search(query);
+
+        res.status(200).send(result.docs);
+    }catch(e){
+        res.status(400).send(e);
+    }
     
-
-    const query = libs.reqToEsFilters({
-        is_crawled : false,
-        pageNo : page
-        
-    })
-
-    let result = await esCtrl.Search();
-
-    res.sendStatus(200).send(result);
 }
 
 const getExcelDetail = async (req,res)=>{
-    const pid = parseInt(req.query.PID);
+    try{
+        let result = await esCtrl.Detail(req.query.PID);
 
-    let result = await esCtrl.Detail(req.query.pid);
-
-    res.status(200).send(result);
+        res.status(200).send(result.body.hits.hits);
+    }catch(e){
+        res.status(400).send(e);
+    }
 }
 
 

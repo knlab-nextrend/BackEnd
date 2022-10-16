@@ -14,6 +14,7 @@ const esDetail = (_id) => new Promise(async (resolve, reject) => {
             }
         }
     };
+    console.log(query)
     try {
         const value = await esDB.search(query);
         resolve(value);
