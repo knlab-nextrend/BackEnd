@@ -67,7 +67,7 @@ const nullProcessing = (doc) => {
     newDoc["doc_url"] = keys.includes("doc_url")? doc.doc_url||null : null;
     newDoc["doc_url_intro"] = keys.includes("doc_url_intro")? doc.doc_url_intro||null : null;
     newDoc["doc_write_date"] = keys.includes("doc_write_date")? doc.doc_write_date||null : null;
-    newDoc["is_crawled"] = keys.includes("is_crawled")? doc.is_crawled||null : true;
+    newDoc["is_crawled"] = keys.includes("is_crawled")? doc.is_crawled : true;
     newDoc["item_id"] = keys.includes("item_id")? doc.item_id||null : null;
     newDoc["status"] = keys.includes("status")? doc.status||null : null;
 

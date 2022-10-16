@@ -6,6 +6,10 @@ services:
     command : --default-authentication-plugin=mysql_native_password
     ports : 
       - "3306:3306"
+  redis-server :
+    image: redis
+    ports:
+      - "6379:6379"
   #solr-db:
   # image: solr
   # ports :
@@ -16,22 +20,15 @@ services:
   #    - discovery.type=single-node
   #  ports:
   #    - "9200:9200"
-  redis-server :
-    image: redis
-    ports:
-      - "6379:6379"
-  backend :
-    build : ./Backend/.
-    ports : 
-      - "5000:5000"
-    depends_on:
-      - mysql-db
-      - redis-server
-    command: ["./wait-for-it/wait-for-it.sh","-t","60" ,"mysql-db:3306", "--", "node", "server.js"]
-  frontend :
-    build : ./Frontend/.
-    volumes : 
-      - ./Frontend/src:/usr/src/app/src
-    ports :
-      - "3000:3000"
-    stdin_open : true
+  #backend :
+  #  build : ./Backend/.
+  #  ports : 
+  #    - "5000:5000"
+  #  depends_on:
+  #    - mysql-db
+  #    - redis-server
+  #  command: ["./wait-for-it/wait-for-it.sh","-t","30" ,"localhost:3306", "--", "node", "server.js"]
+  #frontend :
+  #  build : ./Frontend/.
+  #  ports :
+  #    - "3000:3000"

@@ -8,12 +8,12 @@ const imageUpload = multer({
     dest: 'temp/images',
 });
 const pdfUpload = multer({
-    dest:'temp/pdf',
+    dest:'temp/files',
 })
 
 router.get('/docImageDetach/',fileCtrl.docImageDetach);
-router.post('/docImageAttach/',imageUpload.single('thumbnails'), fileCtrl.docImageAttach); //본문 이미지 업로드 및 url 리턴
-router.post('/uploadExcelData/',pdfUpload.array('pdfs'),authJWT, fileCtrl.uploadExcelData);
+router.post('/docImageAttach/',imageUpload.single('files'), fileCtrl.docImageAttach); //본문 이미지 업로드 및 url 리턴
+router.post('/uploadExcelData/',pdfUpload.fields([{name : 'pdfs'},{name :'thumbnails'}]),authJWT, fileCtrl.uploadExcelData);
 
 router.get('/getExcelData', fileCtrl.getExcelData)
 router.get('/getExcelDetail', fileCtrl.getExcelDetail)

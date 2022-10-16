@@ -3,8 +3,6 @@ const path = require('path');
 const nasCtrl = require('./nas/nasService');
 const esCtrl = require('./es/esService');
 const libs = require('../lib/libs');
-const phpDB = require('../models/php/index');
-
 
 const unlinkFile = (filePath) => new Promise((resolve, reject)=>{
     fs.unlinkSync(path.resolve(filePath),(err,res)=>{
