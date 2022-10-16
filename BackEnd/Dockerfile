@@ -1,3 +1,4 @@
+
 FROM node:14
 
 
@@ -15,7 +16,6 @@ COPY models/ ./models
 COPY modules/ ./modules
 COPY routes/ ./routes
 COPY service/ ./service
-COPY 89 ./
 COPY server.js ./
 RUN git clone https://github.com/vishnubob/wait-for-it
 CMD ["node", "server.js"]

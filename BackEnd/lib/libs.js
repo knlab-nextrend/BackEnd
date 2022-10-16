@@ -186,7 +186,7 @@ const reqToEsFilters = (query,stat=null,mustQ=[],shouldQ=[],filterQ=[]) => {
         index: 'politica_service',
         body: {
             query: {
-                bool: bool
+                Is_crawled: bool
             },
             sort: sort,
         }

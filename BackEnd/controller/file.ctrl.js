@@ -7,7 +7,7 @@ const jwt = require("../modules/jwt");
 const poliCtrl = require("../service/politica/poliService");
 const userCtrl = require("../service/nextrend/user");
 const dayjs = require("dayjs");
-const fileService = require("../service/file")
+const es = require("../models/es");
 
 
 // 페이지를 벗어날 때, _id만으로 작업중이던 nas에 등록된 contentImage 파일들을 삭제함.
@@ -84,13 +84,14 @@ const uploadExcelData = async (req, res) => {
         });
         let pdfFolderPath;
         try {
-            const tableError = await uploadCtrl.checkUploadTable();
+            //const tableError = await uploadCtrl.checkUploadTable();
             if (tableError) {
                 throw 'some problems with upload table';
             }
             req.files.forEach(async (file) => {
                 let fileMeta = metaDict[file.originalname];
                 pdfFolderPath = folderDate + '/' + fileMeta.dc_domain + '/';
+                /*
                 const existError = await nasCtrl.checkThenMakeFolder(pdfFolderPath, type = 'pdf');
                 if (existError) {
                     throw 'error occured during access to nas';
@@ -110,6 +111,10 @@ const uploadExcelData = async (req, res) => {
                 fileMeta['item_id'] = itemId;
                 const _id = await esCtrl.Index(fileMeta, 8);
                 await uploadCtrl.updateId(_id, itemId);
+
+                */
+               console.log("meta data : " + metaData)
+               console.log("meta dict : " + metaDict)
             })
             res.send();
         } catch (e) {
@@ -121,19 +126,26 @@ const uploadExcelData = async (req, res) => {
 }
 
 const getExcelData = async (req, res)=>{
-    const page = parseInt(req.query.page || "1");
+    const page = parseInt(req.query.page-1 || "0");
     
-    const result = await fileService.getExcelDataList(req.query);
 
-    res.send(result)
+    const query = libs.reqToEsFilters({
+        is_crawled : false,
+        pageNo : page
+        
+    })
+
+    let result = await esCtrl.Search();
+
+    res.sendStatus(200).send(result);
 }
 
-const getExcelDetail = async(req,res)=>{
+const getExcelDetail = async (req,res)=>{
     const pid = parseInt(req.query.PID);
 
-    const result = await fileService.getExcelDataDetail(pid);
+    let result = await esCtrl.Detail(req.query.pid);
 
-    res.send(result);
+    res.status(200).send(result);
 }
 
 
