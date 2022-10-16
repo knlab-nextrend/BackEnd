@@ -20,10 +20,14 @@ function ExcelDataRegister({
   readPdf,
   pdfMetaData,
   deletePdf,
-  excelData
+  readImage,
+  deleteImage,
+  imageMetaData,
+  excelData,
 }) {
   const [excelFilename, setExcelFilename] = useState(null);
   const [pdfFilename, setPdfFilename] = useState(null);
+  const [imageFileName, setImagefileName] = useState();
   const excelFileHandler = (e) => {
     setExcelFilename(e.target.files[0].name);
     readExcel(e);
@@ -39,6 +43,19 @@ function ExcelDataRegister({
 
     readPdf(e);
   };
+
+  const imageFileHandler = (e) => {
+    if (e.target.files.length === 1) {
+      setImagefileName(e.target.files[0].name);
+    } else {
+      setImagefileName(
+        `${e.target.files[0].name} 외 ${e.target.files.length - 1}장`
+      );
+    }
+
+    readImage(e);
+  };
+
   const excelFileDelete = (e) => {
     setExcelFilename(null);
     setExcelData([]);
@@ -47,6 +64,7 @@ function ExcelDataRegister({
     <>
       <FormHeader type={"view"} title={"엑셀 데이터 등록"} />
       <Wrapper>
+        {/* <----- 엑셀 등록 단계 -----> */}
         {step === 1 && (
           <UploadContainer>
             <HeaderContainer color="#217346">
@@ -83,6 +101,7 @@ function ExcelDataRegister({
             </BodyContainer>
           </UploadContainer>
         )}
+        {/* <----- pdf 등록 단계 -----> */}
         {step === 2 && (
           <UploadContainer>
             <HeaderContainer color="#c83636">
@@ -116,6 +135,7 @@ function ExcelDataRegister({
             </BodyContainer>
           </UploadContainer>
         )}
+        {/* <----- pdf 확인 단계 -----> */}
         {step === 3 && (
           <UploadContainer>
             <HeaderContainer color="#435269">
@@ -126,7 +146,6 @@ function ExcelDataRegister({
                 <div>검토</div>
               </div>
             </HeaderContainer>
-
             <BodyContainer>
               <div className="explain">
                 <span className="emphasis">EXCEL 파일</span>
@@ -159,7 +178,12 @@ function ExcelDataRegister({
                           <div>EXCEL과 매치 불가</div>
                         </div>
                       )}
-                      <button onClick={()=>{deletePdf(file.name)}}className="file-delete-button">
+                      <button
+                        onClick={() => {
+                          deletePdf(file.name);
+                        }}
+                        className="file-delete-button"
+                      >
                         <RiDeleteBinLine color="#fff" size="20" />
                       </button>
                     </FileCard>
@@ -169,6 +193,100 @@ function ExcelDataRegister({
             </BodyContainer>
           </UploadContainer>
         )}
+
+        {/* <----- image 등록 단계 -----> */}
+        {step === 4 && (
+          <UploadContainer>
+            <HeaderContainer color="#c83636">
+              <div className="step">STEP 4</div>
+              <div className="title">
+                <FaCloudUploadAlt size="30" color="#fff" />
+                <div className="bold">이미지</div>
+                <div>파일 업로드</div>
+              </div>
+            </HeaderContainer>
+            <BodyContainer>
+              <AiOutlineFilePdf size="100" color="#d6d6d6" />
+              <div className="explain">
+                <span className="emphasis">이미지 파일</span>
+                <span>을 업로드 해주세요.</span>
+              </div>
+              <div className="upload">
+                <div className="select-file">
+                  <label htmlFor="imageFile">파일 선택</label>
+                  <input
+                    onChange={imageFileHandler}
+                    type="file"
+                    id="imageFile"
+                    accept=".jpeg, .jpg, .png, .gif"
+                    multiple="multiple"
+                  />
+                  <span>{imageFileName || "이미지 파일을 등록해주세요."}</span>
+                </div>
+                <button className="upload-button">데이터 등록</button>
+              </div>
+            </BodyContainer>
+          </UploadContainer>
+        )}
+        {/* <----- image 확인 단계 -----> */}
+        {step === 5 && (
+          <UploadContainer>
+            <HeaderContainer color="#435269">
+              <div className="step">STEP 5</div>
+              <div className="title">
+                <AiOutlineSearch size="30" color="#fff" />
+                <div className="bold">이미지 및 EXCEL</div>
+                <div>검토</div>
+              </div>
+            </HeaderContainer>
+            <BodyContainer>
+              <div className="explain">
+                <span className="emphasis">EXCEL 파일</span>
+                <span>과 </span>
+                <span className="emphasis">이미지 파일</span>
+                <span>
+                  을 대조한 결과 입니다. 파일을 검토하여 적절하지 못한 파일은
+                  삭제하여주세요.
+                </span>
+              </div>
+              <FileList>
+                {imageMetaData.map((file, index) => {
+                  return (
+                    <FileCard>
+                      <div className="file-container">
+                        <HiOutlineDocumentText size="40" color="#d6d6d6" />
+                        <div className="file-info">
+                          <div>{file.name}</div>
+                          <div>{file.size}</div>
+                        </div>
+                      </div>
+                      {imageMetaData.available ? (
+                        <div className="file-availability">
+                          <AiOutlineCheckCircle size="24" color="#6DAF44" />
+                          <div>작업 가능</div>
+                        </div>
+                      ) : (
+                        <div className="file-availability">
+                          <AiOutlineCloseCircle size="20" color="#d0021b" />
+                          <div>EXCEL과 매치 불가</div>
+                        </div>
+                      )}
+                      <button
+                        onClick={() => {
+                          deletePdf(file.name);
+                        }}
+                        className="file-delete-button"
+                      >
+                        <RiDeleteBinLine color="#fff" size="20" />
+                      </button>
+                    </FileCard>
+                  );
+                })}
+              </FileList>
+            </BodyContainer>
+          </UploadContainer>
+        )}
+
         <ButtonContainer>
           {step !== 1 && <button onClick={prevStep}>{"< 이전 단계"}</button>}
           <button onClick={nextStep}>{"다음 단계 >"}</button>
@@ -253,15 +371,15 @@ const FileCard = styled.div`
     width: 0;
     border-radius: 40px;
     display: none;
-    cursor:pointer;
+    cursor: pointer;
   }
   &:hover {
     .file-delete-button {
       display: block;
       width: 2.5rem;
     }
-    .file-availability{
-      display:none;
+    .file-availability {
+      display: none;
     }
   }
 `;
