@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import FormHeader from "../../../Components/FormHeader";
-import { HiOutlineDocumentReport, HiOutlineDocumentText } from "react-icons/hi";
+import { HiOutlineDocumentText } from "react-icons/hi";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { RiFileExcel2Line, RiDeleteBinLine } from "react-icons/ri";
+import {
+  RiFileExcel2Line,
+  RiDeleteBinLine,
+  RiImageAddLine,
+} from "react-icons/ri";
 import {
   AiOutlineFilePdf,
   AiOutlineSearch,
@@ -146,7 +150,7 @@ function ExcelDataRegister({
                   />
                   <span>{pdfFilename || "PDF 파일을 등록해주세요."}</span>
                 </div>
-                <button className="upload-button">데이터 등록</button>
+                {/* <button className="upload-button">데이터 등록</button> */}
               </div>
             </BodyContainer>
           </UploadContainer>
@@ -222,10 +226,13 @@ function ExcelDataRegister({
               </div>
             </HeaderContainer>
             <BodyContainer>
-              <AiOutlineFilePdf size="100" color="#d6d6d6" />
+              <RiImageAddLine size="100" color="#d6d6d6" />
               <div className="explain">
                 <span className="emphasis">이미지 파일</span>
                 <span>을 업로드 해주세요.</span>
+              </div>
+              <div className="more-explain">
+                등록 가능한 확장자 : [ .jpg, .jpeg, .png, .gif ]
               </div>
               <div className="upload">
                 <div className="select-file">
@@ -239,7 +246,7 @@ function ExcelDataRegister({
                   />
                   <span>{imageFileName || "이미지 파일을 등록해주세요."}</span>
                 </div>
-                <button className="upload-button">데이터 등록</button>
+                {/* <button className="upload-button">데이터 등록</button> */}
               </div>
             </BodyContainer>
           </UploadContainer>
@@ -464,10 +471,15 @@ const BodyContainer = styled.div`
   padding: 2rem;
   min-height: 20rem;
   .explain {
-    margin: 1rem;
+    margin: 1rem 1rem 0.5rem;
   }
   .emphasis {
     font-weight: bold;
+  }
+  .more-explain {
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    color: #444444;
   }
   .upload {
     display: flex;
