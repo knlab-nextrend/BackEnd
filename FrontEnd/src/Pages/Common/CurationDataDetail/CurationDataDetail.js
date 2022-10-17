@@ -36,27 +36,30 @@ function CurationDataDetail({ docs, permission, goDataManage }) {
                 <div className="content">{docs.dc_hits || 0}</div>
               </Info>
               <Info>
-                <div className="title">▶ 원문 수집일 / 원문 작성일 / 원문 발행일</div>
+                <div className="title">
+                  ▶ 원문 수집일 / 원문 작성일 / 원문 발행일
+                </div>
                 <div className="content">
-                {docs.doc_collect_date} / {docs.doc_write_date} / {docs.doc_publish_date}
+                  {`${docs.doc_collect_date ? docs.doc_collect_date : " - "}
+                  / ${docs.doc_write_date ? docs.doc_write_date : " - "}
+                  /
+                  ${docs.doc_publish_date ? docs.doc_publish_date : " - "}`}
                 </div>
               </Info>
               <Info>
                 <div className="title">▶ 문서 서비스 등록일</div>
-                <div className="content">
-                  {docs.doc_publish_date}
-                </div>
+                <div className="content">{docs.doc_publish_date}</div>
               </Info>
               <Info>
                 <div className="title">▶ 문서 언어</div>
-                <div className="content">
-                  {docs.doc_language_list}
-                </div>
+                <div className="content">{docs.doc_language_list}</div>
               </Info>
               <Info>
                 <div className="title">▶ 기관 명 / 발행 HOST</div>
                 <div className="content">
-                  {docs.doc_publisher} / {docs.doc_host}
+                  {`${docs.doc_publisher ? docs.doc_publisher : " - "} / ${
+                    docs.doc_host ? docs.doc_host : " - "
+                  }`}
                 </div>
               </Info>
               <Info>
@@ -74,28 +77,36 @@ function CurationDataDetail({ docs, permission, goDataManage }) {
               <Info>
                 <div className="title">▶ 문서 유형 분류 / 내용 구분 분류</div>
                 <div className="content">
-                  {docs.doc_content_type_list} / {docs.doc_content_category_list}
+                  {`${
+                    docs.doc_content_type_list
+                      ? docs.doc_content_type_list
+                      : " - "
+                  } /
+                  ${
+                    docs.doc_content_category_list
+                      ? docs.doc_content_category_list
+                      : " - "
+                  }`}
                 </div>
               </Info>
               <Info>
                 <div className="title">▶ 문서 토픽 분류</div>
-                <div className="content">
-                  {docs.doc_topic_list}
-                </div>
+                <div className="content">{docs.doc_topic_list}</div>
               </Info>
 
               <Info>
-                <div className="title">▶ 조사 과제 명 / 주문형 조사과제명의 세부과업명</div>
+                <div className="title">
+                  ▶ 조사 과제 명 / 주문형 조사과제명의 세부과업명
+                </div>
                 <div className="content">
-                  {docs.doc_project} /
-                  {docs.doc_publishing}
+                  {`${docs.doc_project ? docs.doc_project : " - "} /${
+                    docs.doc_publishing ? docs.doc_publishing : " - "
+                  }`}
                 </div>
               </Info>
               <Info>
                 <div className="title">▶ 큐레이션 추천문서</div>
-                <div className="content">
-                  {docs.doc_recomment}
-                </div>
+                <div className="content">{docs.doc_recomment}</div>
               </Info>
             </ArticleInfo>
           </ArticleInfoContainer>
@@ -115,14 +126,12 @@ function CurationDataDetail({ docs, permission, goDataManage }) {
         </ContentRow>
         <ContentRow>
           <div className="title">▶ 서지사항</div>
-          <div className="contents">
-            {docs.doc_biblio}
-          </div>
+          <div className="contents">{docs.doc_biblio}</div>
         </ContentRow>
         <ContentRow>
           <div className="title">▶ 문서 URL</div>
           <div className="contents">
-            <a target="_blank" href={docs.doc_url}>
+            <a target="_blank" rel="noreferrer" href={docs.doc_url}>
               {docs.doc_url}
             </a>
           </div>
@@ -130,28 +139,47 @@ function CurationDataDetail({ docs, permission, goDataManage }) {
         <ContentRow>
           <div className="title">▶ 문서 안내 URL</div>
           <div className="contents">
-            <a target="_blank" href={docs.doc_url_intro}>
+            <a target="_blank" rel="noreferrer" href={docs.doc_url_intro}>
               {docs.doc_url_intro}
             </a>
           </div>
         </ContentRow>
         <ContentRow>
           <div className="title">▶ 연관문서 이동</div>
-          <div className="contents">
-            <a className="chip" target="_blank" href={docs.doc_relate_url}>
-              <AiOutlineLink />
-              {docs.doc_relate_title} ({docs.doc_relate_url})
-            </a>
-          </div>
+          {docs.doc_relate_title && docs.doc_relate_url ? (
+            <div className="contents">
+              <a
+                className="chip"
+                target="_blank"
+                rel="noreferrer"
+                href={docs.doc_relate_url}
+              >
+                <AiOutlineLink />
+                {docs.doc_relate_title} ({docs.doc_relate_url})
+              </a>
+            </div>
+          ) : (
+            "연관문서 없음"
+          )}
         </ContentRow>
         <ContentRow>
           <div className="title">▶ 묶음문서 이동</div>
-          <div className="contents">
-            <a className="chip" target="_blank" href={docs.doc_bundle_url}>
-              <AiOutlineLink />
-              {docs.doc_bundle_title} ({docs.doc_bundle_url})
-            </a>
-          </div>
+
+          {docs.doc_bundle_title && docs.doc_bundle_url ? (
+            <div className="contents">
+              <a
+                className="chip"
+                target="_blank"
+                rel="noreferrer"
+                href={docs.doc_bundle_url}
+              >
+                <AiOutlineLink />
+                {docs.doc_bundle_title} ({docs.doc_bundle_url})
+              </a>
+            </div>
+          ) : (
+            "묶음문서 없음"
+          )}
         </ContentRow>
         <ContentRow>
           <div className="title">▶ 한글 요약</div>
@@ -264,12 +292,12 @@ const ContentRow = styled.div`
     margin-bottom: 12px;
     background-color: #eee;
     margin-right: 1rem;
-    color:black;
-    text-decoration:none;
-    display:flex;
-    align-items:center;
+    color: black;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
     * {
-      margin-right:4px;
+      margin-right: 4px;
     }
   }
 `;
