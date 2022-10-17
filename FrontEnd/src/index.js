@@ -24,7 +24,6 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <Loading />
         <ScrollToTop />
         <App />
       </BrowserRouter>

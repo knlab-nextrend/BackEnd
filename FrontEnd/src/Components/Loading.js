@@ -10,7 +10,7 @@ function Loading() {
         <>
           <Background>
             <LoaderContainer>
-              <BeatLoader margin={7} size={20} color={"#435269"}/>
+              <BeatLoader margin={7} size={20} color={"#435269"} />
             </LoaderContainer>
           </Background>
         </>
@@ -20,9 +20,11 @@ function Loading() {
 }
 
 const Background = styled.div`
-  display: block;
-  position: fixed;
-  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 10;
   left: 0;
   top: 0;
   width: 100%;
@@ -32,10 +34,10 @@ const Background = styled.div`
 
 const LoaderContainer = styled.div`
   display: block;
-  z-index: 9999;
-  position: fixed;
-  left: 50%;
-  top: 50%;
+  z-index: 10;
+  /* position: fixed; */
+  /* left: 50%; */
+  /* top: 50%; */
 `;
 
 export default Loading;

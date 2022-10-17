@@ -45,7 +45,7 @@ const HeaderContainer = styled.header`
   position: fixed; // 상단고정
   background-color: white;
   width: 100%;
-  z-index: 9; // 맨 위에
+  z-index: 999; // 맨 위에
 `;
 
 const ContentWrapper = styled.div`
