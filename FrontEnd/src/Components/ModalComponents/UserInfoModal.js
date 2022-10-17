@@ -7,6 +7,8 @@ import {
   verifyUserIdApi,
 } from "../../Utils/api";
 import permission from "../../Data/permission.json";
+import { setModal } from "../../Modules/modal";
+import { AiOutlineClose } from "react-icons/ai";
 
 function UserInfoModal({ closeModal, executeModal }) {
   const [id, setID] = useState("");
@@ -161,7 +163,7 @@ function UserInfoModal({ closeModal, executeModal }) {
       salt,
     };
     if (_confirmCheck()) {
-      modifyUserInfoApi(userInfo,id)
+      modifyUserInfoApi(userInfo, id)
         .then(() => {
           alert("성공적으로 수정되었습니다.");
           window.location.reload();
@@ -179,7 +181,10 @@ function UserInfoModal({ closeModal, executeModal }) {
     <>
       <ModalWrapper>
         <Modalheader>
-          <ModalTitle>사용자{type ? " 추가" : " 정보 수정"}</ModalTitle>
+          <ModalTitle>
+            <span>사용자{type ? " 추가" : " 정보 수정"}</span>
+            <AiOutlineClose onClick={closeModal} cursor="pointer" />
+          </ModalTitle>
           <ModalSubTitle>
             {"아래 데이터를 입력한 후 확인을 누르면 정보가 반영됩니다."}
           </ModalSubTitle>
@@ -368,6 +373,9 @@ const Modalheader = styled.div`
   margin-bottom: 1rem;
 `;
 const ModalTitle = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 0.5rem;

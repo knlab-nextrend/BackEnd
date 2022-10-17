@@ -1,28 +1,36 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { setModal, setModalData } from "../../Modules/modal";
 /* modal Components */
 import CategoryModal from "./CategoryModal";
 import UserInfoModal from "./UserInfoModal";
-import AxisCategoryModal from "./AxisCategoryModal"
-import HostSelectModal from "./HostSelectModal"
-import CurationWorkContentModal from "./CurationWorkContentModal"
+import AxisCategoryModal from "./AxisCategoryModal";
+import HostSelectModal from "./HostSelectModal";
+import CurationWorkContentModal from "./CurationWorkContentModal";
 
 export const MODAL_TYPES = {
-  CategoryModal: "CategoryModal",
   UserInfoModal: "UserInfoModal",
-  AxisCategoryModal:"AxisCategoryModal",
-  HostSelectModal:"HostSelectModal",
-  CurationWorkContentModal:"CurationWorkContentModal",
+  CategoryModal: "CategoryModal",
+  AxisCategoryModal: "AxisCategoryModal",
+  HostSelectModal: "HostSelectModal",
+  CurationWorkContentModal: "CurationWorkContentModal",
+};
+
+const BACKDROP_CLOSE = {
+  [MODAL_TYPES.UserInfoModal]: false,
+  [MODAL_TYPES.CategoryModal]: true,
+  [MODAL_TYPES.AxisCategoryModal]: true,
+  [MODAL_TYPES.HostSelectModal]: true,
+  [MODAL_TYPES.CurationWorkContentModal]: true,
 };
 
 const MODAL_COMPONENTS = {
   [MODAL_TYPES.CategoryModal]: CategoryModal,
   [MODAL_TYPES.UserInfoModal]: UserInfoModal,
-  [MODAL_TYPES.AxisCategoryModal]:AxisCategoryModal,
-  [MODAL_TYPES.HostSelectModal]:HostSelectModal,
-  [MODAL_TYPES.CurationWorkContentModal] :CurationWorkContentModal,
+  [MODAL_TYPES.AxisCategoryModal]: AxisCategoryModal,
+  [MODAL_TYPES.HostSelectModal]: HostSelectModal,
+  [MODAL_TYPES.CurationWorkContentModal]: CurationWorkContentModal,
 };
 
 function GlobalModal() {
@@ -36,6 +44,13 @@ function GlobalModal() {
   const closeModal = () => {
     dispatch(setModal(null));
   };
+
+  const onBackDrop = () => {
+    console.log(BACKDROP_CLOSE[modalType]);
+    if (!BACKDROP_CLOSE[modalType]) return;
+    closeModal();
+  };
+
   const executeModal = (modalData, dataType) => {
     dispatch(setModalData(modalData, dataType));
   };
@@ -54,7 +69,7 @@ function GlobalModal() {
     <>
       {modalType ? (
         <>
-          <Background onClick={closeModal} />
+          <Background onClick={onBackDrop} />
           <ModalWrapper>{renderComponent()}</ModalWrapper>
         </>
       ) : null}
@@ -63,7 +78,7 @@ function GlobalModal() {
 }
 
 const Background = styled.div`
-  z-index: 10;
+  z-index: 2000;
   position: fixed;
   left: 0;
   top: 0;
@@ -78,7 +93,7 @@ const ModalWrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 11;
+  z-index: 2001;
   max-width: 960px;
   width: 700px;
   box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2),
