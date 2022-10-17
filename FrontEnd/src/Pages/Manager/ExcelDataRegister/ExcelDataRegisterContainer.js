@@ -3,6 +3,7 @@ import ExcelDataRegister from "./ExcelDataRegister";
 import XLSX from "xlsx";
 import { uploadExcelDataApi, categoryListFetchApi } from "../../../Utils/api";
 import resolve from "resolve";
+import { RiWalkFill } from "react-icons/ri";
 
 function ExcelDataRegisterContainer() {
   const [excelData, setExcelData] = useState([]);
@@ -10,6 +11,7 @@ function ExcelDataRegisterContainer() {
   const [pdfMetaData, setPdfMetaData] = useState([]);
   const [thumbnails, setThumbnails] = useState([]);
   const [thumbnailMetaData, setThumbnailMetaData] = useState([]);
+  const [errorList, setErrorList] = useState([]);
   const [step, setStep] = useState(1);
 
   function getfileSize(x) {
@@ -29,15 +31,16 @@ function ExcelDataRegisterContainer() {
 
   const readPdf = (e) => {
     const files = e.target.files;
+    console.log(files);
     const _pdfData = [];
     const _pdfMetaData = [];
     for (const file of files) {
-      const available = excelData.filter(
-        (item) => item.pdf_file_name === file.name.replace(/(.pdf)$/, "")
+      const available = excelData.some(
+        (item) => item.pdf_file_name === file.name.normalize("NFC")
       );
       const _obj = {
         size: getfileSize(file.size),
-        name: file.name.replace(/(.pdf)$/, ""),
+        name: file.name,
         available,
       };
       _pdfData.push(file);
@@ -54,14 +57,11 @@ function ExcelDataRegisterContainer() {
     const _thumbnailMetaData = [];
     for (const image of images) {
       const available = excelData.some(
-        (item) =>
-          item.thumbnail_file_name ===
-          image.name.replace(/(.png|.jpg|.jpeg|.gif)$/, "")
+        (item) => item.thumbnail_file_name === image.name.normalize("NFC")
       );
-
       const _obj = {
         size: getfileSize(image.size),
-        name: image.name.replace(/(.png|.jpg|.jpeg|.gif)$/, ""),
+        name: image.name,
         available,
       };
       _thumbnails.push(image);
@@ -69,6 +69,7 @@ function ExcelDataRegisterContainer() {
     }
     setThumbnails(_thumbnails);
     setThumbnailMetaData(_thumbnailMetaData);
+    console.log(thumbnailMetaData);
   };
 
   const deleteImage = (name) => {
@@ -85,21 +86,25 @@ function ExcelDataRegisterContainer() {
   };
 
   const readExcel = (e) => {
+    setErrorList([]);
     let input = e.target;
     let reader = new FileReader();
     reader.onload = function () {
       let data = reader.result;
-      const excelFile = XLSX.read(data, {
-        type: "binary",
-        cellDates: true,
-      });
-      const sheetName = excelFile.SheetNames[0];
-      const firstSheet = excelFile.Sheets[sheetName];
-
-      console.log(firstSheet);
+      const firstSheet = getFirstSheet(data);
+      const copySheetForCheck = { ...firstSheet };
+      if (!checkCorrectFormat(copySheetForCheck)) {
+        alert("잘못된 엑셀 양식입니다.");
+        window.location.reload();
+        return;
+      }
+      const cells = parseHeaderAndRow(copySheetForCheck);
+      const errList = checkErrorFields(cells);
+      setErrorList(errList);
       const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
         defval: null,
       });
+
       const _exelData = jsonData.map((item) => {
         return {
           ...item,
@@ -132,10 +137,14 @@ function ExcelDataRegisterContainer() {
             : null,
         };
       });
-      console.log(_exelData);
       setExcelData(_exelData);
     };
     reader.readAsBinaryString(input.files[0]);
+  };
+
+  const deleteExcelData = () => {
+    setExcelData([]);
+    setErrorList([]);
   };
 
   const regiExcel = () => {
@@ -147,9 +156,7 @@ function ExcelDataRegisterContainer() {
   };
   const upload = () => {
     const files = new FormData();
-    pdfData.forEach((pdf) => {
-      files.append("pdfs", pdf);
-    });
+    pdfData.forEach((pdf) => files.append("pdfs", pdf));
     thumbnails.forEach((thumbnaiil) => files.append("thumbnails", thumbnaiil));
     files.append("meta", JSON.stringify(excelData));
     console.log(excelData);
@@ -157,16 +164,37 @@ function ExcelDataRegisterContainer() {
       console.log(res);
     });
   };
+
   const nextStep = () => {
-    if (step === 1 && excelData.length === 0) {
-      alert("엑셀 데이터 등록 해주세요.");
-      return;
+    if (step === 1) {
+      if (errorList.length > 0) {
+        alert("잘못된 셀을 수정 후 다시 업로드 해주세요");
+        return;
+      }
+      if (excelData.length === 0) {
+        alert("엑셀 데이터 등록 해주세요.");
+        return;
+      }
     }
     if (step === 2 && pdfData.length === 0) {
       alert("PDF 파일을 등록 해주세요.");
       return;
     }
+    if (step === 3) {
+      if (pdfMetaData.some((data) => !data.available)) {
+        alert("등록 불가능한 파일을 제거해주세요");
+        return;
+      }
+    }
+    if (step === 4 && thumbnails.length === 0) {
+      alert("이미지 파일을 등록 해주세요.");
+      return;
+    }
     if (step === 5) {
+      if (thumbnailMetaData.some((data) => !data.available)) {
+        alert("등록 불가능한 파일을 제거해주세요");
+        return;
+      }
       upload();
       return;
     }
@@ -260,7 +288,7 @@ function ExcelDataRegisterContainer() {
     <>
       <ExcelDataRegister
         readPdf={readPdf}
-        setExcelData={setExcelData}
+        deleteExcelData={deleteExcelData}
         readExcel={readExcel}
         regiExcel={regiExcel}
         nextStep={nextStep}
@@ -273,12 +301,362 @@ function ExcelDataRegisterContainer() {
         readImage={readImage}
         deleteImage={deleteImage}
         imageMetaData={thumbnailMetaData}
+        errorList={errorList}
       />
     </>
   );
 }
 export default ExcelDataRegisterContainer;
 
-const dateToDashStyle = (target) => {
-  if (!target) return null;
+// SheetJS 라이브러리용
+const CELL_OBJECT_TYPE = {
+  n: "number",
+  s: "string",
+  b: "boolean",
+  d: "date",
+};
+
+const DATA_TYPE = {
+  NUMBER: "number",
+  STRING: "string",
+  DATE: "date",
+  BOOLEAN: "boolean",
+};
+
+const EXCEL_SCHEMA = {
+  dc_domain: {
+    isRequired: true,
+    type: DATA_TYPE.STRING,
+  },
+  doc_biblio: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_bundle_title: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_bundle_url: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_category: {
+    // 카테고리 받아와야함
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_collect_date: {
+    isRequired: false,
+    type: DATA_TYPE.DATE,
+  },
+  doc_content: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_content_category: {
+    // 카테고리 받아와야함
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_content_type: {
+    // 카테고리 받아오기
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_country: {
+    // 국가 받아오기
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_custom: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_language: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_keyword: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_kor_summary: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_kor_title: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_memo: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_modify_date: {
+    isRequired: false,
+    type: DATA_TYPE.DATE,
+  },
+  doc_origin_title: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_original_summary: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_page: {
+    isRequired: false,
+    type: DATA_TYPE.NUMBER,
+  },
+  doc_poject: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_publish_country: {
+    //  받아오기
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_publish_date: {
+    isRequired: false,
+    type: DATA_TYPE.DATE,
+  },
+  doc_publisher: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_publishing: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_recomment: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_register_date: {
+    isRequired: false,
+    type: DATA_TYPE.DATE,
+  },
+  doc_relate_title: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_relate_url: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+
+  doc_topic: {
+    // 받아오기
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_url: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_url_intro: {
+    isRequired: false,
+    type: DATA_TYPE.STRING,
+  },
+  doc_write_date: {
+    isRequired: false,
+    type: DATA_TYPE.DATE,
+  },
+
+  pdf_file_name: {
+    isRequired: true,
+    type: DATA_TYPE.STRING,
+    validate: (v) => {
+      const result = {};
+      result.isValid = v.split(".").pop() === "pdf";
+      if (!result.isValid)
+        result.message = "확장자까지 올바르게 입력되어야합니다.";
+      return result;
+    },
+  },
+
+  thumbnail_file_name: {
+    isRequired: true,
+    type: DATA_TYPE.STRING,
+    validate: (fileName) => {
+      const result = {};
+      result.isValid = ["jpeg,", "jpg", "gif", "png"].some(
+        (v) => v === fileName.split(".").pop()
+      );
+      if (!result.isValid)
+        result.message = "확장자까지 올바르게 입력되어야합니다.";
+      return result;
+    },
+  },
+
+  /// 사용자 입력 필요없는 필드
+  // doc_file: {
+  //   isRequired: false,
+  //   type: DATA_TYPE.STRING,
+  // },
+  // doc_hit: {
+  //   isRequired: false,
+  //   type: DATA_TYPE.NUMBER,
+  // },
+  // doc_host: {
+  //   isRequired: false,
+  //   type: DATA_TYPE.STRING,
+  // },
+  // status: {
+  //   isRequired: false,
+  //   type: DATA_TYPE.NUMBER,
+  // },
+  // item_id: {
+  //   isRequired: false,
+  //   type: DATA_TYPE.NUMBER,
+  // },
+  // is_crawled: {
+  //   isRequired: false,
+  //   type: DATA_TYPE.BOOLEAN,
+  // },
+  // doc_thumbnail: {
+  //   isRequired: false,
+  //   type: DATA_TYPE.STRING,
+  // },
+};
+
+/**
+ *
+ * @param {XLSX.WorkSheet} sheet
+ */
+const removeUnusedFiled = (sheet) => {
+  delete sheet["!margins"];
+  delete sheet["!ref"];
+};
+
+/**
+ *
+ * @param {string | ArrayBuffer | null} data
+ * FileReader로 읽은 result
+ */
+const getFirstSheet = (data) => {
+  const excelFile = XLSX.read(data, {
+    type: "binary",
+    cellDates: true,
+  });
+  const sheetName = excelFile.SheetNames[0];
+  const firstSheet = excelFile.Sheets[sheetName];
+  return firstSheet;
+};
+
+/**
+ *
+ * @param {XLSX.WorkSheet} sheet
+ */
+const parseHeaderAndRow = (sheet) => {
+  removeUnusedFiled(sheet);
+  const cells = { headers: {}, rows: {} };
+  const columnRegex = /[^A-Z]/g;
+  const rowRegex = /[^0-9]/g;
+  for (let cellName in sheet) {
+    const column = cellName.replace(columnRegex, "");
+    const row = parseInt(cellName.replace(rowRegex, ""));
+
+    if (row === 1) {
+      const headerName = sheet[cellName].v;
+      cells.headers[column] = {
+        value: headerName,
+        type: EXCEL_SCHEMA[headerName].type,
+        isRequired: EXCEL_SCHEMA[headerName].isRequired,
+      };
+    } else {
+      if (!cells.rows.hasOwnProperty(row)) cells.rows[row] = [];
+      cells.rows[row].push({
+        column,
+        row,
+        value: sheet[cellName].v,
+        type: CELL_OBJECT_TYPE[sheet[cellName].t],
+      });
+    }
+  }
+  return cells;
+};
+
+/**
+ *
+ * @param {XLSX.WorkSheet} sheet
+ */
+const checkCorrectFormat = (sheet) => {
+  const rowRegex = /[^0-9]/g;
+  const headerCellNames = Object.keys(sheet)
+    .filter((cellName) => cellName.replace(rowRegex, "") === "1")
+    .map((cellName) => sheet[cellName].v)
+    .sort();
+
+  const schemaNames = Object.keys(EXCEL_SCHEMA).sort();
+  if (
+    headerCellNames.length !== schemaNames.length ||
+    headerCellNames.some((v, i) => v !== schemaNames[i])
+  ) {
+    return false;
+  }
+  return true;
+};
+
+/**
+ *
+ * @param {{headers: {}, rows: {}} data
+ *
+ */
+const checkErrorFields = (data) => {
+  const errorList = [];
+  const requiredFieldNames = Object.keys(EXCEL_SCHEMA).filter(
+    (key) => EXCEL_SCHEMA[key].isRequired
+  );
+
+  Object.values(data.rows).forEach((row) => {
+    //필수 필드가 채워졌는지 확인
+    requiredFieldNames.forEach((fieldName) => {
+      if (
+        !Object.values(row)
+          .map((field) => data.headers[field.column].value)
+          .includes(fieldName)
+      ) {
+        const columnName = Object.keys(data.headers).find(
+          (key) => data.headers[key].value === fieldName
+        );
+        const rowNumber = row[0].row;
+        errorList.push({
+          cellInfo: `${columnName} - ${rowNumber}`,
+          message: `${fieldName}은 필수 필드입니다.`,
+        });
+      }
+    });
+
+    //입력된 필드의 타입이 맞는지 확인
+    Object.values(row).forEach((field) => {
+      if (data.headers[field.column].type !== field.type)
+        errorList.push({
+          cellInfo: `${field.column} - ${field.row}`,
+          message: `${data.headers[field.column].type} 타입으로 입력해주세요`,
+        });
+    });
+
+    //validate 로직이 있는 필드 체크
+    Object.values(row).forEach((field) => {
+      if (
+        EXCEL_SCHEMA[data.headers[field.column].value].hasOwnProperty(
+          "validate"
+        )
+      ) {
+        const { isValid, message } = EXCEL_SCHEMA[
+          data.headers[field.column].value
+        ].validate(field.value);
+        if (!isValid) {
+          errorList.push({
+            cellInfo: `${field.column} - ${field.row}`,
+            message,
+          });
+        }
+      }
+    });
+  });
+
+  return errorList;
 };
