@@ -20,13 +20,15 @@ function CurationDataListContainer() {
   const [pageNo, setPageNo] = useState(1); // 현재 활성화 된 페이지 번호
   const [listSize, setListSize] = useState(10); // 한 페이지에 나타낼 document 개수
 
+  const [viewType, setViewType] = useState("list"); //viewType : list,card1, card2
+
   const dispatch = useDispatch();
   const statusCode = 8;
-
-  const [viewType, setViewType] = useState("list");
+  const storedViewType = localStorage.getItem("curationViewType");
 
   const viewTypeHandler = (e) => {
     setViewType(e.target.value);
+    localStorage.setItem("curationViewType", e.target.value);
   };
 
   const history = useHistory();
@@ -54,15 +56,17 @@ function CurationDataListContainer() {
           .join(", "),
         doc_category_list: item.doc_category.map((x) => x.CT_NM).join(", "),
         doc_register_date: item.doc_register_date.substring(0, 10),
-        
+
         doc_content_type_list: item.doc_content_type
           .map((x) => x.CT_NM)
           .join(", "),
-        doc_content: item.doc_content ? item.doc_content.replace(/(<([^>]+)>)/gi, "") : "", // 태그 삭제 정규표현식
+        doc_content: item.doc_content
+          ? item.doc_content.replace(/(<([^>]+)>)/gi, "")
+          : "", // 태그 삭제 정규표현식
         doc_url: item.doc_url,
-        doc_publisher:item.doc_publisher,
+        doc_publisher: item.doc_publisher,
       };
-      console.log(obj)
+      console.log(obj);
       _curationDataList.push(obj);
     });
     setDcCount(_dcCount);
@@ -75,16 +79,18 @@ function CurationDataListContainer() {
   /* 데이터 불러오기 */
   const dataFetch = (searchObj = null) => {
     trackPromise(
-      CrawlDataListFetchApi(statusCode, listSize, pageNo,searchObj)
+      CrawlDataListFetchApi(statusCode, listSize, pageNo, searchObj)
         .then((res) => {
-          console.log(res.data)
+          console.log(res.data);
           dataCleansing(res.data);
         })
         .catch((err) => {
           sessionHandler(err, dispatch).then((res) => {
-            CrawlDataListFetchApi(statusCode, listSize, pageNo,searchObj).then((res) => {
-              dataCleansing(res.data);
-            });
+            CrawlDataListFetchApi(statusCode, listSize, pageNo, searchObj).then(
+              (res) => {
+                dataCleansing(res.data);
+              }
+            );
           });
         })
     );
@@ -112,13 +118,16 @@ function CurationDataListContainer() {
   };
 
   useEffect(() => {
+    if (storedViewType !== null) setViewType(storedViewType);
+  });
+
+  useEffect(() => {
     if (axisObj.X === null) {
       dataFetch(searchObj);
-    }
-    else{
+    } else {
       customDataFetch();
     }
-  }, [pageNo,listSize,axisObj,searchObj]);
+  }, [pageNo, listSize, axisObj, searchObj]);
 
   return (
     <>
