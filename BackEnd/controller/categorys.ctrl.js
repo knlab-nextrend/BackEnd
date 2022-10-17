@@ -117,7 +117,7 @@ const getCodeByType = async (req, res) => {
         res.send(result);
 
     }catch(e){
-        res.status(400).send(e);
+        res.status(400).send({message : e});
     }
     
 }

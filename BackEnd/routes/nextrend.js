@@ -39,7 +39,7 @@ router.post("/cat/",categoryCtrl.createCat);
 router.put("/cat/",categoryCtrl.updateCat);
 router.delete("/cat/",categoryCtrl.deleteCat);
 
-router.get("/list/category", categoryCtrl.getCodeByType);
+router.get("/cat/list", categoryCtrl.getCodeByType);
 
 router.get("/custom/",customCtrl.read);
 router.post("/custom/",authJWT,customCtrl.create);

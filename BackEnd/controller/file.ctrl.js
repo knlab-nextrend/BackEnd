@@ -171,7 +171,7 @@ const getExcelData = async (req, res)=>{
 
         res.status(200).send(result.docs);
     }catch(e){
-        res.status(400).send(e);
+        res.status(400).send({message : e});
     }
     
 }
@@ -182,7 +182,7 @@ const getExcelDetail = async (req,res)=>{
 
         res.status(200).send(result.body.hits.hits);
     }catch(e){
-        res.status(400).send(e);
+        res.status(400).send({message : e});
     }
 }
 
