@@ -16,10 +16,10 @@ const readQuery = (length,type,code=null) => new Promise((resolve, reject)=>{
     });
 });
 
-const readCodeByNameQuery = (type, name)=> new Promise((resolve, reject)=>{
-    let query = 'SELECT CODE FROM nt_categorys WHERE TYPE=? AND CT_NM = ?';
+const getCodeByType = (type)=> new Promise((resolve, reject)=>{
+    let query = `SELECT CT_NM as name, CODE as code FROM nt_categorys WHERE TYPE=${type}`;
 
-    db.query(query, [type, name], (err, result)=>{
+    db.query(query, (err, result)=>{
         if(err){ reject(err); }
         resolve(result);
     })
@@ -71,5 +71,5 @@ module.exports={
     read:readQuery,
     update:updateQuery,
     delete:deleteQuery,
-    readCodeByNameQuery : readCodeByNameQuery
+    getCodeByType : getCodeByType
 }

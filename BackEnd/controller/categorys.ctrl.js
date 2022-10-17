@@ -106,29 +106,20 @@ const countryToDict = async (req,res) => {
     }
 }
 
-const convertNameToCode = async (req, res) => {
-    const list = req.body;
-
-    if(list.length == 0){
-        res.status(400).send({message : "요청 본문이 양식에 맞지 않습니다."});
-        return;
-    }
+const getCodeByType = async (req, res) => {
+    const typeCode = req.query.type;
     try{
-        for(let element of list){
-            const result = await categoryCtrl.readCodeByNameQuery(element.type, element.name);
-    
-            if(result.length == 0){
-                res.status(400).send({message : "해당하는 코드값을 찾을 수 없습니다.", element : element});
-                return;
-            }
-    
-            element.code = result[0].CODE;
-            delete element.type;
+        if(typeCode == undefined){
+            throw {message : "type 은 필수값입니다."}
         }
-        res.send(list);
-    }catch(err){
-        res.status(400).send({message: err});
+
+        let result = await categoryCtrl.getCodeByType(typeCode);
+        res.send(result);
+
+    }catch(e){
+        res.status(400).send(e);
     }
+    
 }
 
 
@@ -142,5 +133,5 @@ module.exports = {
     createCat:createCat,
     updateCat:updateCat,
     deleteCat:deleteCat,
-    convertNameToCode : convertNameToCode
+    getCodeByType : getCodeByType
 }
