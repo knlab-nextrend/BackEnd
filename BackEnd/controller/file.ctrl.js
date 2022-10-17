@@ -76,11 +76,11 @@ const docImageAttach = async (req, res) => {
 }
 
 const uploadExcelData = async (req, res) => {
+    
     let pdfs = req.files.pdfs;
     let thumbnails = req.files.thumbnails;
 
     if (pdfs && thumbnails) {
-        let metaDict = {};
         const metaData = JSON.parse(req.body.meta);
         const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
 
@@ -142,7 +142,6 @@ const uploadExcelData = async (req, res) => {
                 delete meta.pdf;
                 delete meta.thumbnail;
                 
-
                 const _id = await esCtrl.Index(meta, 8, false, true);
                 await uploadCtrl.updateId(_id, itemId);
             })
@@ -164,7 +163,8 @@ const getExcelData = async (req, res)=>{
         const query = libs.reqToEsFilters({
             is_crawled : false,
             pageNo : page,
-            listSize : 20
+            listSize : 20,
+            ...req.query
         })
 
         let result = await esCtrl.Search(query);

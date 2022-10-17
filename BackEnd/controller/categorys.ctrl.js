@@ -48,7 +48,7 @@ const deleteCat = async (req,res) => {
         res.status(400).send({message:'value not exists'})
     }else{
         try{
-            const result = await categoryCtrl.delete(req.query.type,req.query.code);
+            const result = await categoryCtrl.delete(req.query.type, req.query.code);
             res.send(result);
         }catch(e){
             res.status(400).send({message:e});
@@ -105,6 +105,33 @@ const countryToDict = async (req,res) => {
         res.status(400).send({message:"error occured during loading countries"});
     }
 }
+
+const convertNameToCode = async (req, res) => {
+    const list = req.body;
+
+    if(list.length == 0){
+        res.status(400).send({message : "요청 본문이 양식에 맞지 않습니다."});
+        return;
+    }
+    try{
+        for(let element of list){
+            const result = await categoryCtrl.readCodeByNameQuery(element.type, element.name);
+    
+            if(result.length == 0){
+                res.status(400).send({message : "해당하는 코드값을 찾을 수 없습니다.", element : element});
+                return;
+            }
+    
+            element.code = result[0].CODE;
+            delete element.type;
+        }
+        res.send(list);
+    }catch(err){
+        res.status(400).send({message: err});
+    }
+}
+
+
 module.exports = {
     getCodes:codeList,
     getConti:contiList,
@@ -114,5 +141,6 @@ module.exports = {
     readCat:readCat,
     createCat:createCat,
     updateCat:updateCat,
-    deleteCat:deleteCat
+    deleteCat:deleteCat,
+    convertNameToCode : convertNameToCode
 }

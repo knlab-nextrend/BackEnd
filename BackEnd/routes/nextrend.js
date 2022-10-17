@@ -39,6 +39,8 @@ router.post("/cat/",categoryCtrl.createCat);
 router.put("/cat/",categoryCtrl.updateCat);
 router.delete("/cat/",categoryCtrl.deleteCat);
 
+router.get("/list/category", categoryCtrl.convertNameToCode);
+
 router.get("/custom/",customCtrl.read);
 router.post("/custom/",authJWT,customCtrl.create);
 router.put("/custom/",authJWT,customCtrl.update);
@@ -73,5 +75,8 @@ router.get('/viewPage/');
 // 해당 엔드포인트를 사용하여 view 페이지 렌더링.
 
 router.get("/test",testCtrl.test);
+
+
+
 
 module.exports = router;

@@ -16,6 +16,16 @@ const readQuery = (length,type,code=null) => new Promise((resolve, reject)=>{
     });
 });
 
+const readCodeByNameQuery = (type, name)=> new Promise((resolve, reject)=>{
+    let query = 'SELECT CODE FROM nt_categorys WHERE TYPE=? AND CT_NM = ?';
+
+    db.query(query, [type, name], (err, result)=>{
+        if(err){ reject(err); }
+        resolve(result);
+    })
+})
+
+
 const createQuery = (length,type,ct_nm,code) => new Promise((resolve, reject)=>{
     const query = 'call setLimitCat(?,?,?,?)';
     const params = [type,code,length,ct_nm];
@@ -60,5 +70,6 @@ module.exports={
     create:createQuery,
     read:readQuery,
     update:updateQuery,
-    delete:deleteQuery
+    delete:deleteQuery,
+    readCodeByNameQuery : readCodeByNameQuery
 }
