@@ -75,7 +75,7 @@ function UserInfoModal({ closeModal, executeModal }) {
 
   const _userIDdVerify = () => {
     if (userID !== "") {
-      verifyUserIdApi(userID, id)
+      verifyUserIdApi(userID)
         .then(() => {
           setIdMsg("사용가능한 ID입니다.");
           setConfirm(true);
@@ -106,7 +106,7 @@ function UserInfoModal({ closeModal, executeModal }) {
   };
 
   const _confirmCheck = () => {
-    if (confirm) {
+    if (!type || confirm) {
       if (_fieldCheck()) {
         if (_userPWVerify()) {
           return true;
@@ -197,10 +197,13 @@ function UserInfoModal({ closeModal, executeModal }) {
                 value={userID}
                 onChange={_userUserIDHandler}
                 type="text"
+                disabled={!type}
               />
-              <Button color="#435269" onClick={_userIDdVerify}>
-                중복확인
-              </Button>
+              {type && (
+                <Button color="#435269" onClick={_userIDdVerify}>
+                  중복확인
+                </Button>
+              )}
             </InputFieldWrapper>
             <Message>{idMsg}</Message>
           </InputWrapper>
