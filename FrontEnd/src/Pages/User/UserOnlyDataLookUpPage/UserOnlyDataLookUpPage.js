@@ -17,35 +17,42 @@ function UserOnlyDataLookUpPage({
   setPageNo,
   archiveData,
   curationRequest,
+  selectedMenu,
+  onClickAllMenu,
+  selectedAll,
 }) {
   return (
     <Wrapper>
-      <AxisTitle>전체</AxisTitle>
+      <AxisTitle selected={selectedAll} onClick={onClickAllMenu}>
+        <div>전체</div>
+      </AxisTitle>
       <AxisMenuBar axis="X">
         {axisMenu.X.map((category, index) => {
           return (
-            <div
+            <XAxismenuBarItem
+              selected={selectedMenu.X.code === category.code}
               key={index}
               onClick={() => {
                 menuClickHandler("X", category);
               }}
             >
               {category.ct_nm}
-            </div>
+            </XAxismenuBarItem>
           );
         })}
       </AxisMenuBar>
       <AxisMenuBar axis="Y">
         {axisMenu.Y.map((category, index) => {
           return (
-            <div
+            <YAxisMenuBarItem
+              selected={selectedMenu.Y.code === category.code}
               key={index}
               onClick={() => {
                 menuClickHandler("Y", category);
               }}
             >
               {category.ct_nm}
-            </div>
+            </YAxisMenuBarItem>
           );
         })}
       </AxisMenuBar>
@@ -56,7 +63,6 @@ function UserOnlyDataLookUpPage({
               dcCount={dcCount}
               listSize={listSize}
               pageNo={pageNo}
-              ß
               setPageNo={setPageNo}
               listSizeHandler={listSizeHandler}
               archiveData={archiveData}
@@ -122,11 +128,33 @@ const AxisTitle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: white;
   grid-column: 1 / 2;
   grid-row: 1 / 2;
-  color: #009999;
-  font-weight: bold;
+  border-bottom: 0.5rem solid #435269;
+  color: #ffffff;
+  background-color: #435269;
+  cursor: pointer;
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    :hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+  ${(props) =>
+    props.selected &&
+    css`
+      & > div{
+        background-color:#ffffff;
+        color: #435269;
+        font-weight: bold;
+        :hover{
+          background-color:#ffffff;
+        }
+    `}
 `;
 const AxisMenuBar = styled.div`
   ${(props) =>
@@ -135,21 +163,11 @@ const AxisMenuBar = styled.div`
       display: flex;
       align-items: center;
       flex-direction: row;
-      color: white;
-      background-color: #435269;
       grid-column: 2 / 3;
       grid-row: 1 / 2;
-      div {
-        display: flex;
-        align-items: center;
-        height: 100%;
-        padding-left: 2rem;
-        padding-right: 2rem;
-        text-align: center;
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.2);
-        }
-      }
+      border-bottom: 0.5rem solid #435269;
+      background-color: #435269;
+      color: white;
     `}
   ${(props) =>
     props.axis === "Y" &&
@@ -159,14 +177,48 @@ const AxisMenuBar = styled.div`
       background-color: #eee;
       grid-column: 1 / 2;
       grid-row: 2 / 3;
-      div {
-        padding: 1rem 0.5rem 1rem 0.5rem;
-        text-align: center;
-        &:hover {
-          background-color: #d6d6d6;
-        }
-      }
     `}
+`;
+
+const XAxismenuBarItem = styled.div`
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  ${(props) =>
+    props.selected &&
+    css`
+      background-color: #ffffff;
+      color: #435269;
+      font-weight: bold;
+      &:hover {
+        background-color: #ffffff;
+      }
+    `};
+`;
+
+const YAxisMenuBarItem = styled.div`
+  padding: 1rem 0.5rem 1rem 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    background-color: #d6d6d6;
+  }
+  ${(props) =>
+    props.selected &&
+    css`
+      background-color: #d8dee6;
+      &:hover {
+        background-color: #d8dee6;
+      }
+      font-weight: bold;
+    `};
 `;
 
 const ContentBody = styled.div`
