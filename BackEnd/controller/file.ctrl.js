@@ -11,6 +11,52 @@ const es = require("../models/es");
 const fileCtrl = require("../service/file");
 
 
+const docCatViewer = (doc) => new Promise(async(resolve,reject)=>{
+    let newDoc = Object.assign({},doc);
+    const fieldList = {
+        doc_country:3,
+        doc_publish_country:3,
+        doc_category:1,
+        doc_language:4,
+        doc_content_type:2,
+        doc_custom:6,
+        doc_content_category:2,
+        doc_topic:5,
+        CATEGORY:1,
+        COUNTRY:3,
+        LANG:4,
+    };
+    for (const [key,catType] of Object.entries(fieldList)){
+        try{
+            let converted = [];
+            doc[key] = Array.isArray(doc[key])? doc[key]:[doc[key]];
+            if(doc[key].length!==0){
+                for (let valueId of doc[key]) {
+                    const valueInfo = await codeCtrl.getInfoById(valueId,catType);
+                    if(valueInfo[0]){
+                        converted.push(valueInfo[0]);
+                    }
+                };
+                if(key in newDoc){
+                    newDoc[key] = converted;
+                }
+            }
+        }catch(e){
+            continue;
+        }
+    }
+    if('doc_host' in newDoc){
+        if(newDoc.doc_host){
+            try{
+                const data = await hostCtrl.read(newDoc.doc_host)
+                newDoc.doc_host = data;
+            }catch(e){
+            }
+        }
+    }
+    resolve(newDoc);
+})
+
 // 페이지를 벗어날 때, _id만으로 작업중이던 nas에 등록된 contentImage 파일들을 삭제함.
 const docImageDetach = async (req, res) => {
     if (req.query._id) {
@@ -169,11 +215,22 @@ const getExcelData = async (req, res)=>{
 
         let result = await esCtrl.Search(query);
 
-        res.status(200).send(result.docs);
-    }catch(e){
-        res.status(400).send({message : e});
-    }
-    
+        const document = [];
+        for(let doc of result.docs){
+            doc = await docCatViewer(doc);
+            document.push(doc);
+        }
+        result.docs = document;
+        if (result) {
+            result.docs.forEach((doc) => {
+                if (doc["stat"] === undefined) {
+                    doc["stat"] = 0;
+                }
+            });
+            res.send(result);
+        } else {
+            res.status(400).send();
+        }}catch(e){res.status(400).send();}
 }
 
 const getExcelDetail = async (req,res)=>{

@@ -194,6 +194,8 @@ const crawlSearch = async (req, res) => {
             case 8:
                 const searchQuery = libs.reqToEsFilters(req.query,statusCode);
                 result = await esCtrl.Search(searchQuery);
+                
+                
                 const document = [];
                 for(let doc of result.docs){
                     doc = await docCatViewer(doc);
