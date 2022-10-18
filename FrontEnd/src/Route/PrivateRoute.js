@@ -18,7 +18,7 @@ function PrivateRoute({ component: Component, ...rest }) {
       component={(props) =>
         isLogin ? (
           <Wrap>
-            <Loading />
+            {/* <Loading /> */}
             <Component {...props} />
           </Wrap>
         ) : (

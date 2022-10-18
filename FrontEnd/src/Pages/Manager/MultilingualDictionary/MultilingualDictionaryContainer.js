@@ -4,6 +4,7 @@ import { MultilingualDictionaryApi, sessionHandler } from "../../../Utils/api";
 import { trackPromise } from "react-promise-tracker";
 import { useDispatch } from "react-redux";
 import XLSX from "xlsx";
+import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 function MultilingualDictionaryContainer() {
   const dispatch = useDispatch();
   const [wordData, setWordData] = useState([]); // 단어 데이터
@@ -80,9 +81,14 @@ function MultilingualDictionaryContainer() {
     // 새 엑셀 임시 새 문서 생성
     const book = XLSX.utils.book_new();
     // 값 생성. 언어 구분 없어도 가능.
-    let _arr = [["id","다국어 유사어, 관련어를 (, )로 구분 또는 셀로 구분하여 입력하세요."]];
+    let _arr = [
+      [
+        "id",
+        "다국어 유사어, 관련어를 (, )로 구분 또는 셀로 구분하여 입력하세요.",
+      ],
+    ];
     wordData.map((item) => {
-      _arr.push([item.IDX,...item.MULTI_TEXT.split(", ")]);
+      _arr.push([item.IDX, ...item.MULTI_TEXT.split(", ")]);
     });
     const _hostArray = XLSX.utils.aoa_to_sheet(_arr);
     // 첫번째 시트에 생성한 데이터를 넣는다.
@@ -154,7 +160,7 @@ function MultilingualDictionaryContainer() {
   }, [keyword]);
 
   return (
-    <>
+    <LoadingWrapper>
       <MultilingualDictionary
         dataAddOpen={dataAddOpen}
         dataAddOpenHandler={dataAddOpenHandler}
@@ -173,7 +179,7 @@ function MultilingualDictionaryContainer() {
         wordDataUpload={wordDataUpload}
         wordDataDownload={wordDataDownload}
       />
-    </>
+    </LoadingWrapper>
   );
 }
 export default MultilingualDictionaryContainer;

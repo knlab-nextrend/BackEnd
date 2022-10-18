@@ -3,6 +3,7 @@ import styled, { css } from "styled-components";
 import CurationDataListContainer from "../../Common/CurationDataList/CurationDataListContainer";
 import UserArchiveDataList from "./UserArchiveDataList";
 import { HiOutlineArchive, HiOutlineDocumentDuplicate } from "react-icons/hi";
+import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 function UserOnlyDataLookUpPage({
   axisMenu,
   menuClickHandler,
@@ -15,7 +16,7 @@ function UserOnlyDataLookUpPage({
   pageNo,
   setPageNo,
   archiveData,
-  curationRequest
+  curationRequest,
 }) {
   return (
     <Wrapper>
@@ -48,24 +49,24 @@ function UserOnlyDataLookUpPage({
           );
         })}
       </AxisMenuBar>
-      <ContentBody>
-        {dataMode === "archive" ? (
-          <UserArchiveDataList
-            dcCount={dcCount}
-            listSize={listSize}
-            pageNo={pageNo}
-            setPageNo={setPageNo}
-            listSizeHandler={listSizeHandler}
-            archiveData={archiveData}
-            curationRequest={curationRequest}
-          />
-        ) : (
-          <CurationDataListContainer
-            className="list"
-            axisObj={axisObj}
-          />
-        )}
-      </ContentBody>
+      <LoadingWrapper>
+        <ContentBody>
+          {dataMode === "archive" ? (
+            <UserArchiveDataList
+              dcCount={dcCount}
+              listSize={listSize}
+              pageNo={pageNo}
+              ß
+              setPageNo={setPageNo}
+              listSizeHandler={listSizeHandler}
+              archiveData={archiveData}
+              curationRequest={curationRequest}
+            />
+          ) : (
+            <CurationDataListContainer className="list" axisObj={axisObj} />
+          )}
+        </ContentBody>
+      </LoadingWrapper>
       <ModeSwitchButton onClick={modeSwitchHandler}>
         {dataMode === "archive" ? (
           <>

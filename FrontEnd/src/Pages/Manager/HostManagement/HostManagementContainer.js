@@ -14,6 +14,7 @@ import {
   setCategoryModalType,
 } from "../../../Modules/modal";
 import { trackPromise } from "react-promise-tracker";
+import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 
 function HostManagementContainer() {
   const dispatch = useDispatch();
@@ -128,7 +129,7 @@ function HostManagementContainer() {
         // });
         _excelData.push(item["HOST 도메인"]);
       });
-      console.log(_excelData)
+      console.log(_excelData);
       //hostTestUpload(_excelData);
     };
     reader.readAsBinaryString(input.files[0]);
@@ -271,9 +272,9 @@ function HostManagementContainer() {
   };
 
   const testDataCleansing = (rawData) => {
-    const _arr = rawData.map((item,index) => {
+    const _arr = rawData.map((item, index) => {
       let _obj = { ...item };
-      _obj["idx"]=index;
+      _obj["idx"] = index;
       _obj["test_end"] = true;
       _obj["is_registered"] =
         hostList.filter((host) => host.host === "https://www.worldbank.org/")
@@ -301,7 +302,7 @@ function HostManagementContainer() {
     }
   }, [selectedHost]);
   return (
-    <>
+    <LoadingWrapper>
       <HostManagement
         currentHostList={currentHostList}
         filterOpen={filterOpen}
@@ -323,9 +324,8 @@ function HostManagementContainer() {
         hostPublisher={hostPublisher}
         nextrendSync={nextrendSync}
         hostTestList={hostTestList}
-        
       />
-    </>
+    </LoadingWrapper>
   );
 }
 export default HostManagementContainer;

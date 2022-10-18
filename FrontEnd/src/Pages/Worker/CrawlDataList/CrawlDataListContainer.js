@@ -4,6 +4,7 @@ import { CrawlDataListFetchApi, sessionHandler } from "../../../Utils/api";
 import CrawlDataList from "./CrawlDataList";
 import { useDispatch } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
+import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 
 function CrawlDataListContainer() {
   const dispatch = useDispatch();
@@ -65,13 +66,13 @@ function CrawlDataListContainer() {
         doc_keyword: item.doc_keyowrd,
         doc_collect_date: item.doc_collect_date.substring(0, 10),
         _id: item._id,
-        item_id:item.item_id,
+        item_id: item.item_id,
         stat: item.stat,
         doc_language: item.doc_language,
         doc_page: item.doc_page,
         doc_url: item.doc_url,
         doc_origin_summary: item.doc_origin_summary,
-        doc_publisher:item.doc_publisher,
+        doc_publisher: item.doc_publisher,
       };
       _crawlDataList.push(obj);
     });
@@ -84,7 +85,7 @@ function CrawlDataListContainer() {
     trackPromise(
       CrawlDataListFetchApi(currentCode, listSize, pageNo, searchObj)
         .then((res) => {
-          console.log(res.data)
+          console.log(res.data);
           dataCleansing(res.data);
         })
         .catch((err) => {
@@ -102,8 +103,7 @@ function CrawlDataListContainer() {
     );
   };
 
-  const dataFilterFetch = (searchObj
-  ) => {
+  const dataFilterFetch = (searchObj) => {
     setSearchObj(searchObj);
   };
 
@@ -112,7 +112,7 @@ function CrawlDataListContainer() {
     dataFetch(searchObj);
   }, [pageNo, currentCode, listSize, searchObj]);
   return (
-    <>
+    <LoadingWrapper>
       <CrawlDataList
         statusCode={statusCode}
         crawlDataList={crawlDataList}
@@ -126,7 +126,7 @@ function CrawlDataListContainer() {
         isKeep={isKeep}
         dataFilterFetch={dataFilterFetch}
       />
-    </>
+    </LoadingWrapper>
   );
 }
 export default CrawlDataListContainer;

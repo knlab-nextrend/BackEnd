@@ -9,6 +9,7 @@ import {
 } from "../../../Utils/api";
 import { useDispatch } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
+import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 function CategoryManagementContainer() {
   const dispatch = useDispatch();
 
@@ -23,8 +24,8 @@ function CategoryManagementContainer() {
     유형분류: 2,
     국가분류: 3,
     언어: 4,
-    토픽분류:5,
-    기관맞춤형분류:6,
+    토픽분류: 5,
+    기관맞춤형분류: 6,
   };
 
   const [addCategoryName, setAddCategoryName] = useState(""); // 새롭게 등록할 카테고리 이름
@@ -99,13 +100,17 @@ function CategoryManagementContainer() {
         if (res.status === 200) {
           alert("성공적으로 등록되었습니다.");
           dataFetch();
-          // setAddCategoryName(""); input 초기화 왜 안되는거지 
+          // setAddCategoryName(""); input 초기화 왜 안되는거지
         }
       });
     }
   };
   const categoryDelete = (code) => {
-    if (confirm("해당 카테고리를 삭제하시겠습니까? 연관된 문서에서 카테고리 설정이 삭제됩니다.")) {
+    if (
+      confirm(
+        "해당 카테고리를 삭제하시겠습니까? 연관된 문서에서 카테고리 설정이 삭제됩니다."
+      )
+    ) {
       categoryItemDeleteApi(type, code).then((res) => {
         if (res.status === 200) {
           alert("성공적으로 삭제되었습니다.");
@@ -141,11 +146,11 @@ function CategoryManagementContainer() {
 
   useEffect(() => {
     dataFetch();
-    console.log(upperCode[2])
+    console.log(upperCode[2]);
   }, [type, length, upperCode]);
 
   return (
-    <>
+    <LoadingWrapper>
       <CategoryManagement
         CATEGOROY_CODE_LIST={CATEGOROY_CODE_LIST}
         categoryList={categoryList}
@@ -164,7 +169,7 @@ function CategoryManagementContainer() {
         categoryDelete={categoryDelete}
         upperCode={upperCode}
       />
-    </>
+    </LoadingWrapper>
   );
 }
 
