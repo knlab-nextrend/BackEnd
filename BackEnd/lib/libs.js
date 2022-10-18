@@ -124,11 +124,52 @@ const ImageExtractorFromContent = (content) => {
     }
 }
 
-const reqToEsFilters = (query,stat=null,mustQ=[],shouldQ=[],filterQ=[]) => {
+const reqToEsFilters = (query,stat=null,mustQ=[],shouldQ=[],filterQ=[], general = false) => {
+    const size = query.listSize||10;
+    const from = query.pageNo ? ((query.pageNo - 1) * size) : 0;
+
+    let sort = [];
+    let sortTemp = {};
+    const sortType = query.sortType||'doc_collect_date';
+    sortTemp[sortType] = query.sort||'desc';
+    sort.push(sortTemp);
+
+    // 모든 필드에 대해서 검색하는 통합 검색 기능
+    if(general){
+        const searchQuery = {
+        from: from,
+        size: size,
+        index: 'politica_service',
+        body:{
+                query: {
+                    bool :{
+                        must : [
+                            {
+                                match :{
+                                is_crawled : (query.is_crawled && true)
+                                }
+                            },
+                            {
+                                multi_match : {
+                                    query : query.query,
+                                    fields : []
+                                }
+                            }
+                        ]
+                    },
+
+                },
+            sort: sort,
+            }
+        };
+    return searchQuery;
+    }
+
+    // 상세 검색 기능
     let must =[];
     let should = shouldQ;
     let filters = [];
-    let sort = [];
+    
     for (const [key,value] of Object.entries(query)){
         if(key.startsWith('doc_host')){
             let tempDict={};
@@ -144,7 +185,7 @@ const reqToEsFilters = (query,stat=null,mustQ=[],shouldQ=[],filterQ=[]) => {
             must.push({match:tempDict});
         }
     }
-    const sortType = query.sortType||'doc_collect_date'
+    
     if(query.dateGte||query.dateLte){
         let temp = {};
         let range = {};
@@ -153,9 +194,6 @@ const reqToEsFilters = (query,stat=null,mustQ=[],shouldQ=[],filterQ=[]) => {
         range[sortType] =temp;
         filters.push({range:range})
     }
-    let sortTemp = {};
-    sortTemp[sortType] = query.sort||'desc'
-    sort.push(sortTemp);
 
     if(stat===null){
     }else if(Array.isArray(stat)){
@@ -166,8 +204,7 @@ const reqToEsFilters = (query,stat=null,mustQ=[],shouldQ=[],filterQ=[]) => {
 
     must.push.apply(must,mustQ);
     filters.push.apply(filters,filterQ);
-    const size = query.listSize||10;
-    const from = query.pageNo ? ((query.pageNo - 1) * size) : 0;
+    
     let bool = {
         minimum_should_match:Math.ceil(should.length/2)||0
     };

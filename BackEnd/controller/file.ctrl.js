@@ -206,12 +206,16 @@ const uploadExcelData = async (req, res) => {
 const getExcelData = async (req, res)=>{
     try{
         const page = parseInt(req.query.page || "1");
+        const general = (req.query.general === "true");
+
+        delete req.query.general;
+
         const query = libs.reqToEsFilters({
             is_crawled : false,
             pageNo : page,
             listSize : 20,
             ...req.query
-        })
+        },8, [],[],[], general);
 
         let result = await esCtrl.Search(query);
 
