@@ -175,6 +175,8 @@ const crawlDetail = async (req, res) => {
 //router.get('/list/:statusCode',crawlSearch.Search);
 const crawlSearch = async (req, res) => {
     const statusCode = parseInt(req.params.statusCode);
+    const general = (req.query.general === "true");
+
     if (statusCode === undefined) {
         res.status(400).send();
     } else {
@@ -192,7 +194,8 @@ const crawlSearch = async (req, res) => {
             case 6:
             case 7:
             case 8:
-                const searchQuery = libs.reqToEsFilters(req.query,statusCode);
+                const searchQuery = libs.reqToEsFilters(req.query,statusCode,[],[],[], general);
+
                 result = await esCtrl.Search(searchQuery);
                 
                 

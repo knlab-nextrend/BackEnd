@@ -145,11 +145,6 @@ const reqToEsFilters = (query,stat=null,mustQ=[],shouldQ=[],filterQ=[], general 
                     bool :{
                         must : [
                             {
-                                match :{
-                                is_crawled : (query.is_crawled && true)
-                                }
-                            },
-                            {
                                 multi_match : {
                                     query : query.query,
                                     fields : []
@@ -162,7 +157,15 @@ const reqToEsFilters = (query,stat=null,mustQ=[],shouldQ=[],filterQ=[], general 
             sort: sort,
             }
         };
-    return searchQuery;
+        if(query.is_crawled != undefined){
+            searchQuery.body.query.bool.must.push({
+                match :{
+                is_crawled : query.is_crawled
+                }
+            })
+
+        }
+        return searchQuery;
     }
 
     // 상세 검색 기능
