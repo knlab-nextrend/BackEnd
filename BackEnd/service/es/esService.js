@@ -23,6 +23,7 @@ const esDetail = (_id) => new Promise(async (resolve, reject) => {
 });
 
 const esSearch = (searchQuery) => new Promise(async (resolve, reject) => {
+
     try{
         const value = await esDB.search(searchQuery);
         const result = {
