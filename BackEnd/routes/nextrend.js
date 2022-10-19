@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const multer = require('multer');
+
 const userCtrl = require("../controller/user.ctrl");
 const tokenCtrl = require("../controller/token.ctrl");
 const categoryCtrl = require("../controller/categorys.ctrl");
@@ -11,8 +13,13 @@ const hostCtrl = require("../controller/host.ctrl");
 const authJWT = require("../middlewares/auth");
 const boardCtrl = require("../controller/board.ctrl");
 
+
+const logoImageUpload = multer({
+    dest: 'temp/images',
+});
+
 router.post("/user/restrict",userCtrl.Restrict);
-router.post("/user/add", userCtrl.Add);
+router.post("/user/add", logoImageUpload.single("logoImage") ,userCtrl.Add);
 router.get("/user/list", userCtrl.List);
 router.get("/user/get", userCtrl.Get);
 router.post("/user/modify", userCtrl.Modify);

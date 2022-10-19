@@ -1,5 +1,6 @@
 const userCtrl = require("../service/nextrend/user");
 const loginCtrl = require("../service/nextrend/login");
+const nasCtrl = require("../service/nas/nasService");
 
 const infoProcess = (body) => {
     const userInfo = {
@@ -40,6 +41,24 @@ const userAdd = async (req,res) => {
             userInfo.salt = saltResult.salt;
 
             const result = await userCtrl.Add(userInfo);
+
+            //사용자 로고 이미지 추가 로직
+            if(req.file){
+                const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
+
+                let folderPath = folderDate + '/' + userInfo.ID + "/";
+                const existErrorPDF = await nasCtrl.checkThenMakeFolder(folderPath, type = 'logo');
+                if (existErrorPDF) {
+                    throw 'error occured during access to nas';
+                }
+
+
+
+
+                userCtrl.addLogo(result.insertId, req.file);
+            }
+
+
             if(result){
                 res.send();
             }else{
