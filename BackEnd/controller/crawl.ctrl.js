@@ -177,6 +177,8 @@ const crawlSearch = async (req, res) => {
     const statusCode = parseInt(req.params.statusCode);
     const general = (req.query.general === "true");
 
+    delete req.query.general;
+
     if (statusCode === undefined) {
         res.status(400).send();
     } else {

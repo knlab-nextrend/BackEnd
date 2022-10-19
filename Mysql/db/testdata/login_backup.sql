@@ -22,6 +22,19 @@
 
 USE `login`;
 
+
+
+CREATE TABLE `nt_user_logo_list`(
+  `IDX` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `UID` int(11) NOT NULL,
+  `LOGO_PATH` varchar(50) NOT NULL,
+  PRIMARY KEY (`IDX`),
+  UNIQUE KEY `UID` (`UID`),
+  KEY `uid_for_logo` (`UID`),
+  CONSTRAINT `uid_for_logo` FOREIGN KEY (`UID`) REFERENCES `nt_users_list` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2111 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
 DROP TABLE IF EXISTS `mysql_migrations_347ertt3e`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

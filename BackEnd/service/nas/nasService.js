@@ -5,6 +5,8 @@ const ftp = require('basic-ftp');
 const NasFTP = require("../../models/nas/index");
 const thumbRoute = NasFTP.thumbRoute;
 const uploadRoute = NasFTP.uploadRoute;
+const userLogoRoute = NasFTP.userLogoRoute;
+
 const webServer = NasFTP.webServer;
 const config = NasFTP.config;
 
@@ -20,6 +22,11 @@ const pathTypeCatcher = (type) => {
             subPath = uploadRoute;
             tailPath = '.pdf';
             break;
+        case 'logo' :
+            subPath = userLogoRoute;
+            tailPath = '.png';
+            break;
+
     }
     return {subPath:subPath,tailPath:tailPath};
 }

@@ -80,6 +80,7 @@ const loadPage = async (req, res) => {
 }
 
 const customSearch = async (req, res) => {
+
     const fieldList = {
         doc_country: 3,
         doc_publish_country: 3,
@@ -113,6 +114,7 @@ const customSearch = async (req, res) => {
             const reqCode= parseInt(req.query.statusCode);
             let stat = (reqCode===6||reqCode===7)? [6,7]:8
             const searchQuery = libs.reqToEsFilters(req.query,stat,must,should);
+
             let result = await esServiceCtrl.Search(searchQuery)
             const document = [];
             for(let doc of result.docs){

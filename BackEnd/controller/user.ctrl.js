@@ -47,15 +47,17 @@ const userAdd = async (req,res) => {
                 const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
 
                 let folderPath = folderDate + '/' + userInfo.ID + "/";
-                const existErrorPDF = await nasCtrl.checkThenMakeFolder(folderPath, type = 'logo');
-                if (existErrorPDF) {
+                const existError = await nasCtrl.checkThenMakeFolder(folderPath, type = 'logo');
+                if (existError) {
                     throw 'error occured during access to nas';
                 }
 
-
-
-
-                userCtrl.addLogo(result.insertId, req.file);
+                const uploadError = await nasCtrl.uploadFile(req.file , folderPath, type = 'logo');
+                if (uploadError) {
+                    // 업로드 실패시 throw
+                    throw 'error occured put file to nas storage';
+                }
+                userCtrl.addLogo(result.insertId, folderPath + req.file.filename + ".png");
             }
 
 

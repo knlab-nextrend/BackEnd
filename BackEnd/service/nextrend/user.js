@@ -58,13 +58,17 @@ const addUser = (Info) => new Promise((resolve, reject)=>{
     });
 });
 
-const addLogo = (UID, filePath)=>{
+const addLogo = (UID, filePath)=>new Promise((resolve, reject)=>{
+    const query = "INSERT INTO nt_user_logo_list (UID, LOGO_PATH) VALUES (?, ?);"
+    db.query(query, [UID, filePath],(err, data , fields)=>{
+        if(err){
+            resolve(err);
+        }else{
+            resolve(data);
+        }
+    })
+})
     
-
-
-}
-
-
 
 const listAllUser = () => new Promise((resolve, reject)=>{
     const query = "select * from nt_users_list";
