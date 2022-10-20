@@ -72,6 +72,7 @@ const addLogo = (UID, filePath)=>new Promise((resolve, reject)=>{
 const getLogoPath = (UID) => new Promise((resolve, reject)=>{
     const query = "SELECT LOGO_PATH as filePath FROM nt_user_logo_list WHERE UID=?;";
 
+
     db.query(query, [UID], (err, data, fields)=>{
         if(err){
             reject(err);
@@ -123,7 +124,7 @@ const deleteUser = (uid) => new Promise((resolve, reject)=>{
     const param = [uid];
     db.query(query, param, (err,data) => {
         if(err){
-            resolve(false);
+            reject(err);
         }else{
             resolve(true);
         }

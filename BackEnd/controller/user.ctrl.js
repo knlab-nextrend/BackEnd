@@ -32,7 +32,9 @@ const userGet = async (req,res) => {
 
 const userAdd = async (req,res) => {
     if(req.body.userInfo){
+
         let userInfo = infoProcess(req.body.userInfo);
+
 
         if(userInfo.PW&&userInfo.ID){
             //pw 및 salt는 해쉬를 거친 후 저장.
@@ -70,6 +72,11 @@ const userList = async (req,res) => {
 const userModify = async (req,res) => {
     if(req.body.uid&&req.body.userInfo){
         let userInfo = infoProcess(req.body.userInfo);
+
+        if(!userInfo.userID){
+            userInfo.userID = userCtrl.getUserByUid(req.body.uid).userID;
+        }
+
         if(userInfo.PW){
             //pw 및 salt는 해쉬를 거친 후 저장.
             const saltResult = await loginCtrl.HashPW(userInfo.PW);
@@ -78,13 +85,7 @@ const userModify = async (req,res) => {
         }
         const result = await userCtrl.Modify(userInfo,req.body.uid);
 
-
-        //logo 업로드 기능 추가 && 이미 로고가 있다면 지우고 다시 저장
-        const LogoResult = userCtrl.getLogoPath(req.body.uid);
-        if(LogoResult){
-            userCtrl.removeFilePathFromDB(LogoResult.IDX);
-            nasCtrl.deleteFile(LogoResult[0].filePath+ "/logo", "logo");
-        }
+        //logo 업로드 기능 추가
         await saveLogo(req.file, userInfo.ID, result1.insertId);
 
         if(result){
@@ -99,14 +100,10 @@ const userModify = async (req,res) => {
 
 const userDelete = async (req,res) => {
     if(req.body.uid){
+        
+        const userID = await userCtrl.getUserByUid(req.body.uid).userID;
         const result = await userCtrl.Delete(req.body.uid);
-        //유저가 로고이미지를 갖고 있다면 삭제
-        const LogoResult = userCtrl.getLogoPath(req.body.uid);
-        if(LogoResult){
-            userCtrl.removeFilePathFromDB(LogoResult.IDX);
-            nasCtrl.deleteFile(LogoResult[0].filePath+ "/logo", "logo");
-        }
-
+        await nasCtrl.deleteFile(`/${userID}/logo`, "logo");
         if(result){
             res.send();
         }else{
@@ -150,9 +147,7 @@ const userVerify = async (req,res) => {
 
 const saveLogo = async (file, userId, UID)=>{
     if(!file) return true;
-
     //const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
-
     let folderPath =  '/' + userId + "/";
     const existError = await nasCtrl.checkThenMakeFolder(folderPath, type = 'logo');
     if (existError) {
@@ -165,8 +160,6 @@ const saveLogo = async (file, userId, UID)=>{
         // 업로드 실패시 throw
         throw 'error occured put file to nas storage';
     }
-    userCtrl.addLogo(UID, folderPath);
-
     return true;
 }
 

@@ -1,6 +1,6 @@
 const loginCtrl = require("../service/nextrend/login");
 const nasCtrl = require("../service/nas/nasService");
-
+const userCtrl = require("../service/nextrend/user");
 
 // 따로 해쉬 하는 api를 요청하는 필요성..? 없을 듯으로 보임.
 const getHash = async (req,res) => {
@@ -20,11 +20,9 @@ const onLogin = async (req,res) => {
     if(req.body.userID&&req.body.userPW){
         const result = await loginCtrl.OnLogin(req.body.userID,req.body.userPW);
 
-        const LogoResult = userCtrl.getLogoPath(result.uid);
-        const logoFiles = await nasCtrl.getItemFromFolder(LogoResult[0].filePath, "logo");
+        const logoFile = await nasCtrl.getLogoFromFolder(`/${req.body.userID}/`);
 
-        result.logo = logoFiles[0];
-
+        result.logo = logoFile;
         if(result.message === undefined){
             res.send(result);
         }else{

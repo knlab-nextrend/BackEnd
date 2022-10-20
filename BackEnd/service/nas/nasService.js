@@ -2,7 +2,9 @@ const jsftp = require("jsftp");
 const fs = require('fs');
 const ftp = require('basic-ftp');
 
+
 const NasFTP = require("../../models/nas/index");
+const { Writable } = require("stream");
 const thumbRoute = NasFTP.thumbRoute;
 const uploadRoute = NasFTP.uploadRoute;
 const userLogoRoute = NasFTP.userLogoRoute;
@@ -94,30 +96,20 @@ const getFileList = (path,type='image') => new Promise(async (resolve, reject) =
 });
 
 
-const getItemFromFolder = (folderPath,type='logo') => new Promise(async (resolve, reject) => {
-    const subPath = pathTypeCatcher(type).subPath;
+const getLogoFromFolder = (folderPath) => new Promise(async (resolve, reject) => {
+    const subPath = pathTypeCatcher('logo').subPath;
+    var ws = new Writable({
+        write: function(chunk, encoding, next) {
+            resolve(chunk);
+        }
+      });
     const client = new ftp.Client()
     try {
         await client.access(config);
-        const result = await client.list(subPath+path);
-        if(result.code===550){
-            // 폴더가 없을 경우
-            resolve(false);
-        }else{
-            if(result.length===0){
-                // 폴더 속 파일이 없을 경우
-                resolve(false);
-            }else{
-                let fileList = [];
-                result.forEach((item)=>{
-                    fileList.push(item);
-                })
-                resolve(fileList);
-            }
-        }
+        const result = await client.downloadTo(ws,subPath +folderPath+"/logo.png");
     }
     catch(err) {
-        resolve(false);
+        resolve(null);
     }
     client.close();
 });
@@ -137,6 +129,7 @@ const checkThenMakeFolder = (folderPath,type=false) => new Promise(async (resolv
 });
 
 const deleteFile = (path,type=false) => new  Promise(async (resolve, reject) => {
+    console.log(path);
     const pathList = pathTypeCatcher(type);
     const subPath = pathList.subPath;
     const tailPath = pathList.tailPath;
@@ -180,5 +173,5 @@ module.exports = {
     uploadFile: uploadFile,
     checkThenMakeFolder: checkThenMakeFolder,
     deleteFile:deleteFile,
-    getItemFromFolder : getItemFromFolder
+    getLogoFromFolder, getLogoFromFolder
 }
