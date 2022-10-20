@@ -40,26 +40,10 @@ const userAdd = async (req,res) => {
             userInfo.PW = saltResult.PW;
             userInfo.salt = saltResult.salt;
 
-            const result = await userCtrl.Add(userInfo);
+            const result1 = await userCtrl.Add(userInfo);
 
             //사용자 로고 이미지 추가 로직
-            if(req.file){
-                const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
-
-                let folderPath = folderDate + '/' + userInfo.ID + "/";
-                const existError = await nasCtrl.checkThenMakeFolder(folderPath, type = 'logo');
-                if (existError) {
-                    throw 'error occured during access to nas';
-                }
-
-                const uploadError = await nasCtrl.uploadFile(req.file , folderPath, type = 'logo');
-                if (uploadError) {
-                    // 업로드 실패시 throw
-                    throw 'error occured put file to nas storage';
-                }
-                userCtrl.addLogo(result.insertId, folderPath + req.file.filename + ".png");
-            }
-
+            const result = await saveLogo(req.file, userInfo.ID, result1.insertId);
 
             if(result){
                 res.send();
@@ -93,6 +77,16 @@ const userModify = async (req,res) => {
             userInfo.salt = saltResult.salt;
         }
         const result = await userCtrl.Modify(userInfo,req.body.uid);
+
+
+        //logo 업로드 기능 추가 && 이미 로고가 있다면 지우고 다시 저장
+        const LogoResult = userCtrl.getLogoPath(req.body.uid);
+        if(LogoResult){
+            userCtrl.removeFilePathFromDB(LogoResult.IDX);
+            nasCtrl.deleteFile(LogoResult[0].filePath, "logo");
+        }
+        await saveLogo(req.file, userInfo.ID, result1.insertId);
+
         if(result){
             res.send();
         }else{
@@ -146,6 +140,29 @@ const userVerify = async (req,res) => {
         res.status(400).send();
     }
 }
+
+const saveLogo = async (file, userId, UID)=>{
+    if(!file) return true;
+
+    //const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
+
+    let folderPath =  '/' + userId + "/";
+    const existError = await nasCtrl.checkThenMakeFolder(folderPath, type = 'logo');
+    if (existError) {
+        throw 'error occured during access to nas';
+    }
+
+    file.filename = "logo";
+    const uploadError = await nasCtrl.uploadFile(file , folderPath, type = 'logo');
+    if (uploadError) {
+        // 업로드 실패시 throw
+        throw 'error occured put file to nas storage';
+    }
+    userCtrl.addLogo(UID, folderPath + file.filename + ".png");
+
+    return true;
+}
+
 
 module.exports = {
     Add:userAdd,

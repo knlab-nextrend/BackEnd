@@ -51,7 +51,7 @@ const addUser = (Info) => new Promise((resolve, reject)=>{
     const param = [Info.ID,Info.PW,Info.Name,Info.Company,Info.Position,Info.Email,Info.Tel,Info.Category,Info.salt];
     db.query(query, param, (err,data, fields) => {
         if(err){
-            resolve(err);
+            reject(err);
         }else{
             resolve(data);
         }
@@ -62,13 +62,38 @@ const addLogo = (UID, filePath)=>new Promise((resolve, reject)=>{
     const query = "INSERT INTO nt_user_logo_list (UID, LOGO_PATH) VALUES (?, ?);"
     db.query(query, [UID, filePath],(err, data , fields)=>{
         if(err){
-            resolve(err);
+            reject(err);
         }else{
             resolve(data);
         }
     })
 })
     
+const getLogoPath = (UID) => new Promise((resolve, reject)=>{
+    const query = "SELECT LOGO_PATH as filePath FROM nt_user_logo_list WHERE UID=?;";
+
+    db.query(query, [UID], (err, data, fields)=>{
+        if(err){
+            reject(err);
+        }else{
+            resolve(data);
+        }
+    })
+
+})
+
+const removeFilePathFromDB = (IDX)=>new Promise((resolve, reject)=>{
+    const query = "DELETE FROM nt_user_logo_list WHERE IDX=?;";
+
+    db.query(query, [UID], (err, data, fields)=>{
+            if(err){
+                reject(err);
+            }else{
+                resolve(data);
+            }
+    })
+})
+
 
 const listAllUser = () => new Promise((resolve, reject)=>{
     const query = "select * from nt_users_list";
@@ -110,6 +135,8 @@ module.exports = {
     getUserByUid:getUserByUid,
     Add: addUser,
     addLogo : addLogo,
+    getLogoPath : getLogoPath,
+    removeFilePathFromDB : removeFilePathFromDB,
     List: listAllUser,
     Modify: modifyUser,
     Delete:deleteUser,
