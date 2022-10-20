@@ -12,6 +12,7 @@ import {
   countryWorkListFetchApi,
   workAllLogFetchApi,
 } from "../../../Utils/api";
+import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 
 function DashboardContainer() {
   // docs 문서 통계
@@ -37,12 +38,12 @@ function DashboardContainer() {
 
   const [userWorkAllData, setUserWorkAllData] = useState([]); // 해당 작업자의 총 작업량
   const [countryPieChartData, setCountryPieChartData] = useState([]); // 세계 국가 문서 현황
-  const [countryDocumentData , setCountryDocumentData] = useState(null); // 특정 국가 문서 현황 
+  const [countryDocumentData, setCountryDocumentData] = useState(null); // 특정 국가 문서 현황
   const [workAllLogData, setWorkAllLogData] = useState({});
   const [workAllStatus, setWorkAllStatus] = useState(-1); // 전체 작업에서 통계를 확인할 단계
 
-  const [sortType,setSortType] = useState("asc");
-  const [sortDataType,setSortDataType] = useState(null);
+  const [sortType, setSortType] = useState("asc");
+  const [sortDataType, setSortDataType] = useState(null);
   const processTitle = {
     0: "스크리닝",
     1: "정제",
@@ -80,18 +81,17 @@ function DashboardContainer() {
 
   const crawlCountSort = (dataType) => {
     setSortDataType(dataType);
-    if(sortType==="asc"){
-      setSortType("desc")
+    if (sortType === "asc") {
+      setSortType("desc");
+    } else {
+      setSortType("asc");
     }
-    else{
-      setSortType("asc")
-    }
-  }
+  };
   const getCrawlHostList = () => {
     trackPromise(
       crawlHostDataFetchApi()
         .then((res) => {
-          console.log(res.data)
+          console.log(res.data);
           setCrawlHostList(res.data);
           crawlSumDataFetchApi().then((res) => {
             setCrawlSum(res.data[0]);
@@ -256,14 +256,14 @@ function DashboardContainer() {
     const _register = await countryWorkListFetchApi(4);
     const _curation = await countryWorkListFetchApi(6);
     const _data = {
-      collect:_collect.data[countryName] || 0,
-      screening:_screening.data[countryName] || 0,
-      refine:_refine.data[countryName] || 0,
-      register:_register.data[countryName] || 0,
-      curation: _curation.data[countryName] || 0
+      collect: _collect.data[countryName] || 0,
+      screening: _screening.data[countryName] || 0,
+      refine: _refine.data[countryName] || 0,
+      register: _register.data[countryName] || 0,
+      curation: _curation.data[countryName] || 0,
     };
-    console.log(_data)
-    setCountryDocumentData({country:countryName,data:_data});
+    console.log(_data);
+    setCountryDocumentData({ country: countryName, data: _data });
   };
   useEffect(() => {
     getCrawlHostList(); // 크롤 호스트 목록 불러오기
@@ -291,21 +291,23 @@ function DashboardContainer() {
     }
   }, [selectedHostId]);
 
-  useEffect(()=>{
-    if(sortDataType !==null){
-      if(sortType==="asc"){
-        const sortResult = crawlHostList.sort((a, b) => a[sortDataType] - b[sortDataType]);
+  useEffect(() => {
+    if (sortDataType !== null) {
+      if (sortType === "asc") {
+        const sortResult = crawlHostList.sort(
+          (a, b) => a[sortDataType] - b[sortDataType]
+        );
+        setCrawlHostList(sortResult);
+      } else {
+        const sortResult = crawlHostList.sort(
+          (a, b) => b[sortDataType] - a[sortDataType]
+        );
         setCrawlHostList(sortResult);
       }
-      else{
-        const sortResult = crawlHostList.sort((a, b) => b[sortDataType] - a[sortDataType]);
-        setCrawlHostList(sortResult);
-      }
-      
     }
-  },[sortType,sortDataType])
+  }, [sortType, sortDataType]);
   return (
-    <>
+    <LoadingWrapper>
       <Dashboard
         countryPieChartData={countryPieChartData}
         menuHandler={menuHandler}
@@ -334,7 +336,7 @@ function DashboardContainer() {
         getCountryMapChartData={getCountryMapChartData}
         crawlCountSort={crawlCountSort}
       />
-    </>
+    </LoadingWrapper>
   );
 }
 export default DashboardContainer;

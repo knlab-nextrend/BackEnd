@@ -9,6 +9,7 @@ import {
 import CrawlDataScreening from "./CrawlDataScreening";
 import { useDispatch } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
+import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 
 function CrawlDataScreeningContainer() {
   const dispatch = useDispatch();
@@ -42,7 +43,9 @@ function CrawlDataScreeningContainer() {
 
   const onChangeEach = (e, type) => {
     const _item_id = e.target.value;
-    const _index = itemList.findIndex((item) => item.item_id === Number(_item_id));
+    const _index = itemList.findIndex(
+      (item) => item.item_id === Number(_item_id)
+    );
     const _newItemList = [...itemList];
     _newItemList[_index].status = type;
     setItemList(_newItemList);
@@ -66,39 +69,44 @@ function CrawlDataScreeningContainer() {
   /* itemList 의 status가 변경되었을 경우 */
   useEffect(() => {
     setStageDataList(
-      itemList.filter((item) => item.status === "stage").map((item) => item.item_id)
+      itemList
+        .filter((item) => item.status === "stage")
+        .map((item) => item.item_id)
     );
     setKeepDataList(
-      itemList.filter((item) => item.status === "keep").map((item) => item.item_id)
+      itemList
+        .filter((item) => item.status === "keep")
+        .map((item) => item.item_id)
     );
     setDeleteDataList(
-      itemList.filter((item) => item.status === "delete").map((item) => item.item_id)
+      itemList
+        .filter((item) => item.status === "delete")
+        .map((item) => item.item_id)
     );
   }, [itemList]);
 
   /* 선택된 데이터를 크롤데이터 정제 단계로 넘기고 나머지 데이터는 버리기 */
   const stageScreeningData = async () => {
     if (window.confirm("선택 하신 대로 스크리닝을 진행하시겠습니까?")) {
-      ScreeningDataStageApi(stageDataList).then(res=>{
-        if(res.status === 200){
-          ScreeningDataKeepApi(keepDataList).then(res=>{
-            if(res.status === 200){
+      ScreeningDataStageApi(stageDataList).then((res) => {
+        if (res.status === 200) {
+          ScreeningDataKeepApi(keepDataList).then((res) => {
+            if (res.status === 200) {
               if (deleteDataList.length !== 0) {
-                ScreeningDataDeleteApi(deleteDataList).then(res=>{
-                  if(res.status===200){
+                ScreeningDataDeleteApi(deleteDataList).then((res) => {
+                  if (res.status === 200) {
                     alert("스크리닝이 성공적으로 완료되었습니다.");
                     dataFetch();
                   }
                 });
-              }
-              else{
+              } else {
                 alert("스크리닝이 성공적으로 완료되었습니다.");
                 dataFetch();
               }
             }
-          })
+          });
         }
-      })
+      });
     }
   };
 
@@ -129,7 +137,7 @@ function CrawlDataScreeningContainer() {
     trackPromise(
       ScreeningDataFetchApi(listSize, pageNo, isKeep, searchObj)
         .then((res) => {
-          console.log(res.data)
+          console.log(res.data);
           dataCleansing(res.data);
         })
         .catch((err) => {
@@ -144,7 +152,7 @@ function CrawlDataScreeningContainer() {
 
   /* pageNo, listSize 가 변경되었을 때 데이터를 다시 불러옴 */
   useEffect(() => {
-    setCheckedAll("delete")
+    setCheckedAll("delete");
     dataFetch(searchObj);
   }, [pageNo, listSize, isKeep, searchObj]);
 
@@ -158,7 +166,7 @@ function CrawlDataScreeningContainer() {
   }, [screeningData]);
 
   return (
-    <>
+    <LoadingWrapper>
       <CrawlDataScreening
         screeningData={screeningData}
         dcCount={dcCount}
@@ -177,7 +185,7 @@ function CrawlDataScreeningContainer() {
         onChangeKeepToggle={onChangeKeepToggle}
         dataFilterFetch={dataFilterFetch}
       />
-    </>
+    </LoadingWrapper>
   );
 }
 

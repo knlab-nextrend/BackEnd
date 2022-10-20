@@ -1,6 +1,8 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Loading from "../Components/Loading";
+import styled from "styled-components";
 
 /* 
     로그인한 상태에서만 접근 가능한 페이지다.
@@ -14,9 +16,22 @@ function PrivateRoute({ component: Component, ...rest }) {
     <Route
       {...rest}
       component={(props) =>
-        isLogin ? <Component {...props} /> : <Redirect to="/" />
+        isLogin ? (
+          <Wrap>
+            {/* <Loading /> */}
+            <Component {...props} />
+          </Wrap>
+        ) : (
+          <Redirect to="/" />
+        )
       }
     />
   );
 }
+
+const Wrap = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+`;
 export default PrivateRoute;

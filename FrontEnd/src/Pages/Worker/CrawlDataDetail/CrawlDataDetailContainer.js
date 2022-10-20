@@ -10,6 +10,7 @@ import CrawlDataDetail from "./CrawlDataDetail";
 import { useParams, useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
+import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 
 function CrawlDataDetailContainer() {
   /* 
@@ -27,7 +28,6 @@ function CrawlDataDetailContainer() {
     CrawlDataForm 에 ref를.. 걸고자 함. 
   */
 
-  
   const [docs, setDocs] = useState({}); // 폼에 default 값으로 출력할 데이터를 객체로 전달. 관리 편하게
   const [isLeave, setIsLeave] = useState(false); // 페이지 이동 및 나가기 여부
 
@@ -79,43 +79,43 @@ function CrawlDataDetailContainer() {
   const dataCleansing = (rawData) => {
     const _rawStatusDetailData = rawData.docs;
     let _docs = {
-      doc_content:
-        _rawStatusDetailData.doc_content || "",
+      doc_content: _rawStatusDetailData.doc_content || "",
       doc_collect_date: _rawStatusDetailData.doc_collect_date || "",
       doc_write_date: _rawStatusDetailData.doc_write_date || "",
-      doc_register_date : _rawStatusDetailData.doc_register_date || "",
-      doc_publish_date : _rawStatusDetailData.doc_publish_date||"",
-      doc_keyword: _rawStatusDetailData.doc_keyowrd || [], // 오타로 필드가 설정되어있어서 ... 
+      doc_register_date: _rawStatusDetailData.doc_register_date || "",
+      doc_publish_date: _rawStatusDetailData.doc_publish_date || "",
+      doc_keyword: _rawStatusDetailData.doc_keyowrd || [], // 오타로 필드가 설정되어있어서 ...
       doc_publisher: _rawStatusDetailData.doc_publisher || "",
       doc_thumbnail: _rawStatusDetailData.doc_thumbnail || [],
       doc_country: _rawStatusDetailData.doc_country || [],
       doc_publish_country: _rawStatusDetailData.doc_publish_country || [],
       doc_category: _rawStatusDetailData.doc_category || [],
-      doc_content_type:_rawStatusDetailData.doc_content_type||[],
-      doc_topic:_rawStatusDetailData.doc_topic || [],
-      doc_custom:_rawStatusDetailData.doc_custom || [],
-      doc_content_category:_rawStatusDetailData.doc_content_category||[],
+      doc_content_type: _rawStatusDetailData.doc_content_type || [],
+      doc_topic: _rawStatusDetailData.doc_topic || [],
+      doc_custom: _rawStatusDetailData.doc_custom || [],
+      doc_content_category: _rawStatusDetailData.doc_content_category || [],
       doc_language: _rawStatusDetailData.doc_language || [],
       doc_page: _rawStatusDetailData.doc_page || 0,
       doc_origin_title: _rawStatusDetailData.doc_origin_title || "",
       doc_kor_title: _rawStatusDetailData.doc_kor_title || "",
       doc_kor_summary: _rawStatusDetailData.doc_kor_summary || "",
-      doc_origin_summary:_rawStatusDetailData.doc_origin_summary || "",
+      doc_origin_summary: _rawStatusDetailData.doc_origin_summary || "",
       doc_url: _rawStatusDetailData.doc_url || "",
-      doc_url_intro:_rawStatusDetailData.doc_url_intro||"",
-      doc_project:_rawStatusDetailData.doc_project || "",
-      doc_biblio:_rawStatusDetailData.doc_biblio || "",
-      doc_relate_title:_rawStatusDetailData.doc_relate_title || "",
-      doc_relate_url:_rawStatusDetailData.doc_relate_url || "",
-      doc_bundle_title:_rawStatusDetailData.doc_bundle_title || "",
-      doc_bundle_url:_rawStatusDetailData.doc_bundle_url || "",
-      doc_memo:_rawStatusDetailData.doc_memo || "",
-      doc_host:_rawStatusDetailData.doc_host || "",
-      doc_recomment:_rawStatusDetailData.doc_recomment ? String.fromCharCode(_rawStatusDetailData.doc_recomment): "", // 아스키코드..
-      doc_publishing:_rawStatusDetailData.doc_publishing || "",
-      
+      doc_url_intro: _rawStatusDetailData.doc_url_intro || "",
+      doc_project: _rawStatusDetailData.doc_project || "",
+      doc_biblio: _rawStatusDetailData.doc_biblio || "",
+      doc_relate_title: _rawStatusDetailData.doc_relate_title || "",
+      doc_relate_url: _rawStatusDetailData.doc_relate_url || "",
+      doc_bundle_title: _rawStatusDetailData.doc_bundle_title || "",
+      doc_bundle_url: _rawStatusDetailData.doc_bundle_url || "",
+      doc_memo: _rawStatusDetailData.doc_memo || "",
+      doc_host: _rawStatusDetailData.doc_host || "",
+      doc_recomment: _rawStatusDetailData.doc_recomment
+        ? String.fromCharCode(_rawStatusDetailData.doc_recomment)
+        : "", // 아스키코드..
+      doc_publishing: _rawStatusDetailData.doc_publishing || "",
 
-      item_id:_rawStatusDetailData.item_id,
+      item_id: _rawStatusDetailData.item_id,
     };
     setDocs(_docs);
   };
@@ -148,17 +148,17 @@ function CrawlDataDetailContainer() {
 
   const dataStage = () => {
     const _crawlDataFormDocs = crawlDataFormRef.current.getCrawlFormData();
-    if(_crawlDataFormDocs.doc_recomment)
-    CrawlDataStageApi(statusCode, _id, _crawlDataFormDocs).then((res) => {
-      alert("해당 데이터가 성공적으로 저장되었습니다.");
-      if (statusCode === "6") {
-        history.push(`/archive`); // 목록으로 돌아가기
-      } else if (statusCode === "8") {
-        history.push(`/curation`);
-      } else {
-        history.push(`/crawl/${statusCode}`); // 목록으로 돌아가기
-      }
-    });
+    if (_crawlDataFormDocs.doc_recomment)
+      CrawlDataStageApi(statusCode, _id, _crawlDataFormDocs).then((res) => {
+        alert("해당 데이터가 성공적으로 저장되었습니다.");
+        if (statusCode === "6") {
+          history.push(`/archive`); // 목록으로 돌아가기
+        } else if (statusCode === "8") {
+          history.push(`/curation`);
+        } else {
+          history.push(`/crawl/${statusCode}`); // 목록으로 돌아가기
+        }
+      });
   };
 
   const cancel = () => {
@@ -200,7 +200,7 @@ function CrawlDataDetailContainer() {
       window.removeEventListener("beforeunload", leaveSetting);
       window.removeEventListener("unload", imageDetachHandler);
       imageDetachHandler();
-    }; 
+    };
   }, []);
 
   useEffect(() => {
@@ -208,7 +208,7 @@ function CrawlDataDetailContainer() {
   }, [_id]);
 
   return (
-    <>
+    <LoadingWrapper>
       <CrawlDataDetail
         docs={docs}
         dataKeep={dataKeep}
@@ -221,7 +221,7 @@ function CrawlDataDetailContainer() {
         type={STATUS_CODE_SET[statusCode].type}
         _id={_id}
       />
-    </>
+    </LoadingWrapper>
   );
 }
 

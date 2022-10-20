@@ -20,6 +20,11 @@ function UserOnlyDataLookUpPageContainer() {
   const axisObj = useSelector((state) => state.custom.axisObj);
   const [axisMenu, setAxisMenu] = useState({ X: [], Y: [] });
   const [dataMode, setDataMode] = useState("curation"); // curation , archive
+  const [selectedMenu, setSelectedMenu] = useState({
+    X: {},
+    Y: {},
+  });
+  const [selectedAll, setSelectedAll] = useState(true);
 
   const [archiveData, setArchiveData] = useState([]);
   /* 페이지네이션 */
@@ -46,6 +51,8 @@ function UserOnlyDataLookUpPageContainer() {
   };
   const menuDataFetch = (uid) => {
     userAxisMenuFetchApi(uid).then((res) => {
+      console.log(res.data);
+
       if (res.data.axis_x.length === 0 || res.data.axis_y.lengtth === 0) {
         alert("x축, y축 메뉴가 모두 설정되지 않은 사용자입니다.");
         dispatch(setLogout("NORMAL_LOGOUT"));
@@ -57,19 +64,25 @@ function UserOnlyDataLookUpPageContainer() {
     });
   };
 
+  const onClickAllMenuButton = () => {
+    menuDataFetch(userInfo.id);
+    setSelectedMenu({ X: {}, Y: {} });
+    setSelectedAll(true);
+  };
+
   const archiveDataFetch = () => {
     if (axisObj.X !== null && axisObj.Y !== null) {
       let axis = {};
       axis[axisObj.X.type] = axisObj.X.code;
       axis[axisObj.Y.type] = axisObj.Y.code;
       trackPromise(
-        userCustomCurationDataFetchApi(axis,true)
+        userCustomCurationDataFetchApi(axis, true)
           .then((res) => {
             dataCleansing(res.data);
           })
           .catch((err) => {
             sessionHandler(err, dispatch).then((res) => {
-              userCustomCurationDataFetchApi(axis,true).then((res) => {
+              userCustomCurationDataFetchApi(axis, true).then((res) => {
                 dataCleansing(res.data);
               });
             });
@@ -106,6 +119,8 @@ function UserOnlyDataLookUpPageContainer() {
   const menuClickHandler = (axis, item) => {
     let _axisObj = { ...axisObj };
     _axisObj[axis] = { type: item.type, code: item.code };
+    setSelectedMenu((prev) => ({ ...prev, [axis]: { code: item.code } }));
+    setSelectedAll(false);
     dispatch(setAxis(_axisObj));
   };
   const listSizeHandler = (e) => {
@@ -120,7 +135,7 @@ function UserOnlyDataLookUpPageContainer() {
     if (dataMode === "archive") {
       archiveDataFetch();
     }
-  }, [dataMode, pageNo, listSize,axisObj]);
+  }, [dataMode, pageNo, listSize, axisObj]);
 
   return (
     <>
@@ -137,6 +152,9 @@ function UserOnlyDataLookUpPageContainer() {
         setPageNo={setPageNo}
         archiveData={archiveData}
         curationRequest={curationRequest}
+        selectedMenu={selectedMenu}
+        onClickAllMenu={onClickAllMenuButton}
+        selectedAll={selectedAll}
       />
     </>
   );

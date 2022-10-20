@@ -9,7 +9,8 @@ import {
   userAxisMenuSettingFetchApi,
   userAxisMenuSaveApi,
 } from "../../../Utils/api";
-import { setModal} from "../../../Modules/modal";
+import { setModal } from "../../../Modules/modal";
+import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 function UserCustomMenuContainer() {
   const CATEGORY_TYPE_LIST = {
     1: "정책 분류",
@@ -79,18 +80,24 @@ function UserCustomMenuContainer() {
           }));
           setAxisMenuData((prev) => ({
             ...prev,
-            X: userSettingObj.x_cid !== null?{
-              IDX: userSettingObj.x_cid,
-              CODE: userSettingObj.x_code,
-              CT_NM: userSettingObj.x_name,
-              TYPE: userSettingObj.x_type,
-            }:null,
-            Y: userSettingObj.y_cid !== null?{
-              IDX: userSettingObj.y_cid,
-              CODE: userSettingObj.y_code,
-              CT_NM: userSettingObj.y_name,
-              TYPE: userSettingObj.y_type,
-            }:null,
+            X:
+              userSettingObj.x_cid !== null
+                ? {
+                    IDX: userSettingObj.x_cid,
+                    CODE: userSettingObj.x_code,
+                    CT_NM: userSettingObj.x_name,
+                    TYPE: userSettingObj.x_type,
+                  }
+                : null,
+            Y:
+              userSettingObj.y_cid !== null
+                ? {
+                    IDX: userSettingObj.y_cid,
+                    CODE: userSettingObj.y_code,
+                    CT_NM: userSettingObj.y_name,
+                    TYPE: userSettingObj.y_type,
+                  }
+                : null,
           }));
         } else {
           // 값이 존재하지 않을 경우
@@ -172,21 +179,21 @@ function UserCustomMenuContainer() {
 
   useEffect(() => {
     // 해당 유저의 세팅정보가 없거나 X축 또는 Y축의 세팅 정보가 없을 때
-    if(axisMenuData.X === null){
-      setPreviewAxisMenu((prev)=>({...prev,X:[]}))
+    if (axisMenuData.X === null) {
+      setPreviewAxisMenu((prev) => ({ ...prev, X: [] }));
     }
-    if(axisMenuData.Y === null){
-      setPreviewAxisMenu((prev)=>({...prev,Y:[]}))
+    if (axisMenuData.Y === null) {
+      setPreviewAxisMenu((prev) => ({ ...prev, Y: [] }));
     }
-    if(axisMenuData.X !== null){
+    if (axisMenuData.X !== null) {
       previewSetting("X");
     }
-    if(axisMenuData.Y !== null){
+    if (axisMenuData.Y !== null) {
       previewSetting("Y");
     }
   }, [axisMenuData]);
   return (
-    <>
+    <LoadingWrapper>
       <UserCustomMenu
         userList={userList}
         currentUserId={currentUserId}
@@ -196,7 +203,7 @@ function UserCustomMenuContainer() {
         axisCategoryInfo={axisCategoryInfo}
         saveUserAxisData={saveUserAxisData}
       />
-    </>
+    </LoadingWrapper>
   );
 }
 

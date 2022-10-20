@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch,Redirect } from "react-router-dom";
+import { Switch, Redirect } from "react-router-dom";
 import PrivateRoute from "../../Route/PrivateRoute";
 
 import CrawlDataDetailContainer from "./CrawlDataDetail/CrawlDataDetailContainer";
@@ -9,6 +9,7 @@ import ArchiveDataListContainer from "./ArchiveDataList/ArchiveDataListContainer
 import CurationDataListContainer from "../Common/CurationDataList/CurationDataListContainer";
 import CurationDataDetailContainer from "../Common/CurationDataDetail/CurationDataDetailContainer";
 import AdminCurationDataList from "./AdminCurationDataList";
+import { LoadingWrapper } from "../../Components/LoadingWrapper";
 
 function WorkerSection() {
   return (
@@ -18,8 +19,10 @@ function WorkerSection() {
         component={CrawlDataScreeningContainer}
         exact
       />
-      <Redirect from="/crawl/3" to="/crawl/2" /> {/* statusCode 3번 , 5번 접근 방지*/}
-      <Redirect from="/crawl/5" to="/crawl/4" /> {/* statusCode 3번 , 5번 접근 방지*/}
+      <Redirect from="/crawl/3" to="/crawl/2" />
+      {/* statusCode 3번 , 5번 접근 방지*/}
+      <Redirect from="/crawl/5" to="/crawl/4" />
+      {/* statusCode 3번 , 5번 접근 방지*/}
       <PrivateRoute
         path="/crawl/:statusCode"
         component={CrawlDataListContainer}
@@ -35,11 +38,7 @@ function WorkerSection() {
         component={CrawlDataDetailContainer}
         exact
       />
-      <PrivateRoute
-        path="/curation"
-        component={AdminCurationDataList}
-        exact
-      />
+      <PrivateRoute path="/curation" component={AdminCurationDataList} exact />
       <PrivateRoute
         path="/curation/:_id"
         component={CurationDataDetailContainer}

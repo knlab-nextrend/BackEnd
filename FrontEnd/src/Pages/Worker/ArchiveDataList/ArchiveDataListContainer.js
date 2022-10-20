@@ -3,6 +3,7 @@ import ArchiveDataList from "./ArchiveDataList";
 import { CrawlDataListFetchApi, sessionHandler } from "../../../Utils/api";
 import { useDispatch } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
+import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 
 function ArchiveDataListContainer() {
   const dispatch = useDispatch();
@@ -14,10 +15,10 @@ function ArchiveDataListContainer() {
   const [pageNo, setPageNo] = useState(1); // 현재 활성화 된 페이지 번호
   const [listSize, setListSize] = useState(10); // 한 페이지에 나타낼 document 개수
 
-  const [isRequest,setIsRequest]=useState(false); // 큐레이션 선정 여부
-  const onChangeRequestToggle = ()=>{
-    setIsRequest(!isRequest)
-  }
+  const [isRequest, setIsRequest] = useState(false); // 큐레이션 선정 여부
+  const onChangeRequestToggle = () => {
+    setIsRequest(!isRequest);
+  };
   const statusCode = 6;
   const [currentCode, setCurrentCode] = useState(statusCode);
   /* 데이터 정제하기 */
@@ -31,7 +32,7 @@ function ArchiveDataListContainer() {
         doc_kor_title: item.doc_kor_title,
         doc_origin_title: item.doc_origin_title,
         doc_origin_summary: item.doc_origin_summary,
-        doc_kor_summary:item.doc_kor_summary,
+        doc_kor_summary: item.doc_kor_summary,
         doc_page: item.doc_page,
         doc_country_list: item.doc_country.map((x) => x.CT_NM).join(", "),
         doc_category_list: item.doc_category.map((x) => x.CT_NM).join(", "),
@@ -39,7 +40,7 @@ function ArchiveDataListContainer() {
         is_crawled: item.is_crawled,
         doc_collect_date: item.doc_collect_date,
         doc_language: item.doc_language,
-        doc_publisher:item.doc_publisher,
+        doc_publisher: item.doc_publisher,
       };
       _archiveDataList.push(obj);
     });
@@ -62,11 +63,14 @@ function ArchiveDataListContainer() {
         })
         .catch((err) => {
           sessionHandler(err, dispatch).then((res) => {
-            CrawlDataListFetchApi(currentCode, listSize, pageNo, searchObj).then(
-              (res) => {
-                dataCleansing(res.data);
-              }
-            );
+            CrawlDataListFetchApi(
+              currentCode,
+              listSize,
+              pageNo,
+              searchObj
+            ).then((res) => {
+              dataCleansing(res.data);
+            });
           });
         })
     );
@@ -74,7 +78,7 @@ function ArchiveDataListContainer() {
 
   useEffect(() => {
     dataFetch(searchObj);
-  }, [currentCode,pageNo, listSize, searchObj]);
+  }, [currentCode, pageNo, listSize, searchObj]);
 
   useEffect(() => {
     const code = isRequest ? Number(statusCode) + 1 : Number(statusCode);
@@ -82,7 +86,7 @@ function ArchiveDataListContainer() {
   }, [isRequest]);
 
   return (
-    <>
+    <LoadingWrapper>
       <ArchiveDataList
         archiveDataList={archiveDataList}
         statusCode={statusCode}
@@ -95,7 +99,7 @@ function ArchiveDataListContainer() {
         onChangeRequestToggle={onChangeRequestToggle}
         isRequest={isRequest}
       />
-    </>
+    </LoadingWrapper>
   );
 }
 export default ArchiveDataListContainer;

@@ -10,6 +10,7 @@ import {
 import UserManagement from "./UserManagement";
 import { setModal, setModalData } from "../../../Modules/modal";
 import { trackPromise } from "react-promise-tracker";
+import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 
 function UserManagementContainer() {
   const [userData, setUserData] = useState([]);
@@ -34,17 +35,19 @@ function UserManagementContainer() {
   };
 
   const getUserList = () => {
-    trackPromise(FetchUsersApi()
-      .then((res) => {
-        setUserData(res.data);
-      })
-      .catch((err) => {
-        sessionHandler(err, dispatch).then((res) => {
-          FetchUsersApi().then((res) => {
-            setUserData(res.data);
+    trackPromise(
+      FetchUsersApi()
+        .then((res) => {
+          setUserData(res.data);
+        })
+        .catch((err) => {
+          sessionHandler(err, dispatch).then((res) => {
+            FetchUsersApi().then((res) => {
+              setUserData(res.data);
+            });
           });
-        });
-      }));
+        })
+    );
   };
   const deleteUser = (id) => {
     if (confirm("삭제하시겠습니까?")) {
@@ -60,25 +63,25 @@ function UserManagementContainer() {
       window.location.reload(); //
     }
   };
-  const restrictUser = (id,restrict) => {
-    restrictUserApi(id,restrict)
-    .then(()=>{
-      alert("성공적으로 수행되었습니다");
-    })
-    .catch((err)=>{
-      if (err.response.status === 400) {
-        alert("유저 정보 변경 중 오류발생");
-      }
-    })
+  const restrictUser = (id, restrict) => {
+    restrictUserApi(id, restrict)
+      .then(() => {
+        alert("성공적으로 수행되었습니다");
+      })
+      .catch((err) => {
+        if (err.response.status === 400) {
+          alert("유저 정보 변경 중 오류발생");
+        }
+      });
     window.location.reload();
-  }
+  };
 
   useEffect(() => {
     getUserList();
   }, []);
 
   return (
-    <>
+    <LoadingWrapper>
       <UserManagement
         userData={userData}
         openUserModifyModal={openUserModifyModal}
@@ -87,7 +90,7 @@ function UserManagementContainer() {
         openUserAddModal={openUserAddModal}
         PERMISSON_DATA={PERMISSON_DATA}
       />
-    </>
+    </LoadingWrapper>
   );
 }
 
