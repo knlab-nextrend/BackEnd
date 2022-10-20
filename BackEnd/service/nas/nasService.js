@@ -93,6 +93,35 @@ const getFileList = (path,type='image') => new Promise(async (resolve, reject) =
     client.close();
 });
 
+
+const getItemFromFolder = (folderPath,type='logo') => new Promise(async (resolve, reject) => {
+    const subPath = pathTypeCatcher(type).subPath;
+    const client = new ftp.Client()
+    try {
+        await client.access(config);
+        const result = await client.list(subPath+path);
+        if(result.code===550){
+            // 폴더가 없을 경우
+            resolve(false);
+        }else{
+            if(result.length===0){
+                // 폴더 속 파일이 없을 경우
+                resolve(false);
+            }else{
+                let fileList = [];
+                result.forEach((item)=>{
+                    fileList.push(item);
+                })
+                resolve(fileList);
+            }
+        }
+    }
+    catch(err) {
+        resolve(false);
+    }
+    client.close();
+});
+
 const checkThenMakeFolder = (folderPath,type=false) => new Promise(async (resolve, reject) => {
     const subPath = pathTypeCatcher(type).subPath;
     const client = new ftp.Client()
@@ -150,5 +179,6 @@ module.exports = {
     getFileList:getFileList,
     uploadFile: uploadFile,
     checkThenMakeFolder: checkThenMakeFolder,
-    deleteFile:deleteFile
+    deleteFile:deleteFile,
+    getItemFromFolder : getItemFromFolder
 }

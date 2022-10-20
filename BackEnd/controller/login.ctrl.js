@@ -21,7 +21,7 @@ const onLogin = async (req,res) => {
         const result = await loginCtrl.OnLogin(req.body.userID,req.body.userPW);
 
         const LogoResult = userCtrl.getLogoPath(result.uid);
-        const logoFiles = await nasCtrl.getFileList(LogoResult[0].filePath);
+        const logoFiles = await nasCtrl.getItemFromFolder(LogoResult[0].filePath, "logo");
 
         result.logo = logoFiles[0];
 

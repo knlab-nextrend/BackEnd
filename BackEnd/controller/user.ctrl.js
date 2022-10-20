@@ -83,7 +83,7 @@ const userModify = async (req,res) => {
         const LogoResult = userCtrl.getLogoPath(req.body.uid);
         if(LogoResult){
             userCtrl.removeFilePathFromDB(LogoResult.IDX);
-            nasCtrl.deleteFile(LogoResult[0].filePath, "logo");
+            nasCtrl.deleteFile(LogoResult[0].filePath+ "/logo", "logo");
         }
         await saveLogo(req.file, userInfo.ID, result1.insertId);
 
@@ -100,6 +100,13 @@ const userModify = async (req,res) => {
 const userDelete = async (req,res) => {
     if(req.body.uid){
         const result = await userCtrl.Delete(req.body.uid);
+        //유저가 로고이미지를 갖고 있다면 삭제
+        const LogoResult = userCtrl.getLogoPath(req.body.uid);
+        if(LogoResult){
+            userCtrl.removeFilePathFromDB(LogoResult.IDX);
+            nasCtrl.deleteFile(LogoResult[0].filePath+ "/logo", "logo");
+        }
+
         if(result){
             res.send();
         }else{
@@ -158,7 +165,7 @@ const saveLogo = async (file, userId, UID)=>{
         // 업로드 실패시 throw
         throw 'error occured put file to nas storage';
     }
-    userCtrl.addLogo(UID, folderPath + file.filename + ".png");
+    userCtrl.addLogo(UID, folderPath);
 
     return true;
 }
