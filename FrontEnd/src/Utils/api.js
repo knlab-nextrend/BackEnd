@@ -261,6 +261,16 @@ const getUserInfoApi = (uid) => {
   return axios.get(`/nextrend/user/get`, config);
 };
 
+const getUserLogoApi = (uid) => {
+  const config = {
+    headers: { authorization: `Bearer ${getToken()}` },
+    params: {
+      uid,
+    },
+  };
+  return axios.get(`/nextrend/user/logo`, config);
+};
+
 const modifyUserInfoApi = (userInfo, uid) => {
   const body = {
     userInfo,
@@ -575,4 +585,5 @@ export {
   countryWorkListFetchApi,
   workAllLogFetchApi,
   hostSyncApi,
+  getUserLogoApi,
 };
