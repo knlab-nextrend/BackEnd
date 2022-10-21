@@ -5,6 +5,7 @@ import {
   modifyUserInfoApi,
   addUserApi,
   verifyUserIdApi,
+  getUserLogoApi,
 } from "../../Utils/api";
 import permission from "../../Data/permission.json";
 import { AiOutlineClose } from "react-icons/ai";
@@ -31,6 +32,7 @@ function UserInfoModal({ closeModal, executeModal }) {
   const userInfo = useSelector(
     (state) => state.modal.modalData.modal_user.user
   );
+
   const type = useSelector((state) => state.modal.modalData.modal_user.type);
 
   const encodeFileToBase64 = (fileBlob) => {
@@ -90,6 +92,10 @@ function UserInfoModal({ closeModal, executeModal }) {
     setSalt(userInfo.salt || "");
     setConfirm(userInfo.Confirm || "");
     setCompany(userInfo.Company || "");
+    getUserLogoApi(userInfo.id).then((res) => {
+      const logo = res.data.logo;
+      if (logo) encodeFileToBase64(logo);
+    });
   }, []);
 
   const _userIDdVerify = () => {
@@ -185,7 +191,10 @@ function UserInfoModal({ closeModal, executeModal }) {
       salt,
     };
     if (_confirmCheck()) {
-      modifyUserInfoApi(userInfo, id)
+      const formData = new FormData();
+      formData.append("userInfo", userInfo);
+      if (logoFile) formData.append("logoImage", logoFile);
+      modifyUserInfoApi(formData)
         .then(() => {
           alert("성공적으로 수정되었습니다.");
           window.location.reload();

@@ -271,15 +271,13 @@ const getUserLogoApi = (uid) => {
   return axios.get(`/nextrend/user/logo`, config);
 };
 
-const modifyUserInfoApi = (userInfo, uid) => {
-  const body = {
-    userInfo,
-    uid,
-  };
-  const config = {
-    headers: { authorization: `Bearer ${getToken()}` },
-  };
-  return axios.post(`/nextrend/user/modify`, body, config);
+const modifyUserInfoApi = (formData) => {
+  return axios.post(`/nextrend/user/modify`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      authorization: `Bearer ${getToken()}`,
+    },
+  });
 };
 
 const deleteUserByIdApi = (uid) => {
