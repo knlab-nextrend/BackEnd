@@ -69,8 +69,9 @@ function GlobalModal() {
     <>
       {modalType ? (
         <>
-          <Background onClick={onBackDrop} />
-          <ModalWrapper>{renderComponent()}</ModalWrapper>
+          <Background onClick={onBackDrop}>
+            <ModalWrapper>{renderComponent()}</ModalWrapper>
+          </Background>
         </>
       ) : null}
     </>
@@ -82,17 +83,19 @@ const Background = styled.div`
   position: fixed;
   left: 0;
   top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  display: block;
 `;
 
 const ModalWrapper = styled.div`
-  position: fixed;
-  top: 50%;
+  position: relative;
+  /* top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); */
   z-index: 2001;
   max-width: 960px;
   width: 700px;
