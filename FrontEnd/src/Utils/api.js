@@ -303,7 +303,7 @@ const verifyUserIdApi = (userId, id) => {
 };
 
 const addUserApi = (formData) => {
-  return axios.post(`/file/uploadExcelData/`, formData, {
+  return axios.post(`/nextrend/user/add`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
       authorization: `Bearer ${getToken()}`,
