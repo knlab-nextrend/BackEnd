@@ -5,9 +5,9 @@ import {
   modifyUserInfoApi,
   addUserApi,
   verifyUserIdApi,
+  getUserLogoApi,
 } from "../../Utils/api";
 import permission from "../../Data/permission.json";
-import { setModal } from "../../Modules/modal";
 import { AiOutlineClose } from "react-icons/ai";
 
 function UserInfoModal({ closeModal, executeModal }) {
@@ -24,13 +24,27 @@ function UserInfoModal({ closeModal, executeModal }) {
   const [Email, setEmail] = useState("");
   const [Category, setCategory] = useState(0); // 최초 설정은 일반사용자 ...
   const [Company, setCompany] = useState("");
-
+  const [logoFile, setLogoFile] = useState();
+  const [logoFileName, setLogoFileName] = useState("");
   const [confirm, setConfirm] = useState(false);
+  const [imageSrc, setImageSrc] = useState("");
 
   const userInfo = useSelector(
     (state) => state.modal.modalData.modal_user.user
   );
+
   const type = useSelector((state) => state.modal.modalData.modal_user.type);
+
+  const encodeFileToBase64 = (fileBlob) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(fileBlob);
+    return new Promise((resolve) => {
+      reader.onload = () => {
+        setImageSrc(reader.result);
+        resolve();
+      };
+    });
+  };
 
   const _userUserIDHandler = (e) => {
     setUserID(e.target.value);
@@ -59,6 +73,13 @@ function UserInfoModal({ closeModal, executeModal }) {
   const _userCompanyHandler = (e) => {
     setCompany(e.target.value);
   };
+  const _userLogoHandler = (e) => {
+    const image = e.target.files[0];
+    encodeFileToBase64(image);
+    setLogoFile(image);
+    setLogoFileName(image.name);
+  };
+
   useEffect(() => {
     setUserID(userInfo.userID || "");
     setID(userInfo.id || "");
@@ -71,6 +92,12 @@ function UserInfoModal({ closeModal, executeModal }) {
     setSalt(userInfo.salt || "");
     setConfirm(userInfo.Confirm || "");
     setCompany(userInfo.Company || "");
+    if (!type) {
+      getUserLogoApi(userInfo.id).then((res) => {
+        const logo = res.data.logo;
+        if (logo) encodeFileToBase64(logo);
+      });
+    }
   }, []);
 
   const _userIDdVerify = () => {
@@ -136,13 +163,17 @@ function UserInfoModal({ closeModal, executeModal }) {
       salt,
     };
     if (_confirmCheck()) {
-      addUserApi(userInfo)
+      const formData = new FormData();
+      formData.append("userInfo", JSON.stringify(userInfo));
+      if (logoFile) formData.append("logoImage", logoFile);
+      addUserApi(formData)
         .then(() => {
           alert("성공적으로 생성되었습니다.");
           window.location.reload();
         })
         .catch((err) => {
           if (err.response.status === 400) {
+            console.log(err.Message);
             alert("추가 중 오류발생");
           }
         });
@@ -161,9 +192,15 @@ function UserInfoModal({ closeModal, executeModal }) {
       Category,
       Company,
       salt,
+      id,
     };
     if (_confirmCheck()) {
-      modifyUserInfoApi(userInfo, id)
+      const formData = new FormData();
+      formData.append("userInfo", JSON.stringify(userInfo));
+      formData.append("uid", userInfo.id);
+      if (logoFile) formData.append("logoImage", logoFile);
+      formData.forEach((v) => console.log(v));
+      modifyUserInfoApi(formData)
         .then(() => {
           alert("성공적으로 수정되었습니다.");
           window.location.reload();
@@ -285,6 +322,27 @@ function UserInfoModal({ closeModal, executeModal }) {
               </SelectField>
             </InputFieldWrapper>
           </InputWrapper>
+          <InputWrapper>
+            <InputFieldWrapper>
+              <InputTitle>로고</InputTitle>
+              <LogoInputWrap>
+                <LogoInputLabel htmlFor="logo">파일 선택</LogoInputLabel>
+                <InputField
+                  id="logo"
+                  name="logo"
+                  type="file"
+                  accept=".jpeg, .jpg, .png, .gif"
+                  onChange={_userLogoHandler}
+                />
+                <span>
+                  {logoFileName ? logoFileName : "이미지 파일을 선택해주세요"}
+                </span>
+              </LogoInputWrap>
+            </InputFieldWrapper>
+          </InputWrapper>
+          <LogoPreviewContainer>
+            {imageSrc && <img src={imageSrc} alt="로고 미리보기 이미지" />}
+          </LogoPreviewContainer>
         </ModalBody>
         <ModalActions>
           <Button color="#435269" onClick={type ? _addUser : _modifyUser}>
@@ -343,6 +401,9 @@ const InputField = styled.input`
   height: 100%;
   &:focus {
     outline: none;
+  }
+  &[type="file"] {
+    display: none;
   }
 `;
 
@@ -419,6 +480,51 @@ const ModalActions = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: row;
+`;
+
+const LogoInputLabel = styled.label`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 100%;
+  padding: 0 1rem;
+  background-color: #eee;
+  cursor: pointer;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const LogoInputWrap = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  border: solid 1px #d6d6d6;
+  border-radius: 4px;
+  overflow: hidden;
+
+  & span {
+    padding-left: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+`;
+const LogoPreviewContainer = styled.div`
+  width: 60%;
+  height: 5rem;
+  padding: 0.5rem;
+  border: 1px solid #d6d6d6;
+  border-radius: 4px;
+  overflow: hidden;
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 `;
 
 export default UserInfoModal;
