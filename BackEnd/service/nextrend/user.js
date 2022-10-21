@@ -40,6 +40,10 @@ const getUserByUid = (userID) => new Promise((resolve, reject)=>{
         if(err){
             reject(false);
         }else{
+            if(data){
+                resolve(null);
+                return;
+            }
             const result = data[0];
             resolve(result);
         }

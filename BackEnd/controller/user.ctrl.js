@@ -164,6 +164,21 @@ const saveLogo = async (file, userId, UID)=>{
 }
 
 
+const getUserLogo = async (req, res)=>{
+    const uid = req.query.uid;
+
+    let user = await userCtrl.getUserByUid(uid);
+
+    if(user == null){    
+        res.status(400).send({message : "cannot find user"});
+        return;
+    }
+
+    const logo = nasCtrl.getLogoFromFolder(`${user.userID}`);
+    res.send({"logo" : logo});
+}
+
+
 module.exports = {
     Add:userAdd,
     Modify:userModify,
@@ -171,5 +186,6 @@ module.exports = {
     Delete:userDelete,
     Get:userGet,
     Restrict:userRestrict,
-    Verify:userVerify
+    Verify:userVerify,
+    getUserLogo : getUserLogo
 }
