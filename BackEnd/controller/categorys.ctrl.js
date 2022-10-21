@@ -48,7 +48,7 @@ const deleteCat = async (req,res) => {
         res.status(400).send({message:'value not exists'})
     }else{
         try{
-            const result = await categoryCtrl.delete(req.query.type,req.query.code);
+            const result = await categoryCtrl.delete(req.query.type, req.query.code);
             res.send(result);
         }catch(e){
             res.status(400).send({message:e});
@@ -105,6 +105,24 @@ const countryToDict = async (req,res) => {
         res.status(400).send({message:"error occured during loading countries"});
     }
 }
+
+const getCodeByType = async (req, res) => {
+    const typeCode = req.query.type;
+    try{
+        if(typeCode == undefined){
+            throw {message : "type 은 필수값입니다."}
+        }
+
+        let result = await categoryCtrl.getCodeByType(typeCode);
+        res.send(result);
+
+    }catch(e){
+        res.status(400).send({message : e});
+    }
+    
+}
+
+
 module.exports = {
     getCodes:codeList,
     getConti:contiList,
@@ -114,5 +132,6 @@ module.exports = {
     readCat:readCat,
     createCat:createCat,
     updateCat:updateCat,
-    deleteCat:deleteCat
+    deleteCat:deleteCat,
+    getCodeByType : getCodeByType
 }

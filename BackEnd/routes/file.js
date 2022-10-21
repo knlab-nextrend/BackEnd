@@ -15,6 +15,6 @@ router.get('/docImageDetach/',fileCtrl.docImageDetach);
 router.post('/docImageAttach/',imageUpload.single('files'), fileCtrl.docImageAttach); //본문 이미지 업로드 및 url 리턴
 router.post('/uploadExcelData/',pdfUpload.fields([{name : 'pdfs'},{name :'thumbnails'}]),authJWT, fileCtrl.uploadExcelData);
 
-router.get('/getExcelData', fileCtrl.getExcelData)
-router.get('/getExcelDetail', fileCtrl.getExcelDetail)
+router.get('/excel/list', fileCtrl.getExcelData)
+router.get('/excel/detail', fileCtrl.getExcelDetail)
 module.exports = router;

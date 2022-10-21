@@ -1,5 +1,6 @@
 const userCtrl = require("../service/nextrend/user");
 const loginCtrl = require("../service/nextrend/login");
+const nasCtrl = require("../service/nas/nasService");
 
 const infoProcess = (body) => {
     const userInfo = {
@@ -31,7 +32,9 @@ const userGet = async (req,res) => {
 
 const userAdd = async (req,res) => {
     if(req.body.userInfo){
+
         let userInfo = infoProcess(req.body.userInfo);
+
 
         if(userInfo.PW&&userInfo.ID){
             //pw 및 salt는 해쉬를 거친 후 저장.
@@ -39,7 +42,11 @@ const userAdd = async (req,res) => {
             userInfo.PW = saltResult.PW;
             userInfo.salt = saltResult.salt;
 
-            const result = await userCtrl.Add(userInfo);
+            const result1 = await userCtrl.Add(userInfo);
+
+            //사용자 로고 이미지 추가 로직
+            const result = await saveLogo(req.file, userInfo.ID, result1.insertId);
+
             if(result){
                 res.send();
             }else{
@@ -65,6 +72,11 @@ const userList = async (req,res) => {
 const userModify = async (req,res) => {
     if(req.body.uid&&req.body.userInfo){
         let userInfo = infoProcess(req.body.userInfo);
+
+        if(!userInfo.userID){
+            userInfo.userID = userCtrl.getUserByUid(req.body.uid).userID;
+        }
+
         if(userInfo.PW){
             //pw 및 salt는 해쉬를 거친 후 저장.
             const saltResult = await loginCtrl.HashPW(userInfo.PW);
@@ -72,6 +84,10 @@ const userModify = async (req,res) => {
             userInfo.salt = saltResult.salt;
         }
         const result = await userCtrl.Modify(userInfo,req.body.uid);
+
+        //logo 업로드 기능 추가
+        await saveLogo(req.file, userInfo.ID, result1.insertId);
+
         if(result){
             res.send();
         }else{
@@ -84,7 +100,10 @@ const userModify = async (req,res) => {
 
 const userDelete = async (req,res) => {
     if(req.body.uid){
+        
+        const userID = await userCtrl.getUserByUid(req.body.uid).userID;
         const result = await userCtrl.Delete(req.body.uid);
+        await nasCtrl.deleteFile(`/${userID}/logo`, "logo");
         if(result){
             res.send();
         }else{
@@ -125,6 +144,25 @@ const userVerify = async (req,res) => {
         res.status(400).send();
     }
 }
+
+const saveLogo = async (file, userId, UID)=>{
+    if(!file) return true;
+    //const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
+    let folderPath =  '/' + userId + "/";
+    const existError = await nasCtrl.checkThenMakeFolder(folderPath, type = 'logo');
+    if (existError) {
+        throw 'error occured during access to nas';
+    }
+
+    file.filename = "logo";
+    const uploadError = await nasCtrl.uploadFile(file , folderPath, type = 'logo');
+    if (uploadError) {
+        // 업로드 실패시 throw
+        throw 'error occured put file to nas storage';
+    }
+    return true;
+}
+
 
 module.exports = {
     Add:userAdd,
