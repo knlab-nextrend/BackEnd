@@ -92,10 +92,12 @@ function UserInfoModal({ closeModal, executeModal }) {
     setSalt(userInfo.salt || "");
     setConfirm(userInfo.Confirm || "");
     setCompany(userInfo.Company || "");
-    getUserLogoApi(userInfo.id).then((res) => {
-      const logo = res.data.logo;
-      if (logo) encodeFileToBase64(logo);
-    });
+    if (!type) {
+      getUserLogoApi(userInfo.id).then((res) => {
+        const logo = res.data.logo;
+        if (logo) encodeFileToBase64(logo);
+      });
+    }
   }, []);
 
   const _userIDdVerify = () => {
@@ -171,6 +173,7 @@ function UserInfoModal({ closeModal, executeModal }) {
         })
         .catch((err) => {
           if (err.response.status === 400) {
+            console.log(err.Message);
             alert("추가 중 오류발생");
           }
         });
