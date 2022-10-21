@@ -40,7 +40,23 @@ const getUserByUid = (userID) => new Promise((resolve, reject)=>{
         if(err){
             reject(false);
         }else{
-            if(data){
+            if(!data){
+                resolve(null);
+                return;
+            }
+            const result = data[0];
+            resolve(result);
+        }
+    });
+})
+const getUserByIdx = (idx) => new Promise((resolve, reject)=>{
+    const query = "select * from nt_users_list where id=?";
+    const param = [idx];
+    db.query(query, param, (err,data) => {
+        if(err){
+            reject(false);
+        }else{
+            if(!data){
                 resolve(null);
                 return;
             }
@@ -138,6 +154,7 @@ const deleteUser = (uid) => new Promise((resolve, reject)=>{
 
 module.exports = {
     getUserByUid:getUserByUid,
+    getUserByIdx : getUserByIdx,
     Add: addUser,
     addLogo : addLogo,
     getLogoPath : getLogoPath,

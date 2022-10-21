@@ -165,16 +165,15 @@ const saveLogo = async (file, userId, UID)=>{
 
 
 const getUserLogo = async (req, res)=>{
-    const uid = req.query.uid;
+    const uid = req.body.uid;
 
-    let user = await userCtrl.getUserByUid(uid);
+    let user = await userCtrl.getUserByIdx(uid);
 
     if(user == null){    
         res.status(400).send({message : "cannot find user"});
         return;
     }
-
-    const logo = nasCtrl.getLogoFromFolder(`${user.userID}`);
+    const logo = await nasCtrl.getLogoFromFolder(`/${user.userID}`);
     res.send({"logo" : logo});
 }
 
