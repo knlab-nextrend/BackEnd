@@ -27,6 +27,8 @@ router.post("/user/delete", userCtrl.Delete);
 router.post("/user/verify", userCtrl.Verify);
 
 router.get("/user/",authJWT,tokenCtrl.getUser);
+router.get("/user/logo", userCtrl.getUserLogo);
+
 router.get("/refresh/",tokenCtrl.refresh);
 
 router.post("/login/",loginCtrl.Login);
