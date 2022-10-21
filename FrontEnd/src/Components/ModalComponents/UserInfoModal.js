@@ -189,11 +189,14 @@ function UserInfoModal({ closeModal, executeModal }) {
       Category,
       Company,
       salt,
+      id,
     };
     if (_confirmCheck()) {
       const formData = new FormData();
-      formData.append("userInfo", userInfo);
+      formData.append("userInfo", JSON.stringify(userInfo));
+      formData.append("uid", userInfo.id);
       if (logoFile) formData.append("logoImage", logoFile);
+      formData.forEach((v) => console.log(v));
       modifyUserInfoApi(formData)
         .then(() => {
           alert("성공적으로 수정되었습니다.");
