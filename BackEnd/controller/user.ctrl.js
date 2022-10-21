@@ -31,6 +31,8 @@ const userGet = async (req,res) => {
 }
 
 const userAdd = async (req,res) => {
+
+    req.body.userInfo = JSON.parse(req.body.userInfo);
     if(req.body.userInfo){
 
         let userInfo = infoProcess(req.body.userInfo);
@@ -70,6 +72,9 @@ const userList = async (req,res) => {
 }
 
 const userModify = async (req,res) => {
+    
+    req.body.userInfo = JSON.parse(req.body.userInfo);
+
     if(req.body.uid&&req.body.userInfo){
         let userInfo = infoProcess(req.body.userInfo);
 
@@ -86,7 +91,7 @@ const userModify = async (req,res) => {
         const result = await userCtrl.Modify(userInfo,req.body.uid);
 
         //logo 업로드 기능 추가
-        await saveLogo(req.file, userInfo.ID, result1.insertId);
+        await saveLogo(req.file, userInfo.ID, req.body.uid);
 
         if(result){
             res.send();
@@ -165,7 +170,7 @@ const saveLogo = async (file, userId, UID)=>{
 
 
 const getUserLogo = async (req, res)=>{
-    const uid = req.body.uid;
+    const uid = req.query.uid;
 
     let user = await userCtrl.getUserByIdx(uid);
 

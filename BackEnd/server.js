@@ -3,10 +3,12 @@ const app = express();
 const {stream} = require('./configs/winston');
 const morgan = require('morgan');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
 //ToDo : 개발모드, 배포모드에 따라 settings 분기 시키고... 따로 받아주기. (script에서 가능..?)
 //const config = require(path.join(__dirname,'..','..', 'configs', 'settings.json'))[dbtype][env];
 app.use(express.json());
+app.use(bodyParser.urlencoded({extended:true}));
 app.use(cors({
     exposedHeaders: ['authorization'],
   }));
