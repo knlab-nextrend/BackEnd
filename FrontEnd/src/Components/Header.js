@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { setLogout } from "../Modules/login";
 import { useHistory } from "react-router-dom";
 
-function Header({ name }) {
+function Header({ name, logo }) {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -23,7 +23,7 @@ function Header({ name }) {
         <ContentWrapper>
           <Logo
             onClick={go메인페이지}
-            src={process.env.PUBLIC_URL + "/img/logo4.png"}
+            src={logo ? logo : process.env.PUBLIC_URL + "/img/logo4.png"}
           />
           <LoginInfo>
             <p className="userName">{name}</p>
@@ -55,10 +55,12 @@ const ContentWrapper = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  overflow: hidden;
 `;
 
 const Logo = styled.img`
   height: 4rem;
+  object-fit: contain;
   cursor: pointer;
 `;
 

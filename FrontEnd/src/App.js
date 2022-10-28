@@ -23,6 +23,7 @@ import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { userAuthApi, sessionHandler } from "./Utils/api";
 import { setUser } from "./Modules/user";
 import { trackPromise } from "react-promise-tracker";
+import { encodeBufferToBase64 } from "./Utils/image";
 
 function App() {
   const isLogin = useSelector((state) => state.login.isLogin, shallowEqual);
@@ -39,6 +40,7 @@ function App() {
                 name: res.data.Name,
                 permission: Number(res.data.Category),
                 id: res.data.id,
+                logo: encodeBufferToBase64(res.data.logo),
               })
             );
           })
@@ -59,7 +61,7 @@ function App() {
       />
       {isLogin && userInfo !== null && (
         <>
-          <Header name={userInfo.name} />
+          <Header logo={userInfo.logo} name={userInfo.name} />
           {userInfo.permission !== 0 ? (
             <AdminBody isLogin={isLogin}>
               <AsideMenuBar permission={userInfo.permission} />
@@ -88,7 +90,7 @@ function App() {
         </>
       )}
       <GlobalModal /> {/* 모달 전역 제어 */}
-      <TopButton/> {/* 전역 탑 버튼 */}
+      <TopButton /> {/* 전역 탑 버튼 */}
     </>
   );
 }
@@ -98,7 +100,7 @@ const AdminBody = styled.div`
   padding-top: ${(props) => (!props.isLogin ? "0rem" : "6.5rem")};
   grid-template-columns: minmax(260px, 1fr) 8fr;
   min-height: 1280px;
-  overflow-x:hidden;
+  overflow-x: hidden;
 `;
 const UserBody = styled.div`
   padding-top: ${(props) => (!props.isLogin ? "0rem" : "6.5rem")};
@@ -106,7 +108,7 @@ const UserBody = styled.div`
 `;
 
 const Section = styled.section`
-  width:calc(100vw - 260px);
+  width: calc(100vw - 260px);
 `;
 
 export default App;

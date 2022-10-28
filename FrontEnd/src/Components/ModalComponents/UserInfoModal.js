@@ -9,6 +9,7 @@ import {
 } from "../../Utils/api";
 import permission from "../../Data/permission.json";
 import { AiOutlineClose } from "react-icons/ai";
+import { encodeBufferToBase64 } from "../../Utils/image";
 
 function UserInfoModal({ closeModal, executeModal }) {
   const [id, setID] = useState("");
@@ -44,6 +45,10 @@ function UserInfoModal({ closeModal, executeModal }) {
         resolve();
       };
     });
+  };
+
+  const logoToBase64 = (imageBuffer) => {
+    setImageSrc(encodeBufferToBase64(imageBuffer));
   };
 
   const _userUserIDHandler = (e) => {
@@ -94,8 +99,9 @@ function UserInfoModal({ closeModal, executeModal }) {
     setCompany(userInfo.Company || "");
     if (!type) {
       getUserLogoApi(userInfo.id).then((res) => {
+        console.log(res.data);
         const logo = res.data.logo;
-        if (logo) encodeFileToBase64(logo);
+        if (logo) logoToBase64(logo);
       });
     }
   }, []);
