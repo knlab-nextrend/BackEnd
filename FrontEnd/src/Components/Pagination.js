@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-function Pagination({ dcCount, listSize, pageNo, setPageNo }) {
+function Pagination({ dcCount, listSize, pageNo, setPageNo, pageSize = 10 }) {
   /* 
     pageNo 현재 클릭한 페이지의 No
     listSize 한 페이지에 보여질 document의 개수
@@ -10,62 +10,63 @@ function Pagination({ dcCount, listSize, pageNo, setPageNo }) {
 
   const [pageCount, setPageCount] = useState(0); // 총 보여질 페이지 갯수
   const [pageNoArray, setPageNoArray] = useState([]); // 총 보여질 페이지 갯수 배열
-  const [currentPageNoArray, setCurrentPageNoArray] = useState([]); // 현재 보여질 페이지 갯수 배열
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPageNumberlist, setCurrentPageNumberList] = useState([]); // 현재 보여질 페이지 갯수 배열
+  const [currentPageGroup, setCurrentPageGroup] = useState(0);
 
+  //페이지 전환
   const _handlerPageNo = (e) => {
     const _currentPageNo = Number(e.target.value);
     setPageNo(_currentPageNo);
   };
-  const nextCurrentPage = () => {
-    const _currentPageNext =
-      currentPage + 10 <= pageNoArray.length ? currentPage + 10 : currentPage;
-    setCurrentPage(_currentPageNext);
-  };
-  const prevCurrentPage = () => {
-    const _currentPagePrev = currentPage - 10 >= 0 ? currentPage - 10 : 0;
-    setCurrentPage(_currentPagePrev);
-  };
-  const calcCurrentPageNoArray = () => {
-    const _start = currentPage <= 1 ? 0 : currentPage;
-    const _end = pageNoArray % 10 < 10 ? -1 : _start + 10;
-    if (pageNoArray.length <= 1) {
-      setCurrentPageNoArray([1]);
-    } else {
-      const _currentPageNoArray = pageNoArray.slice(_start, _end);
-      setCurrentPageNoArray(_currentPageNoArray);
-    }
+
+  //다음 페이지 그룹으로 전환
+  const toNextPageGroup = () => {
+    if (currentPageGroup + 1 >= Math.ceil(pageCount / pageSize)) return;
+    const nextPageGroup = currentPageGroup + 1;
+    setCurrentPageGroup(nextPageGroup);
+    setCurrentPageNumberList(getPageNumberList(nextPageGroup));
+    setPageNo(nextPageGroup * pageSize + 1);
   };
 
+  const toPrevPageGroup = () => {
+    if (currentPageGroup === 0) return;
+    const prevpageGroup = currentPageGroup - 1;
+    setCurrentPageGroup(prevpageGroup);
+    setCurrentPageNumberList(getPageNumberList(prevpageGroup));
+    setPageNo(prevpageGroup * pageSize + 1);
+  };
+
+  const getPageNumberList = (pageGroup) => {
+    const result = [];
+    if ((pageGroup + 1) * pageSize > pageCount) {
+      for (let i = 1; i < (pageCount % pageSize) + 1; i++) {
+        result.push(pageGroup * pageSize + i);
+      }
+    } else {
+      for (let i = 1; i <= pageSize; i++) {
+        result.push(pageGroup * pageSize + i);
+      }
+    }
+    return result;
+  };
+
+  //총 페이지 수 초기화
   useEffect(() => {
     const _pageCount = Math.ceil(dcCount / listSize);
     setPageCount(_pageCount);
   }, [dcCount, listSize]);
 
   useEffect(() => {
-    const _pageNoArray = Array.from({ length: pageCount }, (v, i) => i + 1);
-    setPageNoArray(_pageNoArray);
+    setCurrentPageNumberList(getPageNumberList(currentPageGroup));
   }, [pageCount]);
-
-  useEffect(() => {
-    calcCurrentPageNoArray();
-  }, [pageNoArray]);
-
-  useEffect(() => {
-    calcCurrentPageNoArray();
-  }, [currentPage]);
-
-  useEffect(() => {
-    if (pageNo > pageCount) {
-      setPageNo(1);
-    }
-  }, [listSize, pageCount]);
 
   return (
     <>
       <PaginationContainer>
-        <NextPrevButton onClick={prevCurrentPage}>{"<"}</NextPrevButton>
-        {currentPageNoArray.map((item, i) => {
+        {currentPageGroup !== 0 && (
+          <NextPrevButton onClick={toPrevPageGroup}>{"<"}</NextPrevButton>
+        )}
+        {currentPageNumberlist.map((item, i) => {
           return (
             <PaginationButton
               key={i}
@@ -77,7 +78,9 @@ function Pagination({ dcCount, listSize, pageNo, setPageNo }) {
             </PaginationButton>
           );
         })}
-        <NextPrevButton onClick={nextCurrentPage}>{">"}</NextPrevButton>
+        {(currentPageGroup + 2) * pageSize <= pageCount && (
+          <NextPrevButton onClick={toNextPageGroup}>{">"}</NextPrevButton>
+        )}
       </PaginationContainer>
     </>
   );

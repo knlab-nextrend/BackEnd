@@ -26,6 +26,8 @@ function CurationDataDetailContainer() {
           dataCleansing(res.data);
         })
         .catch((err) => {
+          console.log("큐레이션 상세 조회 에러");
+          console.error(err);
           sessionHandler(err, dispatch).then((res) => {
             CrawlDataDetailFetchApi(statusCode, _id).then((res) => {
               dataCleansing(res.data);
@@ -90,6 +92,7 @@ function CurationDataDetailContainer() {
         .map((x) => x.CT_NM)
         .join(", "),
       doc_host:
+        _rawStatusDetailData.doc_host &&
         _rawStatusDetailData.doc_host.length !== 0
           ? _rawStatusDetailData.doc_host[0].HOST
           : "",

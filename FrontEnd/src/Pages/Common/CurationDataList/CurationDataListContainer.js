@@ -43,6 +43,7 @@ function CurationDataListContainer() {
     let _curationDataList = [];
     let _rawCurationDataList = rawData.docs;
     let _dcCount = rawData.dcCount;
+
     _rawCurationDataList.forEach((item) => {
       const obj = {
         _id: item._id,
@@ -55,7 +56,9 @@ function CurationDataListContainer() {
           .map((x) => x.CT_NM)
           .join(", "),
         doc_category_list: item.doc_category.map((x) => x.CT_NM).join(", "),
-        doc_register_date: item.doc_register_date.substring(0, 10),
+        doc_register_date: item.doc_register_date
+          ? item.doc_register_date.substring(0, 10)
+          : null,
 
         doc_content_type_list: item.doc_content_type
           .map((x) => x.CT_NM)
@@ -66,10 +69,11 @@ function CurationDataListContainer() {
         doc_url: item.doc_url,
         doc_publisher: item.doc_publisher,
       };
-      console.log(obj);
       _curationDataList.push(obj);
     });
+
     setDcCount(_dcCount);
+
     setCurationDataList(_curationDataList);
   };
 
@@ -85,6 +89,7 @@ function CurationDataListContainer() {
           dataCleansing(res.data);
         })
         .catch((err) => {
+          console.error(err);
           sessionHandler(err, dispatch).then((res) => {
             CrawlDataListFetchApi(statusCode, listSize, pageNo, searchObj).then(
               (res) => {
