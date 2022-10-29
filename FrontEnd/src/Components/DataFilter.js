@@ -37,7 +37,7 @@ function DataFilter({ dataFilterFetch = null, type }) {
   const [pageLte, setPageLte] = useState(0);
 
   const [screeningHost, setScreeningHost] = useState(""); // 스크리닝 호스트 검색용
-  const [screeningLanguage,setScreeningLanguage] = useState(""); // 스크리닝 언어 검색용
+  const [screeningLanguage, setScreeningLanguage] = useState(""); // 스크리닝 언어 검색용
 
   const docLanguage = useSelector(
     (state) => state.modal.modalData.doc_language
@@ -68,9 +68,9 @@ function DataFilter({ dataFilterFetch = null, type }) {
   const _screeningHostHandler = (e) => {
     setScreeningHost(e.target.value);
   };
-  const _screeningLanguageHandler = (e)=>{
-    setScreeningLanguage(e.target.value)
-  }
+  const _screeningLanguageHandler = (e) => {
+    setScreeningLanguage(e.target.value);
+  };
   const _isCrawledHandler = (e) => {
     setIsCrawled(e.target.value);
   };
@@ -127,7 +127,7 @@ function DataFilter({ dataFilterFetch = null, type }) {
       alert("검색 필드 하나에 하나의 필터 값만 설정 가능 합니다.");
       return;
     }
-    
+
     if (docCountry.length !== 0) {
       searchObj["doc_country"] = docCountry.map((item) => item.CODE);
     }
@@ -146,7 +146,7 @@ function DataFilter({ dataFilterFetch = null, type }) {
       if (screeningHost !== "") {
         searchObj["host"] = screeningHost;
       }
-      if(screeningLanguage!==""){
+      if (screeningLanguage !== "") {
         searchObj["lang"] = screeningLanguage;
       }
     } else {
@@ -218,18 +218,18 @@ function DataFilter({ dataFilterFetch = null, type }) {
     setDateGte(_dateGte.toISOString().substring(0, 10));
   }, [dateRange]);
 
-  useEffect(()=>{
-    if(optionIsOpen){
+  useEffect(() => {
+    if (optionIsOpen) {
       searchReset();
     }
-  },[optionIsOpen])
+  }, [optionIsOpen]);
   return (
     <>
       <Wrapper>
         <FilterHeader>
           <Title>
             <FaFilter color="#435269" />
-            <p>검색 필터</p>
+            <p>상세 검색</p>
           </Title>
           <CustomButton onClick={_optionIsOpenHandler}>
             {optionIsOpen ? (
@@ -349,7 +349,7 @@ function DataFilter({ dataFilterFetch = null, type }) {
                   </OptionRow>
                   <OptionRow>
                     <OptionCol>
-                    {type === "screening" ? (
+                      {type === "screening" ? (
                         <>
                           <OptionTitle>언어코드 검색</OptionTitle>
                           <OptionInput
@@ -359,20 +359,23 @@ function DataFilter({ dataFilterFetch = null, type }) {
                             placeholder="언어 코드 검색 (ex. ko, ja, en ... )"
                           ></OptionInput>
                         </>
-                      ):(<><OptionTitle>언어</OptionTitle>
-                      <ActionButton
-                        onClick={() => {
-                          _openCategoryModal("doc_language");
-                        }}
-                      >
-                        <MdSettings /> 선택
-                      </ActionButton>
-                      <CustomList>
-                        {docLanguage.map((item, index) => {
-                          return <Chip key={index}>{item.CT_NM}</Chip>;
-                        })}
-                      </CustomList></>)}
-                      
+                      ) : (
+                        <>
+                          <OptionTitle>언어</OptionTitle>
+                          <ActionButton
+                            onClick={() => {
+                              _openCategoryModal("doc_language");
+                            }}
+                          >
+                            <MdSettings /> 선택
+                          </ActionButton>
+                          <CustomList>
+                            {docLanguage.map((item, index) => {
+                              return <Chip key={index}>{item.CT_NM}</Chip>;
+                            })}
+                          </CustomList>
+                        </>
+                      )}
                     </OptionCol>
                     <OptionCol>
                       {type === "screening" ? (
