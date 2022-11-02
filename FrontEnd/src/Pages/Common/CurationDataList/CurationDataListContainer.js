@@ -131,21 +131,21 @@ function CurationDataListContainer() {
     }
   };
 
+  const onSearch = () => {
+    dataFetch(null, true, searchInput);
+  };
+
   useEffect(() => {
     if (storedViewType !== null) setViewType(storedViewType);
   });
 
   useEffect(() => {
     if (axisObj.X === null) {
-      if (searchInput !== "") {
-        dataFetch(searchObj, true, searchInput);
-      } else {
-        dataFetch(searchObj);
-      }
+      dataFetch(searchObj, false, searchInput);
     } else {
       customDataFetch();
     }
-  }, [pageNo, listSize, axisObj, searchObj, searchInput]);
+  }, [pageNo, listSize, axisObj, searchObj]);
 
   return (
     <>
@@ -163,6 +163,7 @@ function CurationDataListContainer() {
         userInfo={userInfo}
         dataFilterFetch={dataFilterFetch}
         setSearchInput={setSearchInput}
+        onSearch={onSearch}
       />
     </>
   );

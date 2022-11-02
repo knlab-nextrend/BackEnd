@@ -22,6 +22,7 @@ function CurationDataList({
   dataFilterFetch,
   setListSize,
   setSearchInput,
+  onSearch,
 }) {
   const _listSizeHandler = (e) => {
     setListSize(e.target.value);
@@ -29,9 +30,11 @@ function CurationDataList({
 
   const onSubmitSearch = (e) => {
     e.preventDefault();
-    const { search } = e.target;
-    const input = search.value;
-    setSearchInput(input);
+    onSearch();
+  };
+
+  const onChangeSearch = (e) => {
+    setSearchInput(e.target.value);
   };
 
   return (
@@ -98,12 +101,12 @@ function CurationDataList({
             </div>
           </Row>
           <Row>
-            <SearchForm onSubmit={(e) => onSubmitSearch(e)}>
+            <SearchForm onSubmit={onSubmitSearch}>
               <SearchTitle>
                 <HiSearch />
                 <span>검색</span>
               </SearchTitle>
-              <SearchInput id="search" />
+              <SearchInput id="search" onChange={onChangeSearch} />
               <button>검색하기</button>
             </SearchForm>
           </Row>
