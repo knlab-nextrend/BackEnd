@@ -10,6 +10,7 @@ import {
   MdUpload,
   MdManageSearch,
   MdCalendarViewDay,
+  MdLibraryBooks,
 } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import { FaBook } from "react-icons/fa";
@@ -60,6 +61,21 @@ function AsideMenuBar({ permission }) {
             </div>
           </AsideMenuGroup>
           <AsideMenuGroup>
+            <div className="group-title">LEGACY</div>
+            <div className="group-menu">
+              {PERMISSON_DATA[permission] === "관리자" && (
+                <li>
+                  <AsideMenuBarItem to="/legacy" activeClassName="active">
+                    <div className="icon-container">
+                      <MdLibraryBooks className="icon" size="16" />
+                    </div>
+                    데이터 조회
+                  </AsideMenuBarItem>
+                </li>
+              )}
+            </div>
+          </AsideMenuGroup>
+          <AsideMenuGroup>
             <div className="group-title">CRAWL DATA WORK</div>
             <div className="group-menu">
               {PERMISSON_DATA[permission] !== "사용자" &&
@@ -78,11 +94,7 @@ function AsideMenuBar({ permission }) {
                 )}
               {PERMISSON_DATA[permission] !== "사용자" && (
                 <li>
-                  <AsideMenuBarItem
-                    to="/crawl/2"
-                    activeClassName="active"
-                    
-                  >
+                  <AsideMenuBarItem to="/crawl/2" activeClassName="active">
                     <div className="icon-container">
                       <MdSettings size="16" />
                     </div>
@@ -93,10 +105,7 @@ function AsideMenuBar({ permission }) {
               {PERMISSON_DATA[permission] !== "사용자" &&
                 PERMISSON_DATA[permission] !== "정제 작업자" && (
                   <li>
-                    <AsideMenuBarItem
-                      to="/crawl/4"
-                      activeClassName="active"
-                    >
+                    <AsideMenuBarItem to="/crawl/4" activeClassName="active">
                       <div className="icon-container">
                         <MdOutlineAdd size="16" />
                       </div>
@@ -118,10 +127,7 @@ function AsideMenuBar({ permission }) {
               {(PERMISSON_DATA[permission] === "관리자" ||
                 PERMISSON_DATA[permission] === "큐레이션 작업자") && (
                 <li>
-                  <AsideMenuBarItem
-                    to="/curation"
-                    activeClassName="active"
-                  >
+                  <AsideMenuBarItem to="/curation" activeClassName="active">
                     <div className="icon-container">
                       <MdOutlineAdd size="16" />
                     </div>
@@ -182,7 +188,10 @@ function AsideMenuBar({ permission }) {
 
               {PERMISSON_DATA[permission] === "관리자" && (
                 <li>
-                  <AsideMenuBarItem to="/user-custom-menu" activeClassName="active">
+                  <AsideMenuBarItem
+                    to="/user-custom-menu"
+                    activeClassName="active"
+                  >
                     <div className="icon-container">
                       <MdSettings size="16" />
                     </div>
