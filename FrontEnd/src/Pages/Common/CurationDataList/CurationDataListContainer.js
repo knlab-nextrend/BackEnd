@@ -14,6 +14,7 @@ function CurationDataListContainer() {
   const userInfo = useSelector((state) => state.user.user);
   const axisObj = useSelector((state) => state.custom.axisObj);
   const [searchObj, setSearchObj] = useState(null); // 검색 옵션
+  const [searchInput, setSearchInput] = useState("");
 
   /* 페이지네이션 */
   const [dcCount, setDcCount] = useState(0); // document 총 개수
@@ -80,10 +81,18 @@ function CurationDataListContainer() {
   const dataFilterFetch = (searchObj) => {
     setSearchObj(searchObj);
   };
+
   /* 데이터 불러오기 */
-  const dataFetch = (searchObj = null) => {
+  const dataFetch = (searchObj = null, general = false, query) => {
     trackPromise(
-      CrawlDataListFetchApi(statusCode, listSize, pageNo, searchObj)
+      CrawlDataListFetchApi(
+        statusCode,
+        listSize,
+        pageNo,
+        searchObj,
+        general,
+        query
+      )
         .then((res) => {
           console.log(res.data);
           dataCleansing(res.data);
@@ -122,13 +131,17 @@ function CurationDataListContainer() {
     }
   };
 
+  const onSearch = () => {
+    dataFetch(null, true, searchInput);
+  };
+
   useEffect(() => {
     if (storedViewType !== null) setViewType(storedViewType);
   });
 
   useEffect(() => {
     if (axisObj.X === null) {
-      dataFetch(searchObj);
+      dataFetch(searchObj, false, searchInput);
     } else {
       customDataFetch();
     }
@@ -149,6 +162,8 @@ function CurationDataListContainer() {
         handleRowClick={handleRowClick}
         userInfo={userInfo}
         dataFilterFetch={dataFilterFetch}
+        setSearchInput={setSearchInput}
+        onSearch={onSearch}
       />
     </>
   );

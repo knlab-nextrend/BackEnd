@@ -45,8 +45,7 @@ function GlobalModal() {
     dispatch(setModal(null));
   };
 
-  const onBackDrop = () => {
-    console.log(BACKDROP_CLOSE[modalType]);
+  const onBackDrop = (e) => {
     if (!BACKDROP_CLOSE[modalType]) return;
     closeModal();
   };
@@ -70,7 +69,9 @@ function GlobalModal() {
       {modalType ? (
         <>
           <Background onClick={onBackDrop}>
-            <ModalWrapper>{renderComponent()}</ModalWrapper>
+            <ModalWrapper onClick={(e) => e.stopPropagation()}>
+              {renderComponent()}
+            </ModalWrapper>
           </Background>
         </>
       ) : null}

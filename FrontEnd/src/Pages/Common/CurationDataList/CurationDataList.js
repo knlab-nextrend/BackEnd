@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import Pagination from "../../../Components/Pagination";
-import { HiOutlineDocumentSearch, HiPhotograph } from "react-icons/hi";
+import { HiOutlineDocumentSearch, HiSearch } from "react-icons/hi";
 import { MdCalendarViewDay } from "react-icons/md";
 import { RiFileList2Line } from "react-icons/ri";
 import DataFilter from "../../../Components/DataFilter";
@@ -21,10 +21,22 @@ function CurationDataList({
   userInfo,
   dataFilterFetch,
   setListSize,
+  setSearchInput,
+  onSearch,
 }) {
   const _listSizeHandler = (e) => {
     setListSize(e.target.value);
   };
+
+  const onSubmitSearch = (e) => {
+    e.preventDefault();
+    onSearch();
+  };
+
+  const onChangeSearch = (e) => {
+    setSearchInput(e.target.value);
+  };
+
   return (
     <>
       <Wrapper>
@@ -87,6 +99,16 @@ function CurationDataList({
                 <option value={100}>100건</option>
               </select>
             </div>
+          </Row>
+          <Row>
+            <SearchForm onSubmit={onSubmitSearch}>
+              <SearchTitle>
+                <HiSearch />
+                <span>검색</span>
+              </SearchTitle>
+              <SearchInput id="search" onChange={onChangeSearch} />
+              <button>검색하기</button>
+            </SearchForm>
           </Row>
           <Row>
             <DataFilter type={"curation"} dataFilterFetch={dataFilterFetch} />
@@ -195,6 +217,7 @@ function CurationList({ curationData, handleRowClick }) {
                             : process.env.PUBLIC_URL +
                               `/img/curation_default_image.png`
                         }
+                        alt="tubmnail"
                       />
                     </div>
                     <div className="title-container">
@@ -235,11 +258,12 @@ const RowContainer = styled.div`
 `;
 const Row = styled.div`
   display: flex;
-  color: rgb(59, 59, 59);
   justify-content: space-between;
   align-items: center;
+  min-width: max-content;
   padding: 1rem;
   border-bottom: solid 1px #d6d6d6;
+  color: rgb(59, 59, 59);
   &:last-child {
     border: none;
   }
@@ -280,6 +304,42 @@ const ViewType = styled.div`
     padding: 0.25rem 0.5rem 0.25rem 0.5rem;
     border-radius: 4px;
   }
+`;
+
+const SearchTitle = styled.div`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+
+  color: #435269;
+  font-weight: bold;
+`;
+
+const SearchForm = styled.form`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  width: 100%;
+
+  & > button {
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    background-color: #435269;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    word-break: keep-all;
+    cursor: pointer;
+  }
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 0.5rem 1rem;
+  margin: 0 2rem;
+  border: solid 1px #d6d6d6;
 `;
 
 const CurationListTable = styled.table`
