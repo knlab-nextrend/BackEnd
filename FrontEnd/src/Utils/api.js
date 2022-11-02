@@ -72,9 +72,17 @@ const CrawlDataListFetchApi = (
   statusCode,
   listSize,
   pageNo,
-  searchObj = null
+  searchObj = null,
+  general = false,
+  query
 ) => {
-  const params = { listSize: listSize, pageNo: pageNo, ...searchObj };
+  const params = {
+    listSize: listSize,
+    pageNo: pageNo,
+    ...searchObj,
+    general,
+    query,
+  };
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
     params,

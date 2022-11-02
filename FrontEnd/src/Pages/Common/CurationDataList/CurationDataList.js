@@ -21,6 +21,7 @@ function CurationDataList({
   userInfo,
   dataFilterFetch,
   setListSize,
+  setSearchInput,
 }) {
   const _listSizeHandler = (e) => {
     setListSize(e.target.value);
@@ -29,6 +30,8 @@ function CurationDataList({
   const onSubmitSearch = (e) => {
     e.preventDefault();
     const { search } = e.target;
+    const input = search.value;
+    setSearchInput(input);
   };
 
   return (
