@@ -6,10 +6,9 @@ import CrawlDataDetailContainer from "./CrawlDataDetail/CrawlDataDetailContainer
 import CrawlDataScreeningContainer from "./CrawlDataScreening/CrawlDataScreeningContainer";
 import CrawlDataListContainer from "./CrawlDataList/CrawlDataListContainer";
 import ArchiveDataListContainer from "./ArchiveDataList/ArchiveDataListContainer";
-import CurationDataListContainer from "../Common/CurationDataList/CurationDataListContainer";
 import CurationDataDetailContainer from "../Common/CurationDataDetail/CurationDataDetailContainer";
 import AdminCurationDataList from "./AdminCurationDataList";
-import { LoadingWrapper } from "../../Components/LoadingWrapper";
+import LegacyDataListContainer from "./LegacyDatalist/LegacyDataListContainer";
 
 function WorkerSection() {
   return (
@@ -44,6 +43,7 @@ function WorkerSection() {
         component={CurationDataDetailContainer}
         exact
       />
+      <PrivateRoute path="/legacy" component={LegacyDataListContainer} exact />
     </Switch>
   );
 }

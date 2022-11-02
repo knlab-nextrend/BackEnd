@@ -47,9 +47,9 @@ function UserInfoModal({ closeModal, executeModal }) {
     });
   };
 
-  const logoToBase64 = (imageBuffer) => {
-    setImageSrc(encodeBufferToBase64(imageBuffer));
-  };
+  // const logoToBase64 = (imageBuffer) => {
+  //   setImageSrc(encodeBufferToBase64(imageBuffer));
+  // };
 
   const _userUserIDHandler = (e) => {
     setUserID(e.target.value);
@@ -101,7 +101,7 @@ function UserInfoModal({ closeModal, executeModal }) {
       getUserLogoApi(userInfo.id).then((res) => {
         console.log(res.data);
         const logo = res.data.logo;
-        if (logo) logoToBase64(logo);
+        if (logo) setImageSrc(logo);
       });
     }
   }, []);
