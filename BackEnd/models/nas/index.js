@@ -9,7 +9,7 @@ module.exports = {
     thumbRoute:"/GPS/pdf/files/thumbnail/",
     pdfRoute:"/GPS/pdf/files/archived/",
     uploadRoute:"/GPS/pdf/upload_files/",
-    userLogoRoute : "/GPS/user/logo/",
+    userLogoRoute : "/GPS/pdf/files/thumbnail/files/user/logo/",
     webServer:config.host+":"+config.webport,
     config:config
 };

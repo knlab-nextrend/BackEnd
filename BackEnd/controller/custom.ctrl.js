@@ -114,7 +114,7 @@ const customSearch = async (req, res) => {
             const reqCode= parseInt(req.query.statusCode);
             let stat = (reqCode===6||reqCode===7)? [6,7]:8
             const searchQuery = libs.reqToEsFilters(req.query,stat,must,should);
-
+ 
             let result = await esServiceCtrl.Search(searchQuery)
             const document = [];
             for(let doc of result.docs){

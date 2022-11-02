@@ -20,9 +20,9 @@ const onLogin = async (req,res) => {
     if(req.body.userID&&req.body.userPW){
         const result = await loginCtrl.OnLogin(req.body.userID,req.body.userPW);
 
-        const logoFile = await nasCtrl.getLogoFromFolder(`/${req.body.userID}/`);
+        const logo = await nasCtrl.getLogoFromFolder(`/${req.body.userID}/`);
 
-        result.logo = logoFile;
+        result.logo = logo;
         if(result.message === undefined){
             res.send(result);
         }else{

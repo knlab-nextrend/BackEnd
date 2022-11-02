@@ -178,7 +178,7 @@ const getUserLogo = async (req, res)=>{
         res.status(400).send({message : "cannot find user"});
         return;
     }
-    const logo = await nasCtrl.getLogoFromFolder(`/${user.userID}`);
+    const logo = await nasCtrl.getLogoFromFolder(`/${user.userID}/`);
     res.send({"logo" : logo});
 }
 

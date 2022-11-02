@@ -85,7 +85,6 @@ const crawlKeep = async (req, res) => {
                 case 3:
                     // 일단 직접 지정...
                     result = await esCtrl.Keep(_id, 3);
-                    console.log(result);
                     // addEditLog의 workType 4는 보류.
                     await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
                     break;

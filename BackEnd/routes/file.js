@@ -17,4 +17,5 @@ router.post('/uploadExcelData/',pdfUpload.fields([{name : 'pdfs'},{name :'thumbn
 
 router.get('/excel/list', fileCtrl.getExcelData)
 router.get('/excel/detail', fileCtrl.getExcelDetail)
+router.get('/excel/migrate', fileCtrl.migration);
 module.exports = router;
