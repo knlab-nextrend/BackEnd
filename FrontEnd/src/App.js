@@ -40,7 +40,7 @@ function App() {
                 name: res.data.Name,
                 permission: Number(res.data.Category),
                 id: res.data.id,
-                logo: encodeBufferToBase64(res.data.logo),
+                logo: res.data.logo,
               })
             );
           })
