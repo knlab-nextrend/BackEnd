@@ -295,8 +295,8 @@ const migration = async (req, res) =>{
             doc_keyowrd : keywords
         }
         
-        //const _id = await esCtrl.Index(results[i], 8, false, true);
-        //await uploadCtrl.updateId(_id, results[i].item_id);
+        const _id = await esCtrl.Index(results[i], 8, false, true);
+        await uploadCtrl.updateId(_id, results[i].item_id);
     }
     res.send(results)
     
