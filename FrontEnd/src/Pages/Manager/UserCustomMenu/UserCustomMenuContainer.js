@@ -11,6 +11,7 @@ import {
 } from "../../../Utils/api";
 import { setModal } from "../../../Modules/modal";
 import { LoadingWrapper } from "../../../Components/LoadingWrapper";
+import { setEditingAxis, setEditingAxisData } from "../../../Modules/custom";
 function UserCustomMenuContainer() {
   const CATEGORY_TYPE_LIST = {
     1: "정책 분류",
@@ -37,6 +38,7 @@ function UserCustomMenuContainer() {
   const [previewAxisMenu, setPreviewAxisMenu] = useState({ X: [], Y: [] }); // 미리보기용 하위 메뉴
   const openCategoryModal = (axis) => {
     setCurrentAxis(axis);
+    dispatch(setEditingAxis(axis));
     dispatch(setModal("AxisCategoryModal"));
   };
   const getUserList = () => {
@@ -99,6 +101,9 @@ function UserCustomMenuContainer() {
                   }
                 : null,
           }));
+
+          dispatch(setEditingAxisData("X", userSettingObj.x_type));
+          dispatch(setEditingAxisData("Y", userSettingObj.y_type));
         } else {
           // 값이 존재하지 않을 경우
           setIsNewSetting(true);
@@ -107,6 +112,8 @@ function UserCustomMenuContainer() {
             Y: { category_type: null, select_category_name: null },
           });
           setAxisMenuData({ X: null, Y: null });
+          dispatch(setEditingAxisData("X", 0));
+          dispatch(setEditingAxisData("Y", 0));
         }
       })
     );
@@ -122,9 +129,11 @@ function UserCustomMenuContainer() {
           ...prev,
           [axis]: {
             category_type: CATEGORY_TYPE_LIST[res.data[0].type],
-            select_category_name: axisMenuData[axis].CT_NM,
+            select_category_name:
+              axisMenuData[axis].CT_NM || axisMenuData[axis].name,
           },
         }));
+        dispatch(setEditingAxis(axis, res.data[0].type));
       })
     );
   };
