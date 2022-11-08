@@ -20,7 +20,7 @@ const readQuery = (length, type, code = null) =>
 
 const getCodeByType = (type) =>
   new Promise((resolve, reject) => {
-    let query = `SELECT CT_NM as name, CODE as code FROM nt_categorys WHERE TYPE=${type}`;
+    let query = `SELECT CT_NM as name, CODE as code, IDX FROM nt_categorys WHERE TYPE=${type}`;
 
     db.query(query, (err, result) => {
       if (err) {
@@ -28,13 +28,13 @@ const getCodeByType = (type) =>
       } else {
         const list = result.map((category) => {
           if (category.code.length === 2) {
-            return { ...category, type: "대분류" };
+            return { ...category, type, level: "대분류" };
           } else if (category.code.length === 4) {
-            return { ...category, type: "중분류" };
+            return { ...category, type, level: "중분류" };
           } else if (category.code.length === 6) {
-            return { ...category, type: "소분류" };
+            return { ...category, type, level: "소분류" };
           } else {
-            return { ...category, type: "미분류" };
+            return { ...category, type, level: "미분류" };
           }
         });
         resolve(list);
