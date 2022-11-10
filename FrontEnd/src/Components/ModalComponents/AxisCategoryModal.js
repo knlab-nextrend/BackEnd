@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { BsCheckLg } from "react-icons/bs";
-import { getCatogryListAPI } from "../../api/category/category";
+import { getCategryListAPI } from "../../api/category/category";
 import { sessionHandler } from "../../Utils/api";
 
 const CATEGORY_INFO = [
@@ -50,13 +50,13 @@ function CategoryModal({ executeModal, closeModal }) {
 
   /* 데이터 불러오기 */
   const dataFetch = () => {
-    getCatogryListAPI(currentCategoryType)
+    getCategryListAPI(currentCategoryType)
       .then((res) => {
         setCategoryList(stratifyCategoryList(res.data));
       })
       .catch((err) => {
         sessionHandler(err, dispatch).then((res) => {
-          getCatogryListAPI(currentCategoryType).then((res) => {
+          getCategryListAPI(currentCategoryType).then((res) => {
             setCategoryList(res.data);
           });
         });
