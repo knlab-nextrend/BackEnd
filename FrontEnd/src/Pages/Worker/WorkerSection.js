@@ -8,7 +8,6 @@ import CrawlDataListContainer from "./CrawlDataList/CrawlDataListContainer";
 import ArchiveDataListContainer from "./ArchiveDataList/ArchiveDataListContainer";
 import CurationDataDetailContainer from "./CurationDataDetail/CurationDataDetailContainer";
 import AdminCurationDataList from "./AdminCurationDataList";
-import LegacyDataListContainer from "./LegacyDatalist/LegacyDataListContainer";
 
 function WorkerSection() {
   return (
@@ -43,7 +42,6 @@ function WorkerSection() {
         component={CurationDataDetailContainer}
         exact
       />
-      <PrivateRoute path="/legacy" component={LegacyDataListContainer} exact />
     </Switch>
   );
 }
