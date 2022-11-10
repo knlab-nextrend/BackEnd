@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import FormHeader from "../../Components/FormHeader";
 import { LoadingWrapper } from "../../Components/LoadingWrapper";
-import CurationDataListContainer from "../Common/CurationDataList/CurationDataListContainer";
+import CurationDataListContainer from "./CurationDataList/CurationDataListContainer";
 function AdminCurationDataList() {
   return (
     <LoadingWrapper>

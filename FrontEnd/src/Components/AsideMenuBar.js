@@ -61,21 +61,6 @@ function AsideMenuBar({ permission }) {
             </div>
           </AsideMenuGroup>
           <AsideMenuGroup>
-            <div className="group-title">LEGACY</div>
-            <div className="group-menu">
-              {PERMISSON_DATA[permission] === "관리자" && (
-                <li>
-                  <AsideMenuBarItem to="/legacy" activeClassName="active">
-                    <div className="icon-container">
-                      <MdLibraryBooks className="icon" size="16" />
-                    </div>
-                    데이터 조회
-                  </AsideMenuBarItem>
-                </li>
-              )}
-            </div>
-          </AsideMenuGroup>
-          <AsideMenuGroup>
             <div className="group-title">CRAWL DATA WORK</div>
             <div className="group-menu">
               {PERMISSON_DATA[permission] !== "사용자" &&

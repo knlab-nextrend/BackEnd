@@ -1,6 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import CurationDataListContainer from "../../Common/CurationDataList/CurationDataListContainer";
+import UserCurationDataListContainer from "../CurationDataList/CurationDataListContainer";
 import UserArchiveDataList from "./UserArchiveDataList";
 import { HiOutlineArchive, HiOutlineDocumentDuplicate } from "react-icons/hi";
 import { LoadingWrapper } from "../../../Components/LoadingWrapper";
@@ -69,7 +69,7 @@ function UserOnlyDataLookUpPage({
               curationRequest={curationRequest}
             />
           ) : (
-            <CurationDataListContainer className="list" axisObj={axisObj} />
+            <UserCurationDataListContainer className="list" axisObj={axisObj} />
           )}
         </ContentBody>
       </LoadingWrapper>
