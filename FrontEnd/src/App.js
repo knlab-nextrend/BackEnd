@@ -16,8 +16,8 @@ import UserSection from "./Pages/User/UserSection";
 import ManagerSection from "./Pages/Manager/ManagerSection";
 
 /* route components */
-import PublicRoute from "./Route/PublicRoute";
-import PrivateRoute from "./Route/PrivateRoute";
+import PublicRoute from "routes/PublicRoute";
+import PrivateRoute from "routes/PrivateRoute";
 
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { userAuthApi, sessionHandler } from "./Utils/api";
