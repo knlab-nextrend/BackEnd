@@ -82,9 +82,11 @@ function App() {
               </Section>
             </AdminBody>
           ) : (
-            <UserBody isLogin={isLogin}>
-              <UserSection />
-            </UserBody>
+            <>
+              <UserBody isLogin={isLogin}>
+                <UserSection />
+              </UserBody>
+            </>
           )}
           <Footer />
         </>

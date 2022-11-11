@@ -16,7 +16,7 @@ import rootReducer from "./Modules";
 import ScrollToTop from "./Components/ScrollToTop";
 
 /* loading Page */
-import Loading from "./Components/Loading";
+import { GlobalStyle } from "styles/globalStyle";
 /* redux setting */
 const store = createStore(rootReducer);
 
@@ -24,6 +24,7 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
+        <GlobalStyle />
         <ScrollToTop />
         <App />
       </BrowserRouter>
