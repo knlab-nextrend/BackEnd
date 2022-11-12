@@ -23,6 +23,8 @@ import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { userAuthApi, sessionHandler } from "./Utils/api";
 import { setUser } from "./Modules/user";
 import { trackPromise } from "react-promise-tracker";
+import { WorkerLayout } from "templates/WorkerLayout";
+import { UserLayout } from "templates/UserLayout";
 
 function App() {
   const isLogin = useSelector((state) => state.login.isLogin, shallowEqual);
@@ -61,58 +63,32 @@ function App() {
       {isLogin && userInfo !== null && (
         <>
           {userInfo.permission !== 0 ? (
-            <AdminBody isLogin={isLogin}>
-              <SideMenuBar
-                permission={userInfo.permission}
-                name={userInfo.name}
-              />
-              <Section>
-                {userInfo.permission === 1 && <WorkerSection />}
-                {userInfo.permission === 2 && <WorkerSection />}
-                {userInfo.permission === 3 && <WorkerSection />}
-                {userInfo.permission === 4 && <WorkerSection />}
-                {userInfo.permission === 9 && (
-                  <>
-                    <WorkerSection />
-                    <ManagerSection />
-                  </>
-                )}
-                <PrivateRoute path="/home" exact>
-                  <MainPage />
-                </PrivateRoute>
-              </Section>
-            </AdminBody>
+            <WorkerLayout>
+              {[1, 2, 3, 4].some((v) => v === userInfo.permission) && (
+                <WorkerSection />
+              )}
+              {userInfo.permission === 9 && (
+                <>
+                  <WorkerSection />
+                  <ManagerSection />
+                </>
+              )}
+              <PrivateRoute path="/home" exact>
+                <MainPage />
+              </PrivateRoute>
+            </WorkerLayout>
           ) : (
             <>
-              <Header logo={userInfo.logo} name={userInfo.name} />
-              <UserBody isLogin={isLogin}>
+              <UserLayout>
                 <UserSection />
-              </UserBody>
+              </UserLayout>
             </>
           )}
-          <Footer />
         </>
       )}
-      <GlobalModal /> {/* 모달 전역 제어 */}
-      <TopButton /> {/* 전역 탑 버튼 */}
+      <GlobalModal />
+      <TopButton />
     </>
   );
 }
-
-const AdminBody = styled.div`
-  display: ${(props) => (props.isLogin ? "grid" : "none")};
-  grid-template-columns: minmax(260px, 1fr) 8fr;
-  min-height: 1280px;
-  overflow-x: hidden;
-`;
-const UserBody = styled.div`
-  padding-top: ${(props) => (!props.isLogin ? "0rem" : "6.5rem")};
-  min-height: 1280px;
-`;
-
-const Section = styled.section`
-  padding-left: 280px;
-  width: calc(100vw - 280px);
-`;
-
 export default App;
