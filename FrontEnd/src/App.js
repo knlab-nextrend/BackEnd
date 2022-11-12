@@ -4,7 +4,7 @@ import styled from "styled-components";
 /* components */
 import Header from "./Components/Header";
 import MainPage from "./Pages/Common/MainPage";
-import AsideMenuBar from "./Components/AsideMenuBar";
+import { SideMenuBar } from "Components";
 import Footer from "./Components/Footer";
 import GlobalModal from "./Components/ModalComponents/GlobalModal";
 import TopButton from "./Components/TopButton";
@@ -23,7 +23,6 @@ import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { userAuthApi, sessionHandler } from "./Utils/api";
 import { setUser } from "./Modules/user";
 import { trackPromise } from "react-promise-tracker";
-import { encodeBufferToBase64 } from "./Utils/image";
 
 function App() {
   const isLogin = useSelector((state) => state.login.isLogin, shallowEqual);
@@ -61,10 +60,12 @@ function App() {
       />
       {isLogin && userInfo !== null && (
         <>
-          <Header logo={userInfo.logo} name={userInfo.name} />
           {userInfo.permission !== 0 ? (
             <AdminBody isLogin={isLogin}>
-              <AsideMenuBar permission={userInfo.permission} />
+              <SideMenuBar
+                permission={userInfo.permission}
+                name={userInfo.name}
+              />
               <Section>
                 {userInfo.permission === 1 && <WorkerSection />}
                 {userInfo.permission === 2 && <WorkerSection />}
@@ -83,6 +84,7 @@ function App() {
             </AdminBody>
           ) : (
             <>
+              <Header logo={userInfo.logo} name={userInfo.name} />
               <UserBody isLogin={isLogin}>
                 <UserSection />
               </UserBody>
@@ -99,7 +101,6 @@ function App() {
 
 const AdminBody = styled.div`
   display: ${(props) => (props.isLogin ? "grid" : "none")};
-  padding-top: ${(props) => (!props.isLogin ? "0rem" : "6.5rem")};
   grid-template-columns: minmax(260px, 1fr) 8fr;
   min-height: 1280px;
   overflow-x: hidden;
@@ -110,7 +111,8 @@ const UserBody = styled.div`
 `;
 
 const Section = styled.section`
-  width: calc(100vw - 260px);
+  padding-left: 280px;
+  width: calc(100vw - 280px);
 `;
 
 export default App;
