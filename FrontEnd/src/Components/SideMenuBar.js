@@ -1,13 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
-import { RiUserSettingsFill } from "react-icons/ri";
-import { MdOutlineCategory, MdUpload, MdManageSearch } from "react-icons/md";
-import { FcAreaChart, FcDataSheet, FcWebcam } from "react-icons/fc";
-
-import { PERMISSON_DATA } from "Data/permission";
-import { myColors, tailwindColors } from "styles/colors";
 import { useDispatch } from "react-redux";
+
 import {
   BsFillCaretDownFill,
   BsTable,
@@ -22,23 +17,12 @@ import {
   BsPersonLinesFill,
   BsRulers,
 } from "react-icons/bs";
-import { setLogout } from "Modules/login";
-import { BiLogOut, BiFilterAlt } from "react-icons/bi";
+import { BiLogOut } from "react-icons/bi";
 import { AiOutlineRobot } from "react-icons/ai";
 
-const MEMU_ACCESSIBLE_PEOPLE = {
-  대시보드: ["관리자"],
-  "엑셀 데이터 등록": ["관리자"],
-  "크롤 데이터 스크리닝": ["관리자"],
-  "크롤 데이터 등록": ["관리자"],
-  "큐레이션 데이터 등록": ["관리자"],
-  큐레이션: ["관리자"],
-  "카테고리 관리": ["관리자"],
-  "HOST 목록 관리": ["관리자"],
-  "다국어 사전 관리": ["관리자"],
-  "사용자 관리": ["관리자"],
-  "맞춤형 화면 관리": ["관리자"],
-};
+import { setLogout } from "Modules/login";
+import { myColors, tailwindColors } from "styles/colors";
+import { PERMISSON_DATA } from "Data/permission";
 
 export const SideMenuBar = ({ permission, name }) => {
   const dispatch = useDispatch();
@@ -182,7 +166,7 @@ const LoginInfo = styled.div`
 const MenuList = styled.ul`
   height: 85%;
   overflow-y: auto;
-  flex-grow: 1;
+  padding-bottom: 4rem;
   & > * + * {
     border-top: 1px solid ${tailwindColors["grey-300"]};
   }
@@ -193,7 +177,7 @@ const MenuList = styled.ul`
 
 // <----- start of MenuGroup ----->
 
-const MenuGroup = ({ title, children }) => {
+export const MenuGroup = ({ title, children }) => {
   const [open, setOpen] = useState(true);
   const [height, setHeight] = useState(0);
 
