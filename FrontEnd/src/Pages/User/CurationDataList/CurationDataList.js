@@ -9,7 +9,8 @@ import DataFilter from "../../../Components/DataFilter";
 import CurationDataCard from "../../../Components/CurationDataCard";
 import CurationDataCard2 from "../../../Components/CurationDataCard2";
 import NoData from "../../../Components/NoData";
-function CurationDataList({
+
+function UserCurationDataList({
   curationDataList,
   dcCount,
   listSize,
@@ -418,4 +419,4 @@ const CustomLink = styled(Link)`
   text-decoration: none;
   color: black;
 `;
-export default CurationDataList;
+export default UserCurationDataList;

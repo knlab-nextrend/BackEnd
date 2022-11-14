@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import CurationDataList from "./CurationDataList";
-import {
-  CrawlDataListFetchApi,
-  userCustomCurationDataFetchApi,
-  sessionHandler,
-} from "../../../Utils/api";
+import { CrawlDataListFetchApi, sessionHandler } from "../../../Utils/api";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
 
+const TAB_VALUES = {
+  전체: null,
+  "크롤 데이터": true,
+  "수동 데이터": false,
+};
+
 function CurationDataListContainer() {
   const [curationDataList, setCurationDataList] = useState([]);
   const userInfo = useSelector((state) => state.user.user);
-  const axisObj = useSelector((state) => state.custom.axisObj);
   const [searchObj, setSearchObj] = useState(null); // 검색 옵션
   const [searchInput, setSearchInput] = useState("");
 
@@ -20,6 +21,8 @@ function CurationDataListContainer() {
   const [dcCount, setDcCount] = useState(0); // document 총 개수
   const [pageNo, setPageNo] = useState(1); // 현재 활성화 된 페이지 번호
   const [listSize, setListSize] = useState(10); // 한 페이지에 나타낼 document 개수
+
+  const [selectedTab, setSelectedTab] = useState("전체");
 
   const [viewType, setViewType] = useState("list"); //viewType : list,card1, card2
 
@@ -30,6 +33,10 @@ function CurationDataListContainer() {
   const viewTypeHandler = (e) => {
     setViewType(e.target.value);
     localStorage.setItem("curationViewType", e.target.value);
+  };
+
+  const onClickTab = (tabName) => {
+    setSelectedTab(tabName);
   };
 
   const history = useHistory();
@@ -91,7 +98,8 @@ function CurationDataListContainer() {
         pageNo,
         searchObj,
         general,
-        query
+        query,
+        TAB_VALUES[selectedTab]
       )
         .then((res) => {
           console.log(res.data);
@@ -110,27 +118,6 @@ function CurationDataListContainer() {
     );
   };
 
-  const customDataFetch = () => {
-    if (axisObj.X !== null && axisObj.Y !== null) {
-      let axis = {};
-      axis[axisObj.X.type] = axisObj.X.code;
-      axis[axisObj.Y.type] = axisObj.Y.code;
-      trackPromise(
-        userCustomCurationDataFetchApi(axis)
-          .then((res) => {
-            dataCleansing(res.data);
-          })
-          .catch((err) => {
-            sessionHandler(err, dispatch).then((res) => {
-              userCustomCurationDataFetchApi(axis).then((res) => {
-                dataCleansing(res.data);
-              });
-            });
-          })
-      );
-    }
-  };
-
   const onSearch = () => {
     dataFetch(null, true, searchInput);
   };
@@ -140,12 +127,8 @@ function CurationDataListContainer() {
   });
 
   useEffect(() => {
-    if (axisObj.X === null) {
-      dataFetch(searchObj, false, searchInput);
-    } else {
-      customDataFetch();
-    }
-  }, [pageNo, listSize, axisObj, searchObj]);
+    dataFetch(searchObj, false, searchInput);
+  }, [pageNo, listSize, searchObj, selectedTab]);
 
   return (
     <>
@@ -164,6 +147,8 @@ function CurationDataListContainer() {
         dataFilterFetch={dataFilterFetch}
         setSearchInput={setSearchInput}
         onSearch={onSearch}
+        selectedTab={selectedTab}
+        onClickTab={onClickTab}
       />
     </>
   );

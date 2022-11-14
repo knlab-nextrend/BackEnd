@@ -9,8 +9,7 @@ import DataFilter from "../../../Components/DataFilter";
 import CurationDataCard from "../../../Components/CurationDataCard";
 import CurationDataCard2 from "../../../Components/CurationDataCard2";
 import NoData from "../../../Components/NoData";
-import FormHeader from "../../../Components/FormHeader";
-function LegacyDataList({
+function CurationDataList({
   curationDataList,
   dcCount,
   listSize,
@@ -24,6 +23,8 @@ function LegacyDataList({
   setListSize,
   setSearchInput,
   onSearch,
+  selectedTab,
+  onClickTab,
 }) {
   const _listSizeHandler = (e) => {
     setListSize(e.target.value);
@@ -40,7 +41,6 @@ function LegacyDataList({
 
   return (
     <>
-      <FormHeader type="view" title="수동 데이터 조회" />
       <Wrapper>
         <RowContainer>
           <Row>
@@ -116,9 +116,15 @@ function LegacyDataList({
             <DataFilter type={"curation"} dataFilterFetch={dataFilterFetch} />
           </Row>
         </RowContainer>
+        <TabGroup>
+          {["전체", "크롤 데이터", "수동 데이터"].map((v) => (
+            <Tab selected={selectedTab === v} onClick={() => onClickTab(v)}>
+              {v}
+            </Tab>
+          ))}
+        </TabGroup>
         {curationDataList.length !== 0 ? (
           <>
-            {" "}
             {viewType === "list" && (
               <CurationListWrapper>
                 <CurationList
@@ -248,7 +254,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 5rem;
+  width: 100%;
 `;
 
 const RowContainer = styled.div`
@@ -347,24 +353,25 @@ const SearchInput = styled.input`
 const CurationListTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  border: solid 1px #d6d6d6;
 
-  tr {
+  tbody tr {
     height: 2.5rem;
     cursor: pointer;
     border-bottom: 2px solid rgba(0, 0, 0, 0.1);
   }
+
   th,
   td {
     padding: 0.5rem;
     word-break: break-all;
   }
+
   thead {
     background-color: #d8dee6;
     color: #323d4d;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
     text-align: center;
   }
+
   .center {
     text-align: center;
   }
@@ -420,4 +427,24 @@ const CustomLink = styled(Link)`
   text-decoration: none;
   color: black;
 `;
-export default LegacyDataList;
+
+const TabGroup = styled.div`
+  display: flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-bottom: 1rem;
+  border: 1px solid #d8dee6;
+
+  & > * + * {
+    border-left: 1px solid #d8dee6;
+  }
+`;
+
+const Tab = styled.div`
+  padding: 0.5rem 1rem;
+  background-color: ${(props) => (props.selected ? "#d8dee6" : "ffffff")};
+  font-weight: ${(props) => props.selected && "bold"};
+  cursor: pointer;
+`;
+
+export default CurationDataList;

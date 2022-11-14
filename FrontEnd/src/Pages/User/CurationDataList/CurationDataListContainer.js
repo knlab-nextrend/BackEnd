@@ -1,28 +1,25 @@
 import React, { useState, useEffect } from "react";
+import CurationDataList from "./CurationDataList";
 import {
   CrawlDataListFetchApi,
-  fetchLegacyDocumentlistApi,
+  userCustomCurationDataFetchApi,
   sessionHandler,
 } from "../../../Utils/api";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
-import LegacyDataList from "./LegacyDatalist";
-import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 
-function LegacyDataListContainer() {
+function UserCurationDataListContainer() {
   const [curationDataList, setCurationDataList] = useState([]);
   const userInfo = useSelector((state) => state.user.user);
-
   const axisObj = useSelector((state) => state.custom.axisObj);
-
   const [searchObj, setSearchObj] = useState(null); // 검색 옵션
   const [searchInput, setSearchInput] = useState("");
 
   /* 페이지네이션 */
   const [dcCount, setDcCount] = useState(0); // document 총 개수
   const [pageNo, setPageNo] = useState(1); // 현재 활성화 된 페이지 번호
-  const [listSize, setListSize] = useState(50); // 한 페이지에 나타낼 document 개수
+  const [listSize, setListSize] = useState(10); // 한 페이지에 나타낼 document 개수
 
   const [viewType, setViewType] = useState("list"); //viewType : list,card1, card2
 
@@ -55,22 +52,18 @@ function LegacyDataListContainer() {
         doc_kor_title: item.doc_kor_title,
         doc_page: item.doc_page,
         doc_thumbnail: item.doc_thumbnail,
-        doc_country_list: item.doc_country
-          ? item.doc_country.map((x) => x.CT_NM).join(", ")
-          : null,
+        doc_country_list: item.doc_country.map((x) => x.CT_NM).join(", "),
         doc_publish_country_list: item.doc_publish_country
-          ? item.doc_publish_country.map((x) => x.CT_NM).join(", ")
-          : null,
-        doc_category_list: item.doc_category
-          ? item.doc_category.map((x) => x.CT_NM).join(", ")
-          : null,
+          .map((x) => x.CT_NM)
+          .join(", "),
+        doc_category_list: item.doc_category.map((x) => x.CT_NM).join(", "),
         doc_register_date: item.doc_register_date
           ? item.doc_register_date.substring(0, 10)
           : null,
 
         doc_content_type_list: item.doc_content_type
-          ? item.doc_content_type.map((x) => x.CT_NM).join(", ")
-          : null,
+          .map((x) => x.CT_NM)
+          .join(", "),
         doc_content: item.doc_content
           ? item.doc_content.replace(/(<([^>]+)>)/gi, "")
           : "", // 태그 삭제 정규표현식
@@ -92,7 +85,14 @@ function LegacyDataListContainer() {
   /* 데이터 불러오기 */
   const dataFetch = (searchObj = null, general = false, query) => {
     trackPromise(
-      fetchLegacyDocumentlistApi(pageNo, general, query)
+      CrawlDataListFetchApi(
+        statusCode,
+        listSize,
+        pageNo,
+        searchObj,
+        general,
+        query
+      )
         .then((res) => {
           console.log(res.data);
           dataCleansing(res.data);
@@ -100,18 +100,35 @@ function LegacyDataListContainer() {
         .catch((err) => {
           console.error(err);
           sessionHandler(err, dispatch).then((res) => {
-            fetchLegacyDocumentlistApi(
-              listSize,
-              pageNo,
-              searchObj,
-              general,
-              query
-            ).then((res) => {
-              dataCleansing(res.data);
-            });
+            CrawlDataListFetchApi(statusCode, listSize, pageNo, searchObj).then(
+              (res) => {
+                dataCleansing(res.data);
+              }
+            );
           });
         })
     );
+  };
+
+  const customDataFetch = () => {
+    if (axisObj.X !== null && axisObj.Y !== null) {
+      let axis = {};
+      axis[axisObj.X.type] = axisObj.X.code;
+      axis[axisObj.Y.type] = axisObj.Y.code;
+      trackPromise(
+        userCustomCurationDataFetchApi(axis)
+          .then((res) => {
+            dataCleansing(res.data);
+          })
+          .catch((err) => {
+            sessionHandler(err, dispatch).then((res) => {
+              userCustomCurationDataFetchApi(axis).then((res) => {
+                dataCleansing(res.data);
+              });
+            });
+          })
+      );
+    }
   };
 
   const onSearch = () => {
@@ -123,12 +140,16 @@ function LegacyDataListContainer() {
   });
 
   useEffect(() => {
-    dataFetch(searchObj, false, searchInput);
+    if (axisObj.X === null) {
+      dataFetch(searchObj, false, searchInput);
+    } else {
+      customDataFetch();
+    }
   }, [pageNo, listSize, axisObj, searchObj]);
 
   return (
-    <LoadingWrapper>
-      <LegacyDataList
+    <>
+      <CurationDataList
         curationDataList={curationDataList}
         statusCode={statusCode}
         dcCount={dcCount}
@@ -144,7 +165,7 @@ function LegacyDataListContainer() {
         setSearchInput={setSearchInput}
         onSearch={onSearch}
       />
-    </LoadingWrapper>
+    </>
   );
 }
-export default LegacyDataListContainer;
+export default UserCurationDataListContainer;
