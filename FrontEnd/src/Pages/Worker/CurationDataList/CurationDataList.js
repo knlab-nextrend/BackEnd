@@ -9,6 +9,11 @@ import DataFilter from "../../../Components/DataFilter";
 import CurationDataCard from "../../../Components/CurationDataCard";
 import CurationDataCard2 from "../../../Components/CurationDataCard2";
 import NoData from "../../../Components/NoData";
+import { WorkerContentHeader } from "Components/WorkerContentHeader";
+import { BsJournals } from "react-icons/bs";
+import { CurationTable } from "./_CurationTable";
+import { myColors, tailwindColors } from "styles/colors";
+import { CurationSearch } from "./_Search";
 function CurationDataList({
   curationDataList,
   dcCount,
@@ -40,82 +45,57 @@ function CurationDataList({
   };
 
   return (
-    <>
-      <Wrapper>
-        <RowContainer>
-          <Row>
-            <div className="result-count">
-              <HiOutlineDocumentSearch />
-              검색 결과 ({dcCount}건)
-            </div>
-            <div className="action-group">
-              <ViewType>
-                <input
-                  onChange={viewTypeHandler}
-                  type="radio"
-                  value="card1"
-                  id="card1"
-                  name="view-type"
-                  checked={viewType === "card1"}
-                />
-                <label htmlFor="card1">
-                  <MdCalendarViewDay />
-                  카드형1
-                </label>
-                <input
-                  onChange={viewTypeHandler}
-                  type="radio"
-                  value="card2"
-                  id="card2"
-                  name="view-type"
-                  checked={viewType === "card2"}
-                />
-                <label htmlFor="card2">
-                  <MdCalendarViewDay />
-                  카드형2
-                </label>
-                <input
-                  onChange={viewTypeHandler}
-                  type="radio"
-                  value="list"
-                  id="list"
-                  name="view-type"
-                  checked={viewType === "list"}
-                />
-                <label htmlFor="list">
-                  <RiFileList2Line />
-                  목록형
-                </label>
-              </ViewType>
-              <select
-                className="list-size"
-                value={listSize}
-                onChange={_listSizeHandler}
-              >
-                <option disabled>리스트 사이즈</option>
-                <option value={2}>2건</option>
-                <option value={10}>10건</option>
-                <option value={30}>30건</option>
-                <option value={50}>50건</option>
-                <option value={75}>75건</option>
-                <option value={100}>100건</option>
-              </select>
-            </div>
-          </Row>
-          <Row>
-            <SearchForm onSubmit={onSubmitSearch}>
-              <SearchTitle>
-                <HiSearch />
-                <span>검색</span>
-              </SearchTitle>
-              <SearchInput id="search" onChange={onChangeSearch} />
-              <button>검색하기</button>
-            </SearchForm>
-          </Row>
-          <Row>
-            <DataFilter type={"curation"} dataFilterFetch={dataFilterFetch} />
-          </Row>
-        </RowContainer>
+    <Wrap>
+      <WorkerContentHeader title="큐레이션" Icon={BsJournals}>
+        <ViewType>
+          <input
+            onChange={viewTypeHandler}
+            type="radio"
+            value="card1"
+            id="card1"
+            name="view-type"
+            checked={viewType === "card1"}
+          />
+          <label htmlFor="card1">
+            <MdCalendarViewDay />
+            카드형1
+          </label>
+          <input
+            onChange={viewTypeHandler}
+            type="radio"
+            value="card2"
+            id="card2"
+            name="view-type"
+            checked={viewType === "card2"}
+          />
+          <label htmlFor="card2">
+            <MdCalendarViewDay />
+            카드형2
+          </label>
+          <input
+            onChange={viewTypeHandler}
+            type="radio"
+            value="list"
+            id="list"
+            name="view-type"
+            checked={viewType === "list"}
+          />
+          <label htmlFor="list">
+            <RiFileList2Line />
+            목록형
+          </label>
+        </ViewType>
+      </WorkerContentHeader>
+      <ResultWrap>
+        <HiOutlineDocumentSearch />
+        <span> 검색 결과</span> <span>({dcCount}건)</span>
+      </ResultWrap>
+      {/* <DataFilter type={"curation"} dataFilterFetch={dataFilterFetch} /> */}
+      <CurationSearch
+        onChangeSearchInput={onChangeSearch}
+        onSubmitSearch={onSubmitSearch}
+      />
+      <RowWrap justify="space-between">
         <TabGroup>
           {["전체", "크롤 데이터", "수동 데이터"].map((v) => (
             <Tab selected={selectedTab === v} onClick={() => onClickTab(v)}>
@@ -123,173 +103,98 @@ function CurationDataList({
             </Tab>
           ))}
         </TabGroup>
-        {curationDataList.length !== 0 ? (
-          <>
-            {viewType === "list" && (
-              <CurationListWrapper>
-                <CurationList
-                  curationData={curationDataList}
-                  handleRowClick={handleRowClick}
-                />
-              </CurationListWrapper>
-            )}
-            {viewType === "card1" && (
-              <CurationCard1Wrapper>
-                {curationDataList.map((item, index) => {
-                  return (
-                    <CustomLink
-                      to={`/${
-                        userInfo.permission !== 0 ? "curation" : "library"
-                      }/${item._id}`}
-                    >
-                      <CurationDataCard
-                        curationDataItem={item}
-                      ></CurationDataCard>
-                    </CustomLink>
-                  );
-                })}
-              </CurationCard1Wrapper>
-            )}
-            {viewType === "card2" && (
-              <CurationCard2Wrapper>
-                {curationDataList.map((item, index) => {
-                  return (
-                    <CustomLink
-                      to={`/${
-                        userInfo.permission !== 0 ? "curation" : "library"
-                      }/${item._id}`}
-                    >
-                      <CurationDataCard2
-                        curationDataItem={item}
-                      ></CurationDataCard2>
-                    </CustomLink>
-                  );
-                })}
-              </CurationCard2Wrapper>
-            )}
+        <select
+          className="list-size"
+          value={listSize}
+          onChange={_listSizeHandler}
+        >
+          <option disabled>리스트 사이즈</option>
+          <option value={2}>2건</option>
+          <option value={10}>10건</option>
+          <option value={30}>30건</option>
+          <option value={50}>50건</option>
+          <option value={75}>75건</option>
+          <option value={100}>100건</option>
+        </select>
+      </RowWrap>
+      {curationDataList.length !== 0 ? (
+        <>
+          {viewType === "list" && (
+            <CurationTable
+              curationData={curationDataList}
+              handleRowClick={handleRowClick}
+            />
+          )}
+          {viewType === "card1" && (
+            <CurationCard1Wrapper>
+              {curationDataList.map((item, index) => {
+                return (
+                  <CustomLink
+                    to={`/${
+                      userInfo.permission !== 0 ? "curation" : "library"
+                    }/${item._id}`}
+                  >
+                    <CurationDataCard
+                      curationDataItem={item}
+                    ></CurationDataCard>
+                  </CustomLink>
+                );
+              })}
+            </CurationCard1Wrapper>
+          )}
+          {viewType === "card2" && (
+            <CurationCard2Wrapper>
+              {curationDataList.map((item, index) => {
+                return (
+                  <CustomLink
+                    to={`/${
+                      userInfo.permission !== 0 ? "curation" : "library"
+                    }/${item._id}`}
+                  >
+                    <CurationDataCard2
+                      curationDataItem={item}
+                    ></CurationDataCard2>
+                  </CustomLink>
+                );
+              })}
+            </CurationCard2Wrapper>
+          )}
+          <PaginationWrap>
             <Pagination
               dcCount={dcCount}
               listSize={listSize}
               pageNo={pageNo}
               setPageNo={setPageNo}
             />
-          </>
-        ) : (
-          <NoData />
-        )}
-      </Wrapper>
-    </>
+          </PaginationWrap>
+        </>
+      ) : (
+        <NoData />
+      )}
+    </Wrap>
   );
 }
 
-function CurationList({ curationData, handleRowClick }) {
-  return (
-    <>
-      <CurationListTable>
-        <colgroup>
-          <col style={{ width: "40%" }} />
-          <col style={{ width: "12%" }} />
-          <col style={{ width: "12%" }} />
-          <col style={{ width: "8%" }} />
-          <col style={{ width: "12%" }} />
-          <col style={{ width: "8%" }} />
-          <col style={{ width: "10%" }} />
-        </colgroup>
-        <thead>
-          <tr>
-            <th>제목</th>
-            <th>대상 국가</th>
-            <th>정책 분류</th>
-            <th>문서 분류</th>
-            <th>발급 기관 명</th>
-            <th>페이지 수</th>
-            <th>서비스 등록일</th>
-          </tr>
-        </thead>
-        <tbody>
-          {curationData.map((item, index) => {
-            return (
-              <tr
-                onClick={() => {
-                  handleRowClick(item._id);
-                }}
-                key={index}
-              >
-                <td>
-                  <div className="content">
-                    <div className="img-container">
-                      <img
-                        src={
-                          item.doc_thumbnail !== null
-                            ? `http://${item.doc_thumbnail}`
-                            : process.env.PUBLIC_URL +
-                              `/img/curation_default_image.png`
-                        }
-                        alt="tubmnail"
-                      />
-                    </div>
-                    <div className="title-container">
-                      <div className="dc_title_kr">{item.doc_kor_title}</div>
-                      <div className="dc_title_or">{item.doc_origin_title}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="center">{item.doc_country_list}</td>
-                <td className="center">{item.doc_category_list}</td>
-                <td className="center">{item.doc_content_type_list}</td>
-                <td className="center">{item.doc_publisher}</td>
-
-                <td className="center">{item.doc_page}쪽</td>
-                <td className="center">{item.doc_register_date}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </CurationListTable>
-    </>
-  );
-}
-
-const Wrapper = styled.div`
+const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 1024px;
   width: 100%;
+  padding: 1.5rem 3rem;
 `;
 
-const RowContainer = styled.div`
-  border: solid 1px #d6d6d6;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 4px;
-  width: 100%;
-`;
-const Row = styled.div`
+const ResultWrap = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  min-width: max-content;
-  padding: 1rem;
-  border-bottom: solid 1px #d6d6d6;
-  color: rgb(59, 59, 59);
-  &:last-child {
-    border: none;
-  }
+  width: 100%;
+  padding: 1rem 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  white-space: nowrap;
 
-  .result-count {
-    font-size: 16px;
-    font-weight: bold;
-    * {
-      padding-right: 0.5rem;
-    }
-  }
-  .action-group {
-    display: flex;
-  }
-  .list-size {
-    margin: 0 0.5rem 0 0.5rem;
-    padding: 0.5rem;
-    border: solid 1px #d6d6d6;
+  & > span:nth-of-type(2) {
+    color: ${myColors.red};
   }
 `;
 
@@ -301,111 +206,32 @@ const ViewType = styled.div`
     &:checked + label {
       color: white;
       font-weight: bold;
-      background-color: #435269;
+      background-color: ${myColors.blue500};
     }
   }
   label {
     display: flex;
     align-items: center;
-    margin: 0.25rem;
+    gap: 0.2rem;
+    padding: 0.25rem 1rem;
     cursor: pointer;
-    padding: 0.25rem 0.5rem 0.25rem 0.5rem;
-    border-radius: 4px;
   }
 `;
 
-const SearchTitle = styled.div`
+const RowWrap = styled.div`
   display: flex;
-  flex-shrink: 0;
   align-items: center;
-  gap: 0.5rem;
-
-  color: #435269;
-  font-weight: bold;
-`;
-
-const SearchForm = styled.form`
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
+  justify-content: ${(props) => props.justify};
+  gap: ${(props) => props.gap};
   width: 100%;
+  margin-top: 1rem;
 
-  & > button {
-    border: none;
-    border-radius: 0.25rem;
-    padding: 0.5rem 1rem;
-    background-color: #435269;
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
-    word-break: keep-all;
-    cursor: pointer;
-  }
-`;
-
-const SearchInput = styled.input`
-  width: 100%;
-  padding: 0.5rem 1rem;
-  margin: 0 2rem;
-  border: solid 1px #d6d6d6;
-`;
-
-const CurationListTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-
-  tbody tr {
-    height: 2.5rem;
-    cursor: pointer;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-  }
-
-  th,
-  td {
+  .list-size {
     padding: 0.5rem;
-    word-break: break-all;
-  }
-
-  thead {
-    background-color: #d8dee6;
-    color: #323d4d;
-    text-align: center;
-  }
-
-  .center {
-    text-align: center;
-  }
-  .content {
-    display: flex;
-    .img-container {
-      max-width: 5rem;
-      max-height: 5rem;
-      overflow: hidden;
-      border-radius: 4px;
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    }
-    .title-container {
-      display: flex;
-      flex-direction: column;
-      .dc_title_kr {
-        color: #009999;
-        font-weight: bold;
-        font-size: 16px;
-        padding: 0.5rem;
-        word-break: break-all;
-      }
-      .dc_title_or {
-        color: rgb(59, 59, 59);
-        padding: 0.5rem;
-        word-break: break-all;
-      }
-    }
+    border: solid 1px #d6d6d6;
   }
 `;
+
 const CurationListWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -432,19 +258,21 @@ const TabGroup = styled.div`
   display: flex;
   align-items: center;
   align-self: flex-start;
-  margin-bottom: 1rem;
-  border: 1px solid #d8dee6;
-
-  & > * + * {
-    border-left: 1px solid #d8dee6;
-  }
 `;
 
 const Tab = styled.div`
   padding: 0.5rem 1rem;
-  background-color: ${(props) => (props.selected ? "#d8dee6" : "ffffff")};
-  font-weight: ${(props) => props.selected && "bold"};
+  border-bottom: 0.2rem solid ${tailwindColors.white};
+  border-bottom-color: ${(props) => props.selected && myColors.blue400};
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: ${(props) =>
+    props.selected ? myColors.blue400 : tailwindColors["grey-600"]};
   cursor: pointer;
+`;
+
+const PaginationWrap = styled.div`
+  margin-top: 1.5rem;
 `;
 
 export default CurationDataList;

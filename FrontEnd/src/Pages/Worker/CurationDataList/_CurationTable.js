@@ -75,11 +75,11 @@ export const CurationTable = ({ curationData, handleRowClick }) => {
 const CurationListTable = styled.table`
   width: 100%;
   table-layout: fixed;
-  /* border: 1px solid ${tailwindColors["grey-400"]}; */
+  font-size: 14px;
 
   thead {
-    background-color: ${tailwindColors["grey-100"]};
     border-bottom: 1px solid ${tailwindColors["grey-400"]};
+    background-color: ${tailwindColors["grey-100"]};
     font-weight: bold;
     text-align: center;
     white-space: nowrap;
