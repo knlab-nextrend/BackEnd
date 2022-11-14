@@ -243,6 +243,7 @@ const userAuthApi = () => {
 const sessionHandler = (err, dispatch) => {
   /* dispatch 를 사용하기 위해서 인자로 받아옴 */
   return new Promise((resolve, reject) => {
+    console.log(err)
     if (err.response.status === 401) {
       RefreshTokenApi()
         .then((res) => {
