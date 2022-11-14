@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import {
+  BsChevronDoubleLeft,
+  BsChevronDoubleRight,
+  BsChevronLeft,
+  BsChevronRight,
+} from "react-icons/bs";
+import { myColors, tailwindColors } from "styles/colors";
 
 function Pagination({ dcCount, listSize, pageNo, setPageNo, pageSize = 10 }) {
   /* 
@@ -9,8 +16,8 @@ function Pagination({ dcCount, listSize, pageNo, setPageNo, pageSize = 10 }) {
   */
 
   const [pageCount, setPageCount] = useState(0); // 총 보여질 페이지 갯수
-  const [pageNoArray, setPageNoArray] = useState([]); // 총 보여질 페이지 갯수 배열
-  const [currentPageNumberlist, setCurrentPageNumberList] = useState([]); // 현재 보여질 페이지 갯수 배열
+  const [pageGroupCount, setPageGroupCount] = useState(0);
+  const [currentPageNumberlist, setCurrentPageNumberList] = useState([]); // 현재 보여질 페이지  배열
   const [currentPageGroup, setCurrentPageGroup] = useState(0);
 
   //페이지 전환
@@ -36,6 +43,16 @@ function Pagination({ dcCount, listSize, pageNo, setPageNo, pageSize = 10 }) {
     setPageNo(prevpageGroup * pageSize + 1);
   };
 
+  const toFirstPage = () => {
+    setCurrentPageGroup(0);
+    setPageNo(1);
+  };
+
+  const toLastPage = () => {
+    setCurrentPageGroup(pageGroupCount - 1);
+    setPageNo(pageCount);
+  };
+
   const getPageNumberList = (pageGroup) => {
     const result = [];
     if ((pageGroup + 1) * pageSize > pageCount) {
@@ -53,66 +70,99 @@ function Pagination({ dcCount, listSize, pageNo, setPageNo, pageSize = 10 }) {
   //총 페이지 수 초기화
   useEffect(() => {
     const _pageCount = Math.ceil(dcCount / listSize);
+    const _pageGroupCount = Math.ceil(_pageCount / pageSize);
     setPageCount(_pageCount);
+    setPageGroupCount(_pageGroupCount);
   }, [dcCount, listSize]);
 
   useEffect(() => {
     setCurrentPageNumberList(getPageNumberList(currentPageGroup));
-  }, [pageCount]);
+  }, [pageCount, currentPageGroup]);
 
   return (
-    <>
-      <PaginationContainer>
-        {currentPageGroup !== 0 && (
-          <NextPrevButton onClick={toPrevPageGroup}>{"<"}</NextPrevButton>
-        )}
-        {currentPageNumberlist.map((item, i) => {
-          return (
-            <PaginationButton
-              key={i}
-              value={item}
-              onClick={_handlerPageNo}
-              active={item === pageNo}
-            >
-              {item}
-            </PaginationButton>
-          );
-        })}
-        {(currentPageGroup + 2) * pageSize <= pageCount && (
-          <NextPrevButton onClick={toNextPageGroup}>{">"}</NextPrevButton>
-        )}
-      </PaginationContainer>
-    </>
+    <PaginationContainer>
+      <ButtonGroup>
+        <Button onClick={toFirstPage} disabled={currentPageGroup === 0}>
+          <BsChevronDoubleLeft />
+        </Button>
+        <Button onClick={toPrevPageGroup} disabled={currentPageGroup === 0}>
+          <BsChevronLeft />
+        </Button>
+      </ButtonGroup>
+      <PaginationButtonGroup>
+        {currentPageNumberlist.map((item, i) => (
+          <PaginationButton
+            key={i}
+            value={item}
+            onClick={_handlerPageNo}
+            active={item === pageNo}
+          >
+            {item}
+          </PaginationButton>
+        ))}
+      </PaginationButtonGroup>
+      <ButtonGroup>
+        <Button
+          onClick={toNextPageGroup}
+          disabled={currentPageGroup === pageGroupCount - 1}
+        >
+          <BsChevronRight />
+        </Button>
+        <Button
+          onClick={toLastPage}
+          disabled={currentPageGroup === pageGroupCount - 1}
+        >
+          <BsChevronDoubleRight />
+        </Button>
+      </ButtonGroup>
+    </PaginationContainer>
   );
 }
 
 const PaginationContainer = styled.div`
   display: flex;
-  flex-direction: row;
-  margin: 1rem;
+  gap: 0.5rem;
 `;
-const PaginationButton = styled.button`
-  margin: 0.5rem;
-  color: white;
-  font-weight: bold;
-  padding: 1rem;
-  background-color: ${(props) => (props.active ? "#113241" : "#32677F")};
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  &:hover {
-    filter: brightness(150%);
-    transition: all 0.5s;
-  }
-  &:active {
-    filter: brightness(50%);
-    transition: all 0.2s;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+`;
+
+const Button = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid ${tailwindColors["grey-400"]};
+
+  &:disabled {
+    background-color: ${tailwindColors["grey-200"]};
+    cursor: not-allowed;
   }
 `;
 
-const NextPrevButton = styled(PaginationButton)`
-  background-color: #d6d6d6;
-  color: black;
+const PaginationButtonGroup = styled.div``;
+
+const PaginationButton = styled.button`
+  min-width: 40px;
+  height: 40px;
+  padding: 0.5rem;
+  background-color: ${(props) =>
+    props.active ? myColors.blue500 : tailwindColors.white};
+  font-size: 14px;
+  font-weight: bold;
+  color: ${(props) => props.active && tailwindColors.white};
+  cursor: pointer;
+  &:hover {
+    background-color: ${myColors.blue500};
+    color: ${tailwindColors.white};
+  }
+  &:active {
+    filter: brightness(50%);
+  }
 `;
+
 export default Pagination;
