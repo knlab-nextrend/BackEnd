@@ -557,6 +557,8 @@ export const myColors = {
   blue400: "#0D72E3",
   blue500: "#043075",
 
+  skyblue: "#4EC4FB",
+
   red: "#EB1839",
   pink: "#ff3287",
 
@@ -565,8 +567,8 @@ export const myColors = {
   green300: "#009972",
 
   purple: "#6838e9",
-
   yellow100: "#FDF2CC",
-  tellow200: "#fbe9a8",
+  yellow200: "#fbe9a8",
   yellow300: "#FEDE50",
+  yellow400: "#faca07",
 };
