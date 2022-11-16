@@ -85,7 +85,10 @@ const crawlKeep = async (req, res) => {
                 case 3:
                     // 일단 직접 지정...
                     result = await esCtrl.Keep(_id, 3);
+<<<<<<< HEAD
                     console.log(result);
+=======
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
                     // addEditLog의 workType 4는 보류.
                     await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
                     break;
@@ -175,6 +178,13 @@ const crawlDetail = async (req, res) => {
 //router.get('/list/:statusCode',crawlSearch.Search);
 const crawlSearch = async (req, res) => {
     const statusCode = parseInt(req.params.statusCode);
+<<<<<<< HEAD
+=======
+    const general = (req.query.general === "true");
+
+    delete req.query.general;
+
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
     if (statusCode === undefined) {
         res.status(400).send();
     } else {
@@ -192,8 +202,16 @@ const crawlSearch = async (req, res) => {
             case 6:
             case 7:
             case 8:
+<<<<<<< HEAD
                 const searchQuery = libs.reqToEsFilters(req.query,statusCode);
                 result = await esCtrl.Search(searchQuery);
+=======
+                const searchQuery = libs.reqToEsFilters(req.query,statusCode,[],[],[], general);
+
+                result = await esCtrl.Search(searchQuery);
+                
+                
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
                 const document = [];
                 for(let doc of result.docs){
                     doc = await docCatViewer(doc);

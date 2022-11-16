@@ -80,6 +80,10 @@ const loadPage = async (req, res) => {
 }
 
 const customSearch = async (req, res) => {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
     const fieldList = {
         doc_country: 3,
         doc_publish_country: 3,

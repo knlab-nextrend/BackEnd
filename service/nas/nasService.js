@@ -2,9 +2,19 @@ const jsftp = require("jsftp");
 const fs = require('fs');
 const ftp = require('basic-ftp');
 
+<<<<<<< HEAD
 const NasFTP = require("../../models/nas/index");
 const thumbRoute = NasFTP.thumbRoute;
 const uploadRoute = NasFTP.uploadRoute;
+=======
+
+const NasFTP = require("../../models/nas/index");
+
+const thumbRoute = NasFTP.thumbRoute;
+const uploadRoute = NasFTP.uploadRoute;
+const userLogoRoute = NasFTP.userLogoRoute;
+
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
 const webServer = NasFTP.webServer;
 const config = NasFTP.config;
 
@@ -20,6 +30,14 @@ const pathTypeCatcher = (type) => {
             subPath = uploadRoute;
             tailPath = '.pdf';
             break;
+<<<<<<< HEAD
+=======
+        case 'logo' :
+            subPath = userLogoRoute;
+            tailPath = '.png';
+            break;
+
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
     }
     return {subPath:subPath,tailPath:tailPath};
 }
@@ -35,6 +53,10 @@ const getImageFileList = (path) => new Promise(async (resolve, reject) => {
             if (splited[splited.length - 1] == 'png') {
                 resolve([webServer + thumbRoute + underThumb[underThumb.length - 1]]);
             } else {
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
                 await client.ls(thumbRoute + underThumb[underThumb.length - 1], (err, res) => {
                     if (err) {
                         resolve([]);
@@ -86,6 +108,37 @@ const getFileList = (path,type='image') => new Promise(async (resolve, reject) =
     client.close();
 });
 
+<<<<<<< HEAD
+=======
+
+const getLogoFromFolder = (folderPath) => new Promise(async (resolve, reject) => {
+    const subPath = pathTypeCatcher('logo').subPath;
+    const client = new ftp.Client();
+    try {
+        await client.access(config);
+        const result = await client.list(subPath+folderPath);
+        if(result.code===550){
+            // 폴더가 없을 경우
+            resolve(false);
+        }else{
+            if(result.length===0){
+                // 폴더 속 파일이 없을 경우
+                resolve(false);
+            }else{
+                resolve("http://" + webServer + "/files/user/logo" + folderPath + result[0].name);
+            }
+        }
+    }
+    catch(err) {
+    resolve(false);
+}
+client.close();
+
+
+    client.close();
+});
+
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
 const checkThenMakeFolder = (folderPath,type=false) => new Promise(async (resolve, reject) => {
     const subPath = pathTypeCatcher(type).subPath;
     const client = new ftp.Client()
@@ -101,6 +154,10 @@ const checkThenMakeFolder = (folderPath,type=false) => new Promise(async (resolv
 });
 
 const deleteFile = (path,type=false) => new  Promise(async (resolve, reject) => {
+<<<<<<< HEAD
+=======
+    console.log(path);
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
     const pathList = pathTypeCatcher(type);
     const subPath = pathList.subPath;
     const tailPath = pathList.tailPath;
@@ -143,5 +200,10 @@ module.exports = {
     getFileList:getFileList,
     uploadFile: uploadFile,
     checkThenMakeFolder: checkThenMakeFolder,
+<<<<<<< HEAD
     deleteFile:deleteFile
+=======
+    deleteFile:deleteFile,
+    getLogoFromFolder, getLogoFromFolder
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
 }

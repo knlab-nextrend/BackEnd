@@ -23,6 +23,10 @@ const esDetail = (_id) => new Promise(async (resolve, reject) => {
 });
 
 const esSearch = (searchQuery) => new Promise(async (resolve, reject) => {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
     try{
         const value = await esDB.search(searchQuery);
         const result = {
@@ -44,8 +48,13 @@ const esSearch = (searchQuery) => new Promise(async (resolve, reject) => {
 
 const esIndex = (doc, stat, id = false, ret = false) => new Promise(async (resolve, reject) => {
     let body = libs.nullProcessing(doc);
+<<<<<<< HEAD
 
     body.status = stat;
+=======
+    body.status = stat;
+
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
     let query = {
         index: 'politica_service',
         refresh: true,
@@ -56,7 +65,11 @@ const esIndex = (doc, stat, id = false, ret = false) => new Promise(async (resol
     }
     const result = await esDB.index(query);
     if (result.statusCode == 200 || result.statusCode == 201) {
+<<<<<<< HEAD
         resolve(true);
+=======
+        resolve(result._id);
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
     } else if (ret) {
         resolve(result._id);
     } else {

@@ -1,7 +1,16 @@
 /node_modules
 *.log
+<<<<<<< HEAD
 /configs
 /images
 login.sql
 nohup.out
 /temp
+=======
+/images
+login.sql
+nohup.out
+configs
+temp
+Dockerfile
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69

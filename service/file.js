@@ -69,7 +69,81 @@ const deleteComparedContentImage = (_id,target=null) => new Promise(async (resol
     }
 });
 
+<<<<<<< HEAD
 module.exports={
     unlinkFile:unlinkFile,
     deleteComparedContentImage:deleteComparedContentImage
+=======
+/*
+const getExcelDataList = (params)=>new Promise(async (resolve, reject)=>{
+    
+    //쿼리문 생성, 조건 검색시 WHERE 문을 추가함.
+    const page = (parseInt(params.page || "1")-1) * 20;
+    const country = params.country ? ` and DC_COUNTRY like '%${params.country}%'`  : "";
+    const originalTitle = params.orgtitle? ` and DC_TITLE_OR like '%${params.orgtitle}%'` : "";
+    const krTitle = params.krtitle ? ` and DC_TITLE_KR like '%${params.krtitle}%'` : "";
+    const agencyTitle = params.agencytitle? ` and DC_AGENCY like '%${params.agencytitle}%'` : "";
+    const dcType = params.dctype ? ` and DC_TYPE like '%${params.dctype}%'` : ""
+    const summary = params.summary ? ` and DC_CONTENT like '%${params.summary}%'` : ""
+
+
+    let query = `select DISTINCT(a.IDX) as IDX, a.DC_COUNTRY as country, a.DC_TYPE as doc_type, a.DC_AGENCY as agency, a.DC_TITLE_OR as original_title, \
+    a.DC_TITLE_KR as kr_title, a.DC_PAGE as page, a.DC_MEMO1 as attatchment, a.DC_URL_LOC as link from nt_document_list a \
+    where a.STAT < 9${country}${originalTitle}${krTitle}${agencyTitle}${dcType}${summary}\
+    ORDER BY a.IDX DESC LIMIT ${page},20;`
+    
+    try{
+        let [ results ]  = await phpDB.query(query);
+
+        results = results.map((row, idx)=>{
+            return {index : idx+1+page, ...row}
+        });
+        resolve(results);
+    }catch(err) {reject(err);}
+    
+
+});
+
+
+const getExcelDataDetail = (pid)=>new Promise(async (resolve, reject)=>{
+    try{
+        const query = `select a.DC_TITLE_OR as original_title, a.DC_AGENCY as agency, \
+        a.DC_DT_WRITE as writed_time ,a.DC_PAGE as page, a.DC_COUNTRY as country, \
+        a.DC_TYPE as doc_type, b.CT_NM as ct_name, a.DC_KEYWORD as keyword, a.DC_URL_LOC as url, \
+        a.DC_SMRY_KR as kr_summary, a.DC_CONTENT as content, a.DC_LINK as link from nt_document_list a\
+        join nt_categorys b on a.DC_CODE = b.CODE where a.IDX=${pid};`
+    
+        let [ results ] = await phpDB.query(query);
+
+        let result = results[0];
+
+        //연관 링크의 PID(IDX) 리스트, 없으면 패스
+        if([null, '', ' '].includes(result.link)){
+            result.link = [];
+            resolve(result);
+        }
+
+        let links = result.link.split(" ");
+        
+        links = links.map(async (link)=>{
+                const [ linkResult ] = await phpDB.query(`select DC_TITLE_KR,DC_DT_WRITE from nt_document_list where idx like ${link};`);
+                link.kr_title = linkResult[0].DC_TITLE_KR;
+                link.writed_time = linkResult[0].DC_DT_WRITE;
+        });
+
+        result.link = links;
+
+        resolve(result);
+
+    }catch(err){reject(err);}
+})
+
+
+*/
+module.exports={
+    unlinkFile:unlinkFile,
+    deleteComparedContentImage:deleteComparedContentImage,
+    //getExcelDataList : getExcelDataList,
+    //getExcelDataDetail : getExcelDataDetail
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
 }

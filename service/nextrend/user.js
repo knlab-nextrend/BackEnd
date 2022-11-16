@@ -1,5 +1,8 @@
 const db = require("../../models/nextrend/index");
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
 /*
 처음에 했던 await / async 방식은 then과 catch에 걸리는 return 값을 따로 명시해주지 못했지만
 객체로 만드는 방법은 resolve와 reject를 통해 명시가 가능하기에 await로 잡을 수 있음
@@ -41,6 +44,29 @@ const getUserByUid = (userID) => new Promise((resolve, reject)=>{
         if(err){
             reject(false);
         }else{
+<<<<<<< HEAD
+=======
+            if(!data){
+                resolve(null);
+                return;
+            }
+            const result = data[0];
+            resolve(result);
+        }
+    });
+})
+const getUserByIdx = (idx) => new Promise((resolve, reject)=>{
+    const query = "select * from nt_users_list where id=?";
+    const param = [idx];
+    db.query(query, param, (err,data) => {
+        if(err){
+            reject(false);
+        }else{
+            if(!data){
+                resolve(null);
+                return;
+            }
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
             const result = data[0];
             resolve(result);
         }
@@ -50,15 +76,64 @@ const getUserByUid = (userID) => new Promise((resolve, reject)=>{
 const addUser = (Info) => new Promise((resolve, reject)=>{
     const query = "INSERT INTO nt_users_list (userID,userPW,Name,Company,Position,Email,Tel,Category,salt) VALUES (?,?,?,?,?,?,?,?,?)";
     const param = [Info.ID,Info.PW,Info.Name,Info.Company,Info.Position,Info.Email,Info.Tel,Info.Category,Info.salt];
+<<<<<<< HEAD
     db.query(query, param, (err,data) => {
         if(err){
             resolve( false);
         }else{
             resolve( true);
+=======
+    db.query(query, param, (err,data, fields) => {
+        if(err){
+            reject(err);
+        }else{
+            resolve(data);
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
         }
     });
 });
 
+<<<<<<< HEAD
+=======
+const addLogo = (UID, filePath)=>new Promise((resolve, reject)=>{
+    const query = "INSERT INTO nt_user_logo_list (UID, LOGO_PATH) VALUES (?, ?);"
+    db.query(query, [UID, filePath],(err, data , fields)=>{
+        if(err){
+            reject(err);
+        }else{
+            resolve(data);
+        }
+    })
+})
+    
+const getLogoPath = (UID) => new Promise((resolve, reject)=>{
+    const query = "SELECT LOGO_PATH as filePath FROM nt_user_logo_list WHERE UID=?;";
+
+
+    db.query(query, [UID], (err, data, fields)=>{
+        if(err){
+            reject(err);
+        }else{
+            resolve(data);
+        }
+    })
+
+})
+
+const removeFilePathFromDB = (IDX)=>new Promise((resolve, reject)=>{
+    const query = "DELETE FROM nt_user_logo_list WHERE IDX=?;";
+
+    db.query(query, [UID], (err, data, fields)=>{
+            if(err){
+                reject(err);
+            }else{
+                resolve(data);
+            }
+    })
+})
+
+
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
 const listAllUser = () => new Promise((resolve, reject)=>{
     const query = "select * from nt_users_list";
     db.query(query, (err,data) => {
@@ -87,16 +162,31 @@ const deleteUser = (uid) => new Promise((resolve, reject)=>{
     const param = [uid];
     db.query(query, param, (err,data) => {
         if(err){
+<<<<<<< HEAD
             resolve(false);
+=======
+            reject(err);
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
         }else{
             resolve(true);
         }
     });
 });
 
+<<<<<<< HEAD
 module.exports = {
     getUserByUid:getUserByUid,
     Add: addUser,
+=======
+
+module.exports = {
+    getUserByUid:getUserByUid,
+    getUserByIdx : getUserByIdx,
+    Add: addUser,
+    addLogo : addLogo,
+    getLogoPath : getLogoPath,
+    removeFilePathFromDB : removeFilePathFromDB,
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
     List: listAllUser,
     Modify: modifyUser,
     Delete:deleteUser,
