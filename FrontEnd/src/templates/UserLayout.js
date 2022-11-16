@@ -23,7 +23,7 @@ const Contents = styled.div`
   flex-direction: column;
   width: 100%;
   min-height: 100vh;
-  padding-left: 280px;
+  padding-top: 6rem;
 
   & footer {
     margin-top: auto;
