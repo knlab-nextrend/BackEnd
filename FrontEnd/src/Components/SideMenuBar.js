@@ -89,7 +89,7 @@ export const SideMenuBar = ({ permission, name }) => {
                 name="카테고리 관리"
                 Icon={BsFillDiagram3Fill}
               />
-              <Menu to="/hsot" name="HOST 목록 관리" Icon={AiOutlineRobot} />
+              <Menu to="/host" name="HOST 목록 관리" Icon={AiOutlineRobot} />
               <Menu
                 to="/dictionary"
                 name="다국어 사전 관리"
