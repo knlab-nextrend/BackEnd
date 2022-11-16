@@ -3,7 +3,7 @@ import ExcelDataRegister from "./ExcelDataRegister";
 import XLSX from "xlsx";
 import { uploadExcelDataApi, categoryListFetchApi } from "../../../Utils/api";
 import resolve from "resolve";
-import { RiWalkFill } from "react-icons/ri";
+import { useHistory } from "react-router-dom";
 
 function ExcelDataRegisterContainer() {
   const [excelData, setExcelData] = useState([]);
@@ -13,6 +13,8 @@ function ExcelDataRegisterContainer() {
   const [thumbnailMetaData, setThumbnailMetaData] = useState([]);
   const [errorList, setErrorList] = useState([]);
   const [step, setStep] = useState(1);
+
+  const history = useHistory();
 
   function getfileSize(x) {
     var s = ["bytes", "KB", "MB", "GB", "TB", "PB"];
@@ -160,9 +162,15 @@ function ExcelDataRegisterContainer() {
     thumbnails.forEach((thumbnaiil) => files.append("thumbnails", thumbnaiil));
     files.append("meta", JSON.stringify(excelData));
     console.log(excelData);
-    uploadExcelDataApi(files).then((res) => {
-      console.log(res);
-    });
+    uploadExcelDataApi(files)
+      .then((res) => {
+        console.log(res);
+        history.push("/curation");
+      })
+      .catch((err) => {
+        alert("엑셀 데이터 업로드에 실패했습니다");
+        window.location.reload();
+      });
   };
 
   const nextStep = () => {
