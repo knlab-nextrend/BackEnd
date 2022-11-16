@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import CurationDataList from "./CurationDataList";
+import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { trackPromise } from "react-promise-tracker";
+
 import {
   CrawlDataListFetchApi,
   userCustomCurationDataFetchApi,
   sessionHandler,
-} from "../../../Utils/api";
-import { useHistory } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { trackPromise } from "react-promise-tracker";
+} from "Utils/api";
+
+import CurationDataList from "./CurationDataList";
 
 function UserCurationDataListContainer() {
   const [curationDataList, setCurationDataList] = useState([]);
@@ -37,6 +39,11 @@ function UserCurationDataListContainer() {
     history.push(
       `/${userInfo.permission !== 0 ? "curation" : "library"}/${_id}`
     );
+  };
+
+  const onChangeListSize = (e) => {
+    setListSize(e.target.value);
+    setPageNo(1);
   };
 
   /* 데이터 정제하기 */
@@ -111,28 +118,29 @@ function UserCurationDataListContainer() {
   };
 
   const customDataFetch = () => {
-    if (axisObj.X !== null && axisObj.Y !== null) {
-      let axis = {};
-      axis[axisObj.X.type] = axisObj.X.code;
-      axis[axisObj.Y.type] = axisObj.Y.code;
-      trackPromise(
-        userCustomCurationDataFetchApi(axis)
-          .then((res) => {
-            dataCleansing(res.data);
-          })
-          .catch((err) => {
-            sessionHandler(err, dispatch).then((res) => {
-              userCustomCurationDataFetchApi(axis).then((res) => {
-                dataCleansing(res.data);
-              });
+    if (axisObj.X === null || axisObj.Y === null) return;
+
+    const axis = {
+      [axisObj.X.type]: axisObj.X.code,
+      [axisObj.Y.type]: axisObj.Y.code,
+    };
+    trackPromise(
+      userCustomCurationDataFetchApi(axis, listSize, pageNo, searchInput)
+        .then((res) => {
+          dataCleansing(res.data);
+        })
+        .catch((err) => {
+          sessionHandler(err, dispatch).then((res) => {
+            userCustomCurationDataFetchApi(axis).then((res) => {
+              dataCleansing(res.data);
             });
-          })
-      );
-    }
+          });
+        })
+    );
   };
 
   const onSearch = () => {
-    dataFetch(null, true, searchInput);
+    customDataFetch();
   };
 
   useEffect(() => {
@@ -140,11 +148,7 @@ function UserCurationDataListContainer() {
   });
 
   useEffect(() => {
-    if (axisObj.X === null) {
-      dataFetch(searchObj, false, searchInput);
-    } else {
-      customDataFetch();
-    }
+    customDataFetch();
   }, [pageNo, listSize, axisObj, searchObj]);
 
   return (
@@ -154,7 +158,7 @@ function UserCurationDataListContainer() {
         statusCode={statusCode}
         dcCount={dcCount}
         listSize={listSize}
-        setListSize={setListSize}
+        onChangeListSize={onChangeListSize}
         pageNo={pageNo}
         setPageNo={setPageNo}
         viewTypeHandler={viewTypeHandler}

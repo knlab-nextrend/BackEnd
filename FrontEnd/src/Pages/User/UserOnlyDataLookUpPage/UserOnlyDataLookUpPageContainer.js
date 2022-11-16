@@ -76,15 +76,17 @@ function UserOnlyDataLookUpPageContainer() {
       axis[axisObj.X.type] = axisObj.X.code;
       axis[axisObj.Y.type] = axisObj.Y.code;
       trackPromise(
-        userCustomCurationDataFetchApi(axis, true)
+        userCustomCurationDataFetchApi(axis, listSize, pageNo, true)
           .then((res) => {
             dataCleansing(res.data);
           })
           .catch((err) => {
             sessionHandler(err, dispatch).then((res) => {
-              userCustomCurationDataFetchApi(axis, true).then((res) => {
-                dataCleansing(res.data);
-              });
+              userCustomCurationDataFetchApi(axis, listSize, pageNo, true).then(
+                (res) => {
+                  dataCleansing(res.data);
+                }
+              );
             });
           })
       );

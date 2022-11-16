@@ -92,18 +92,26 @@ const CrawlDataListFetchApi = (
   return axios.get(`/crawl/list/${statusCode}`, config);
 };
 
-/* 레거시 데이터 리스트 받아오기 */
-const fetchLegacyDocumentlistApi = (pageNo, general, query) => {
-  const params = {
-    page: pageNo,
-    general,
-    query,
-  };
+const userCustomCurationDataFetchApi = (
+  axis,
+  listSize = 10,
+  pageNo = 1,
+  archive = null,
+  query = null
+) => {
+  const general = query ? true : false;
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
-    params,
+    params: {
+      axis,
+      statusCode: archive ? 6 : 8,
+      listSize,
+      pageNo,
+      query,
+      general,
+    },
   };
-  return axios.get(`/file/excel/list`, config);
+  return axios.get(`/nextrend/custom/search`, config);
 };
 
 /* 크롤데이터 버리기 */
@@ -493,14 +501,6 @@ const HostTestApi = (data = null, method) => {
   }
 };
 
-const userCustomCurationDataFetchApi = (axis, archive = null) => {
-  const config = {
-    headers: { authorization: `Bearer ${getToken()}` },
-    params: { axis, statusCode: archive ? 6 : 8 },
-  };
-  return axios.get(`/nextrend/custom/search`, config);
-};
-
 const curationRequestApi = (_id) => {
   const body = {
     statusCode: 6,
@@ -609,5 +609,4 @@ export {
   workAllLogFetchApi,
   hostSyncApi,
   getUserLogoApi,
-  fetchLegacyDocumentlistApi,
 };
