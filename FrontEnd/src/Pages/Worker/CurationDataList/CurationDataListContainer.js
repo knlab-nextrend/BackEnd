@@ -119,6 +119,7 @@ function CurationDataListContainer() {
   };
 
   const onSearch = () => {
+    setPageNo(1);
     dataFetch(null, true, searchInput);
   };
 
@@ -127,7 +128,7 @@ function CurationDataListContainer() {
   });
 
   useEffect(() => {
-    dataFetch(searchObj, false, searchInput);
+    dataFetch(searchObj, searchInput !== "" ? true : false, searchInput);
   }, [pageNo, listSize, searchObj, selectedTab]);
 
   return (
