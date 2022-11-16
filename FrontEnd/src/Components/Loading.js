@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { usePromiseTracker } from "react-promise-tracker";
 import styled from "styled-components";
 import BeatLoader from "react-spinners/BeatLoader";
+import { myColors } from "styles/colors";
 function Loading() {
   const { promiseInProgress } = usePromiseTracker();
   return (
@@ -10,7 +11,7 @@ function Loading() {
         <>
           <Background>
             <LoaderContainer>
-              <BeatLoader margin={7} size={20} color={"#435269"} />
+              <BeatLoader margin={7} size={20} color={myColors.blue300} />
             </LoaderContainer>
           </Background>
         </>
@@ -29,15 +30,11 @@ const Background = styled.div`
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.1);
 `;
 
 const LoaderContainer = styled.div`
   display: block;
   z-index: 10;
-  /* position: fixed; */
-  /* left: 50%; */
-  /* top: 50%; */
 `;
 
 export default Loading;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Switch } from "react-router-dom";
-import PrivateRoute from "../../Route/PrivateRoute";
+import PrivateRoute from "routes/PrivateRoute";
 
 import ExcelDataRegisterContainer from "../Manager/ExcelDataRegister/ExcelDataRegisterContainer";
 import UserManagementContainer from "../Manager/UserManagement/UserManagementContainer";

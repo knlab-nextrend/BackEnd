@@ -31,10 +31,9 @@ function Footer() {
 }
 
 const Wrapper = styled.footer`
-  padding: 3rem 0 3rem 0;
+  padding: 2rem 0;
   background-color: #435269;
   color: white;
-  height: 13rem;
 `;
 
 const Logo = styled.img`
@@ -44,15 +43,14 @@ const FooterContainer = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const FooterContent = styled.div` 
-width: 90%;
+const FooterContent = styled.div`
+  width: 90%;
   margin: 0 auto;
   & * {
-    margin-right:3rem;
+    margin-right: 3rem;
   }
-`
+`;
 const ContentWrapper = styled.div`
-  
   display: flex;
   align-items: right;
   font-size: 14px;

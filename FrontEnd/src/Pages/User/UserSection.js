@@ -1,6 +1,6 @@
 import React from "react";
 import { Switch, Redirect } from "react-router-dom";
-import PrivateRoute from "../../Route/PrivateRoute";
+import PrivateRoute from "routes/PrivateRoute";
 
 import UserOnlyDataLookUpPageContainer from "./UserOnlyDataLookUpPage/UserOnlyDataLookUpPageContainer";
 import UserCurationDataDetailContainer from "./CurationDataDetail/CurationDataDetailContainer";
