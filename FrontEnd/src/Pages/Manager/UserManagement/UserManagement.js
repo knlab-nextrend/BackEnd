@@ -1,5 +1,4 @@
 import React from "react";
-import FormHeader from "../../../Components/FormHeader";
 import styled from "styled-components";
 import {
   AiOutlineUserDelete,
@@ -8,22 +7,37 @@ import {
   AiOutlineStepForward,
 } from "react-icons/ai";
 import { RiUserSettingsLine } from "react-icons/ri";
+import { BsPersonLinesFill } from "react-icons/bs";
+
+import { WorkerContentHeader } from "Components/WorkerContentHeader";
+import { toYYYYMMDD_DOT } from "Utils/time";
+import { myColors, tailwindColors } from "styles/colors";
+
 function UserManagement({
   userData,
   openUserModifyModal,
   deleteUser,
   restrictUser,
   openUserAddModal,
-  PERMISSON_DATA
+  PERMISSON_DATA,
 }) {
   return (
-    <>
-      <FormHeader type={"view"} title={"사용자 관리"} />
-      
+    <Wrap>
+      <WorkerContentHeader title="사용자 관리" Icon={BsPersonLinesFill} />
+      <AddUserWrap>
+        <Button
+          color="#435269"
+          onClick={() => {
+            openUserAddModal();
+          }}
+        >
+          <AiOutlineUserAdd size="22" color="white" />
+          <p>사용자 추가</p>
+        </Button>
+      </AddUserWrap>
       <TableWrapper>
         <CustomTable>
           <colgroup>
-            <col style={{ width: "5%" }} />
             <col style={{ width: "10%" }} />
             <col style={{ width: "10%" }} />
             <col style={{ width: "10%" }} />
@@ -37,7 +51,6 @@ function UserManagement({
 
           <thead>
             <tr>
-              <th>UID</th>
               <th>사용자 ID</th>
               <th>사용자 이름</th>
               <th>이메일</th>
@@ -53,18 +66,18 @@ function UserManagement({
             {userData.map((user, index) => {
               return (
                 <tr key={index}>
-                  <td>{user.id}</td>
                   <td>{user.userID}</td>
                   <td>{user.Name}</td>
                   <td>{user.Email}</td>
                   <td>{user.Tel}</td>
                   <td>{user.Company}</td>
                   <td>{user.Position}</td>
-                  <td>{user.CreateAt.substring(0, 19).replace("T", " ")}</td>
+                  <td>{toYYYYMMDD_DOT(user.CreateAt)}</td>
                   <td>{PERMISSON_DATA[user.Category]}</td>
                   <td>
                     <ButtonWrapper>
                       <Button
+                        className="btn-edit"
                         onClick={() => {
                           openUserModifyModal(user);
                         }}
@@ -73,6 +86,7 @@ function UserManagement({
                         <p>수정</p>
                       </Button>
                       <Button
+                        className="btn-delete"
                         onClick={() => {
                           deleteUser(user.id);
                         }}
@@ -82,24 +96,28 @@ function UserManagement({
                       </Button>
                       {user.stat ? (
                         <>
-                        <Button
-                          onClick={() => {
-                            restrictUser(user.id,false);
-                          }}
-                        >
-                        <AiOutlineStepForward size="22" color="white" />
-                          <p>재개</p>
-                        </Button></>
+                          <Button
+                            className="btn-start"
+                            onClick={() => {
+                              restrictUser(user.id, false);
+                            }}
+                          >
+                            <AiOutlineStepForward size="22" color="white" />
+                            <p>재개</p>
+                          </Button>
+                        </>
                       ) : (
                         <>
-                        <Button
-                          onClick={() => {
-                            restrictUser(user.id,true);
-                          }}
-                        >
-                        <AiOutlineStop size="22" color="white" />
-                          <p>중지</p>
-                        </Button></>
+                          <Button
+                            className="btn-stop"
+                            onClick={() => {
+                              restrictUser(user.id, true);
+                            }}
+                          >
+                            <AiOutlineStop size="22" color="white" />
+                            <p>중지</p>
+                          </Button>
+                        </>
                       )}
                     </ButtonWrapper>
                   </td>
@@ -109,18 +127,34 @@ function UserManagement({
           </tbody>
         </CustomTable>
       </TableWrapper>
-      <Button
-        color="#435269"
-        onClick={() => {
-          openUserAddModal();
-        }}
-      >
-        <AiOutlineUserAdd size="22" color="white" />
-        <p>사용자 추가</p>
-      </Button>
-    </>
+    </Wrap>
   );
 }
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 1280px;
+  width: 100%;
+  padding: 1.5rem 3rem;
+`;
+
+const AddUserWrap = styled.div`
+  display: flex;
+  width: 100%;
+  padding: 2rem 0 0.5rem;
+
+  & button {
+    padding: 0.5rem 1rem;
+    margin: 0;
+    background-color: ${myColors.blue500};
+    border-radius: 0;
+    p {
+      font-size: 1rem;
+    }
+  }
+`;
 
 const ButtonWrapper = styled.div`
   display: flex;
@@ -145,6 +179,18 @@ const Button = styled.button`
     font-weight: bold;
     color: white;
   }
+
+  &.btn-edit {
+    background-color: ${myColors.blue500};
+  }
+  &.btn-delete {
+    background-color: ${myColors.red};
+  }
+  &.btn-stop {
+  }
+  &.btn-start {
+    background-color: ${myColors.green300};
+  }
 `;
 const TableWrapper = styled.div`
   width: 100%;
@@ -157,16 +203,18 @@ const CustomTable = styled.table`
   text-align: center;
   border-collapse: collapse;
   thead {
-    border-bottom: solid 1px #d6d6d6;
     position: sticky;
     top: 0px;
-    background-color: white;
+    border-bottom: solid 1px ${tailwindColors["grey-400"]};
+    background-color: ${tailwindColors["grey-100"]};
+    color: ${tailwindColors.black};
+    font-weight: bold;
   }
   tr {
     height: 2.5rem;
   }
   tr:nth-child(2n) {
-    background-color: #eee;
+    background-color: ${tailwindColors["grey-100"]};
   }
   input[type="checkbox"] {
     width: 20px; /*Desired width*/

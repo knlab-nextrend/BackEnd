@@ -9,7 +9,6 @@ import {
 } from "../../Utils/api";
 import permission from "../../Data/permission.json";
 import { AiOutlineClose } from "react-icons/ai";
-import { encodeBufferToBase64 } from "../../Utils/image";
 
 function UserInfoModal({ closeModal, executeModal }) {
   const [id, setID] = useState("");
@@ -376,9 +375,8 @@ const Button = styled.button`
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: start;
-  margin: 0.5rem 0 0.5rem 0;
-  width: 60%;
+  width: 50%;
+  margin: 0.5rem 0;
 `;
 const InputTitle = styled.div`
   min-width: 7rem;
@@ -396,7 +394,6 @@ const InputTitle = styled.div`
 const InputFieldWrapper = styled.div`
   display: flex;
   align-items: center;
-  width: 100%;
   height: 2rem;
 `;
 const InputField = styled.input`
@@ -404,6 +401,7 @@ const InputField = styled.input`
   border-radius: 4px;
   border: solid 1px #d6d6d6;
   width: 100%;
+  max-width: 16rem;
   height: 100%;
   &:focus {
     outline: none;
@@ -418,6 +416,7 @@ const SelectField = styled.select`
   border-radius: 4px;
   border: solid 1px #d6d6d6;
   width: 100%;
+  max-width: 16rem;
   height: 100%;
   &:focus {
     outline: none;
@@ -458,8 +457,10 @@ const ModalSubTitle = styled.div`
 const ModalBody = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding-left: 8rem;
   margin-bottom: 1rem;
-  align-items: center;
 `;
 
 const InputContainer = styled.div`
@@ -506,6 +507,7 @@ const LogoInputLabel = styled.label`
 const LogoInputWrap = styled.div`
   display: flex;
   align-items: center;
+  max-width: 16rem;
   width: 100%;
   height: 100%;
   border: solid 1px #d6d6d6;
@@ -520,8 +522,8 @@ const LogoInputWrap = styled.div`
   }
 `;
 const LogoPreviewContainer = styled.div`
-  width: 60%;
-  height: 5rem;
+  width: 24rem;
+  height: 6rem;
   padding: 0.5rem;
   border: 1px solid #d6d6d6;
   border-radius: 4px;
