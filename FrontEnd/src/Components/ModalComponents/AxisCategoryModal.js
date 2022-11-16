@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { BsCheckLg } from "react-icons/bs";
 import { getCategryListAPI } from "../../api/category/category";
 import { sessionHandler } from "../../Utils/api";
+import { myColors, tailwindColors } from "styles/colors";
 
 const CATEGORY_INFO = [
   { name: "정책 분류", code: 1 },
@@ -202,7 +203,7 @@ function CategoryModal({ executeModal, closeModal }) {
           )}
         </ModalBody>
         <ModalActions>
-          <Button color="#435269" onClick={saveCategory}>
+          <Button color={myColors.blue500} onClick={saveCategory}>
             <p>저장</p>
           </Button>
           <Button color="#bfbfbf" onClick={closeModal}>
@@ -257,10 +258,11 @@ const CategoryTypeButton = styled.button`
   min-width: 5rem;
   margin-right: 0.5rem;
   padding: 0.5rem 1rem;
-  border: solid 1px #435269;
+  border: solid 1px ${myColors.blue500};
   border-radius: 20px;
-  background-color: ${(props) => (props.selected ? "#435269" : "#ffffff")};
-  color: ${(props) => (props.selected ? "#ffffff" : "#435269")};
+  background-color: ${(props) =>
+    props.selected ? myColors.blue500 : "#ffffff"};
+  color: ${(props) => (props.selected ? "#ffffff" : myColors.blue500)};
   font-weight: bold;
 
   :disabled {
@@ -269,13 +271,13 @@ const CategoryTypeButton = styled.button`
     &:hover {
       cursor: not-allowed;
       background-color: #ffffff;
-      color: #435269;
+      color: ${myColors.blue500};
     }
   }
 
   &:hover {
     cursor: pointer;
-    background-color: #435269;
+    background-color: ${myColors.blue500};
     color: white;
   }
 `;
@@ -302,21 +304,22 @@ const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
+  color: ${tailwindColors.black};
 `;
 const ListHeader = styled.div`
+  flex: 1;
   display: flex;
-  width: 100%;
-  background-color: #435269;
+  background-color: ${myColors.blue500};
   div {
     padding: 0.5rem 0 0.5rem 0;
-    width: 100%;
+    flex: 1;
     text-align: center;
     color: white;
     font-weight: bold;
   }
 `;
 const ListWrapper = styled.ul`
-  width: 100%;
+  flex: 1;
   list-style-type: none;
   height: 30rem;
   overflow: auto;
