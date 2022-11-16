@@ -1,5 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const multer = require('multer');
+
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
 const userCtrl = require("../controller/user.ctrl");
 const tokenCtrl = require("../controller/token.ctrl");
 const categoryCtrl = require("../controller/categorys.ctrl");
@@ -16,10 +19,26 @@ router.post("/user/add", userCtrl.Add);
 router.get("/user/list", userCtrl.List);
 router.get("/user/get", userCtrl.Get);
 router.post("/user/modify", userCtrl.Modify);
+
+const logoImageUpload = multer({
+    dest: 'temp/images',
+});
+
+const upload = multer({
+    dest: 'temp/tmp',
+});
+
+router.post("/user/restrict",userCtrl.Restrict);
+router.post("/user/add", logoImageUpload.single("logoImage") ,userCtrl.Add);
+router.get("/user/list", userCtrl.List);
+router.get("/user/get", userCtrl.Get);
+router.post("/user/modify",logoImageUpload.single("logoImage") ,userCtrl.Modify);
+>>>>>>> 4eb73263aa397f263d894e5d2b35198f54b3df69
 router.post("/user/delete", userCtrl.Delete);
 router.post("/user/verify", userCtrl.Verify);
 
 router.get("/user/",authJWT,tokenCtrl.getUser);
+router.get("/user/logo", userCtrl.getUserLogo);
 router.get("/refresh/",tokenCtrl.refresh);
 
 router.post("/login/",loginCtrl.Login);
@@ -38,6 +57,8 @@ router.get("/cat/",categoryCtrl.readCat);
 router.post("/cat/",categoryCtrl.createCat);
 router.put("/cat/",categoryCtrl.updateCat);
 router.delete("/cat/",categoryCtrl.deleteCat);
+
+router.get("/cat/list", categoryCtrl.getCodeByType);
 
 router.get("/custom/",customCtrl.read);
 router.post("/custom/",authJWT,customCtrl.create);
