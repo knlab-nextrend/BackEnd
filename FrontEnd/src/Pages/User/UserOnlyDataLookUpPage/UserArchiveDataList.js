@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { HiOutlineDocumentSearch } from "react-icons/hi";
 import Pagination from "../../../Components/Pagination";
 import NoData from "../../../Components/NoData";
+import { myColors, tailwindColors } from "styles/colors";
 function UserArchiveDataList({
   dcCount,
   listSize,
@@ -13,28 +14,24 @@ function UserArchiveDataList({
   curationRequest,
 }) {
   return (
-    <Wrapper>
+    <Wrap>
+      <ResultWrap>
+        <HiOutlineDocumentSearch />
+        <span> 검색 결과</span> <span>({dcCount}건)</span>
+      </ResultWrap>
+
       {archiveData.length === 0 ? (
         <NoData />
       ) : (
         <>
-          {" "}
-          <RowContainer>
-            <Row>
-              <div className="result-count">
-                <HiOutlineDocumentSearch />
-                검색 결과 ({dcCount}건)
-              </div>
-              <div className="action-group">
-                <select className="list-size" onChange={listSizeHandler}>
-                  <option disabled>리스트 사이즈</option>
-                  <option value={10}>10건</option>
-                  <option value={30}>30건</option>
-                  <option value={50}>50건</option>
-                </select>
-              </div>
-            </Row>
-          </RowContainer>
+          <ActionGroup>
+            <select className="list-size" onChange={listSizeHandler}>
+              <option disabled>리스트 사이즈</option>
+              <option value={10}>10건</option>
+              <option value={30}>30건</option>
+              <option value={50}>50건</option>
+            </select>
+          </ActionGroup>
           <ArchiveDataTable>
             <colgroup>
               <col style={{ width: "10%" }} />
@@ -58,7 +55,7 @@ function UserArchiveDataList({
               {archiveData.map((item, index) => {
                 return (
                   <tr key={index}>
-                    <td>{index+1}</td>
+                    <td>{index + 1}</td>
                     <td>
                       <a href={item.doc_url} target="_blank">
                         {item.doc_origin_title}
@@ -67,116 +64,140 @@ function UserArchiveDataList({
                     <td></td>
                     <td>{item.doc_publish_date}</td>
                     <td>{item.doc_page}</td>
-                    <td>{item.status===6?<button onClick={()=>{curationRequest(item._id)}}>큐레이션 신청</button>:<Badge>큐레이션 신청됨</Badge>}</td>
+                    <td>
+                      {item.status === 6 ? (
+                        <button
+                          onClick={() => {
+                            curationRequest(item._id);
+                          }}
+                        >
+                          큐레이션 신청
+                        </button>
+                      ) : (
+                        <Badge>큐레이션 신청됨</Badge>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </ArchiveDataTable>
-          <Pagination
-            dcCount={dcCount}
-            listSize={listSize}
-            pageNo={pageNo}
-            setPageNo={setPageNo}
-          />
+          <PaginationWrap>
+            <Pagination
+              dcCount={dcCount}
+              listSize={listSize}
+              pageNo={pageNo}
+              setPageNo={setPageNo}
+            />
+          </PaginationWrap>
         </>
       )}
-    </Wrapper>
+    </Wrap>
   );
 }
 
-const Wrapper = styled.div`
+const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 1024px;
   width: 100%;
+  padding: 1.5rem 3rem;
 `;
+
+const ResultWrap = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  white-space: nowrap;
+
+  & > span:nth-of-type(2) {
+    color: ${myColors.red};
+  }
+`;
+
 const ArchiveDataTable = styled.table`
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
-  text-align: left;
+  text-align: center;
   font-size: 14px;
-  color: rgb(59, 59, 59);
-  th {
-    color: #323d4d;
-    background-color: #d8dee6;
+
+  thead {
+    border-bottom: 1px solid ${tailwindColors["grey-400"]};
+    background-color: ${tailwindColors["grey-100"]};
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
   }
+
+  th,
+  td {
+    padding: 0.5rem;
+    word-break: break-all;
+  }
+
+  & tbody {
+    width: 100%;
+
+    tr {
+      width: 100%;
+      height: 2.5rem;
+      border-bottom: 1px solid ${tailwindColors["grey-400"]};
+      background-color: ${tailwindColors.white};
+    }
+  }
+
   th,
   td {
     border-bottom: 1px solid #d6d6d6;
     padding: 10px;
     a {
-      color: rgb(59, 59, 59);
-      text-decoration: none;
     }
     a:hover {
-      color: #009999;
+      color: ${myColors.blue500};
       text-decoration: underline;
     }
   }
 
-  tr:first-child,
-  tr:last-child {
-    border: none;
-  }
-  input[type="text"] {
-    width: 100%;
-  }
-  button{
+  button {
     height: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: solid 1px rgba(0,0,0,0.1);
+    border: solid 1px rgba(0, 0, 0, 0.1);
     border-radius: 4px;
-    text-align:center;
-    &:hover{
+    text-align: center;
+    &:hover {
       cursor: pointer;
-      background-color:#d6d6d6;
+      background-color: #d6d6d6;
     }
   }
 `;
 
-const RowContainer = styled.div`
-  border: solid 1px #d6d6d6;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 4px;
-  width: 100%;
-`;
-const Row = styled.div`
+const ActionGroup = styled.div`
   display: flex;
-  color: rgb(59, 59, 59);
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-bottom: solid 1px #d6d6d6;
-  &:last-child {
-    border: none;
-  }
-  .result-count {
-    font-size: 16px;
-    font-weight: bold;
-    * {
-      padding-right: 0.5rem;
-    }
-  }
-  .action-group {
-    display: flex;
-  }
-  .list-size {
-    margin: 0 0.5rem 0 0.5rem;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  & select {
     padding: 0.5rem;
+    margin-left: auto;
     border: solid 1px #d6d6d6;
   }
 `;
+
 const Badge = styled.div`
-  background-color:rgba(67,82,105,0.5);
+  background-color: ${myColors.green300};
   font-weight: bold;
-  color: rgba(67,82,105,1);
-  border-radius: 2px;
+  color: ${tailwindColors.white};
   padding: 2px;
-  text-align:center;
+  text-align: center;
+`;
+
+const PaginationWrap = styled.div`
+  margin-top: 1.5rem;
 `;
 export default UserArchiveDataList;
