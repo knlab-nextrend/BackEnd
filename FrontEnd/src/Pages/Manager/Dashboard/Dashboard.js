@@ -13,7 +13,8 @@ import LineGraph from "./LineGraph";
 import styled from "styled-components";
 import Duration from "../../../Components/DashboardComponents/Duration";
 import { ResponsivePie } from "@nivo/pie"; // 원형차트 임시...
-import {FaSort} from "react-icons/fa"
+import { FaSort } from "react-icons/fa";
+import { myColors } from "styles/colors";
 
 function Dashboard({
   countryPieChartData,
@@ -44,7 +45,7 @@ function Dashboard({
   crawlCountSort,
 }) {
   return (
-    <>
+    <Wrap>
       <Tab>
         <div className="button-group">
           <TabButton
@@ -353,18 +354,18 @@ function Dashboard({
             >
               <CrawlStatusTable>
                 <colgroup>
-                  <col width="10%"/>
-                  <col width="30%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="15%"/>
-                  <col width="10%"/>
-                </colgroup> 
+                  <col width="10%" />
+                  <col width="30%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="15%" />
+                  <col width="10%" />
+                </colgroup>
                 <thead>
                   <tr>
                     <th rowSpan={2}>HOST ID</th>
@@ -374,13 +375,69 @@ function Dashboard({
                     <th rowSpan={2}>크롤링 상태</th>
                   </tr>
                   <tr>
-                    <th>URL<FaSort className="sort-btn" onClick={()=>{crawlCountSort("url")}}/></th>
-                    <th>HTML<FaSort className="sort-btn" onClick={()=>{crawlCountSort("html")}}/></th>
-                    <th>PDF<FaSort className="sort-btn" onClick={()=>{crawlCountSort("pdf")}}/></th>
-                    <th>WORD<FaSort className="sort-btn" onClick={()=>{crawlCountSort("word")}}/></th>
-                    <th>EXCEL<FaSort className="sort-btn" onClick={()=>{crawlCountSort("excel")}}/></th>
-                    <th>PPT<FaSort className="sort-btn" onClick={()=>{crawlCountSort("ppt")}}/></th>
-                    <th>ETC<FaSort className="sort-btn" onClick={()=>{crawlCountSort("etc")}}/></th>
+                    <th>
+                      URL
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("url");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      HTML
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("html");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      PDF
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("pdf");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      WORD
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("word");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      EXCEL
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("excel");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      PPT
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("ppt");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      ETC
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("etc");
+                        }}
+                      />
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -403,7 +460,9 @@ function Dashboard({
                           <td>{item.ppt}</td>
                           <td>{item.etc}</td>
                           <td>{item.created_at}</td>
-                          <td style={{fontWeight:"bold"}}>{item.status.toUpperCase()}</td>
+                          <td style={{ fontWeight: "bold" }}>
+                            {item.status.toUpperCase()}
+                          </td>
                         </tr>
                         {selectedHostId === item.job_id && (
                           <tr key={index + 999}>
@@ -440,9 +499,15 @@ function Dashboard({
           </>
         )}
       </Wrapper>
-    </>
+    </Wrap>
   );
 }
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 1280px;
+`;
 
 const Wrapper = styled.div`
   background-color: #eee;
@@ -466,9 +531,9 @@ const Tab = styled.div`
   }
 `;
 const TabButton = styled.button`
-  color: ${(props) => (props.active ? "#435269" : "rgb(59,59,59)")};
+  color: ${(props) => props.active && myColors.blue400};
   border: none;
-  border-bottom: ${(props) => (props.active ? "solid 3px #435269;" : "none")};
+  border-bottom: ${(props) => props.active && `solid 3px ${myColors.blue400};`};
   font-weight: bold;
   background-color: white;
   cursor: pointer;
@@ -538,8 +603,8 @@ const CrawlStatusTable = styled.table`
     padding: 1rem;
     min-width: 190px;
   }
-  .sort-btn{
-    cursor:pointer;
+  .sort-btn {
+    cursor: pointer;
   }
 `;
 
