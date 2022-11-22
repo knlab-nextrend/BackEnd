@@ -28,11 +28,16 @@ const Container = styled.div`
 
 const Button = styled.button`
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0.3rem;
+  left: 0.3rem;
   z-index: 10;
   padding: 0.5rem;
   color: ${tailwindColors["grey-600"]};
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: ${tailwindColors["grey-300"]};
+  }
 `;
 
 const Contents = styled.div`
