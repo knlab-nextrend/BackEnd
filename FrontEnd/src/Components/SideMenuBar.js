@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
-import { useDispatch } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
 import {
   BsFillCaretDownFill,
   BsTable,
@@ -19,29 +18,37 @@ import {
 } from "react-icons/bs";
 import { BiLogOut } from "react-icons/bi";
 import { AiOutlineRobot } from "react-icons/ai";
+import { FaAngleDoubleLeft } from "react-icons/fa";
 
 import { setLogout } from "Modules/login";
+import { closeSidebar } from "Modules/sidebar";
 import { myColors, tailwindColors } from "styles/colors";
 import { PERMISSON_DATA } from "Data/permission";
 
 export const SideMenuBar = ({ permission, name }) => {
+  const sidebarWidth = useSelector((state) => state.sidebar.width);
   const dispatch = useDispatch();
   const logout = () => dispatch(setLogout("NORMAL_LOGOUT"));
 
   return (
-    <Container>
+    <Container width={sidebarWidth}>
       <Header>
-        <NavLink to="/">
-          <Logo src={process.env.PUBLIC_URL + "/img/logo4.png"} alt="로고" />
-        </NavLink>
-        <LoginInfo>
-          <span>{name}님</span>
-          <span>안녕하세요.</span>
-          <button onClick={logout}>
-            <BiLogOut size={18} />
-            <span>Logout</span>
-          </button>
-        </LoginInfo>
+        <SidebarCloseButton onClick={() => dispatch(closeSidebar())}>
+          <FaAngleDoubleLeft size={20} />
+        </SidebarCloseButton>
+        <div>
+          <NavLink to="/">
+            <Logo src={process.env.PUBLIC_URL + "/img/logo4.png"} alt="로고" />
+          </NavLink>
+          <LoginInfo>
+            <span>{name}님</span>
+            <span>안녕하세요.</span>
+            <button onClick={logout}>
+              <BiLogOut size={18} />
+              <span>Logout</span>
+            </button>
+          </LoginInfo>
+        </div>
       </Header>
       <MenuList>
         {PERMISSON_DATA[permission] === "관리자" && (
@@ -120,22 +127,39 @@ const Container = styled.aside`
   z-index: 100;
   display: flex;
   flex-direction: column;
-  width: 280px;
+  width: ${(props) => props.width ?? "280px"};
   height: 100vh;
   background-color: ${tailwindColors.white};
   box-shadow: rgba(99, 99, 99, 0.3) 0px 0px 8px 0px;
+  overflow: hidden;
+  transition: width 0.5s;
+`;
+
+const SidebarCloseButton = styled.button`
+  align-self: flex-end;
+  padding: 0.5rem;
+  color: ${tailwindColors["grey-600"]};
 `;
 
 const Header = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  height: 15%;
-  padding: 1rem;
+  justify-content: space-between;
+  width: 280px;
+  height: 18%;
+
   border-bottom: 1px solid ${tailwindColors["grey-300"]};
+  & > div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem;
+  }
 `;
 
-const Logo = styled.img``;
+const Logo = styled.img`
+  margin-bottom: 1rem;
+`;
 
 const LoginInfo = styled.div`
   display: flex;
@@ -164,7 +188,7 @@ const LoginInfo = styled.div`
 `;
 
 const MenuList = styled.ul`
-  height: 85%;
+  height: 82%;
   overflow-y: auto;
   padding-bottom: 4rem;
   & > * + * {
