@@ -66,7 +66,7 @@ const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* min-width: 1024px; */
+  min-width: 1024px;
   width: 100%;
   padding: 1.5rem 3rem;
   background-color: ${tailwindColors["grey-50"]};

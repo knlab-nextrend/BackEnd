@@ -788,7 +788,6 @@ const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-width: 1024px;
   border: 1px solid ${tailwindColors["grey-400"]};
 `;
 const CustomFormItem = styled.div`
@@ -835,6 +834,7 @@ const CustomFormItem = styled.div`
     align-items: center;
     border: none;
     height: 100%;
+    text-overflow: ellipsis;
   }
   .textarea {
     padding-top: 2rem;
