@@ -99,7 +99,7 @@ function Dashboard({
                 >
                   <Map getCountryMapChartData={getCountryMapChartData} />
                 </TitleCard>
-                <div>
+                <div className="country-left-section">
                   <ChartCard>
                     <ResponsivePie
                       data={countryPieChartData}
@@ -510,14 +510,24 @@ const Wrap = styled.div`
 `;
 
 const Wrapper = styled.div`
-  background-color: #eee;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   min-height: 1280px;
+  padding: 1.5rem 3rem;
+  background-color: #eee;
 `;
 
 const CountryContentWrapper = styled.div`
   display: grid;
   grid-template-columns: 7fr 3fr;
+  gap: 0.5rem;
+
+  & .country-left-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 `;
 
 const Tab = styled.div`
@@ -526,7 +536,7 @@ const Tab = styled.div`
   align-items: bottom;
   display: flex;
   align-items: end;
-  padding: 0 1.5rem 0 1.5rem;
+  padding: 0 3rem;
   .button-group {
   }
 `;
@@ -613,17 +623,18 @@ const LineGraphOnlyOneWrapper = styled.div`
 `;
 
 const LineGraphWrapper = styled.div`
-  padding: 3rem;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  row-gap: 2rem;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
 
   .graph-title-container {
     display: flex;
     flex-direction: column;
+    padding-top: 1rem;
     .graph-title {
       display: flex;
       padding-left: 3rem;
-      font-size: 14px;
       font-weight: bold;
       color: #435269;
     }

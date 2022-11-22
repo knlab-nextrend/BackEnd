@@ -67,7 +67,6 @@ function WorkStatCard({ workAllLogData, workAllStatus, workAllStatusHandler }) {
   );
 }
 const CardWrapper = styled.div`
-  margin: 1rem 0.5rem 1rem 0.5rem;
   border-radius: 4px;
   box-shadow: 0 0 0.875rem 0 rgba(33, 37, 41, 0.05);
   background-color: white;
@@ -110,6 +109,10 @@ const CardWrapper = styled.div`
     height: 100%;
     display: flex;
     justify-content: center;
+
+    & > * + * {
+      border-left: solid 1px #eee;
+    }
   }
 `;
 const StatContainer = styled.div`
@@ -121,12 +124,8 @@ const StatContainer = styled.div`
   width: 8rem;
   margin: 0.5rem;
   padding: 1rem;
-  border-right: solid 1px #eee;
   cursor: pointer;
 
-  &:nth-child(1) {
-    border-left: solid 1px #eee;
-  }
   .stat-name {
     color: rgb(59, 59, 59);
     font-size: 14px;
