@@ -567,8 +567,11 @@ export const myColors = {
   green300: "#009972",
 
   purple: "#6838e9",
+
   yellow100: "#FDF2CC",
   yellow200: "#fbe9a8",
   yellow300: "#FEDE50",
   yellow400: "#faca07",
+
+  orange: "#EF8234",
 };

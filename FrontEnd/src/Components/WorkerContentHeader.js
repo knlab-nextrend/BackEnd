@@ -18,7 +18,6 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  background-color: ${tailwindColors.white};
 `;
 
 const TitleWrap = styled.div`

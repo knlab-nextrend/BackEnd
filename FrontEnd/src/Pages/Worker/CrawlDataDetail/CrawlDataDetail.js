@@ -1,10 +1,17 @@
-import React  from "react";
-import { AiOutlineArrowRight, AiOutlineDelete } from "react-icons/ai";
-import { FaRegHandPaper } from "react-icons/fa";
-import CrawlDataForm from "../../../Components/CrawlDataForm";
-import FormHeader from "../../../Components/FormHeader";
-import Button from "../../../Components/Button";
+import React from "react";
 import styled from "styled-components";
+import {
+  BsCheckCircle,
+  BsDashCircle,
+  BsTrash,
+  BsXCircle,
+} from "react-icons/bs";
+
+import { STATUS_CODE_SET } from "Data/crawlStatus";
+import { myColors, tailwindColors } from "styles/colors";
+import CrawlDataForm from "Components/CrawlDataForm";
+import Button from "Components/Button";
+import { WorkerContentHeader } from "Components/WorkerContentHeader";
 
 function CrawlDataDetail({
   crawlDataFormRef,
@@ -13,47 +20,71 @@ function CrawlDataDetail({
   dataReject,
   dataStage,
   cancel,
-  STATUS_CODE_SET,
   statusCode,
   type,
-  _id
+  _id,
 }) {
   return (
-    <>
-      <FormHeader type="plus" title={STATUS_CODE_SET[statusCode].title} />
-      <CrawlDataForm docs={docs} type={type} ref={crawlDataFormRef} _id={_id} />
-      <ButtonWrapper>
-        <Button color="#dc3545" onClick={dataReject}>
-          <AiOutlineDelete color="white" />
-          <p>데이터 버리기</p>
-        </Button>
-        {(type !== "archive") && (type !== "curation") && (
-          <Button color="#6DAF44" onClick={dataKeep}>
-            <FaRegHandPaper color="white" />
-            <p>작업 보류</p>
+    <Wrap>
+      <WorkerContentHeader
+        title={STATUS_CODE_SET[statusCode].title}
+        Icon={STATUS_CODE_SET[statusCode].icon}
+      />
+      <Content>
+        <CrawlDataForm
+          docs={docs}
+          type={type}
+          ref={crawlDataFormRef}
+          _id={_id}
+        />
+        <ButtonWrapper>
+          <Button color={myColors.green300} onClick={dataStage}>
+            <BsCheckCircle />
+            <p>작업 완료</p>
           </Button>
-        )}
-        <Button color="#435269" onClick={dataStage}>
-          <AiOutlineArrowRight color="white" />
-          <p>작업 완료</p>
-        </Button>
-        <Button onClick={cancel}>
-          <AiOutlineDelete color="white" />
-          <p>작업 취소</p>
-        </Button>
-      </ButtonWrapper>
-    </>
+          {type !== "archive" && type !== "curation" && (
+            <Button color={myColors.orange} onClick={dataKeep}>
+              <BsDashCircle />
+              <p>작업 보류</p>
+            </Button>
+          )}
+          <Button color={myColors.red} onClick={dataReject}>
+            <BsTrash />
+            <p>데이터 버리기</p>
+          </Button>
+          <Button onClick={cancel}>
+            <BsXCircle />
+            <p>작업 취소</p>
+          </Button>
+        </ButtonWrapper>
+      </Content>
+    </Wrap>
   );
 }
 
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* min-width: 1024px; */
+  width: 100%;
+  padding: 1.5rem 3rem;
+  background-color: ${tailwindColors["grey-50"]};
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 1rem;
+`;
+
 const ButtonWrapper = styled.div`
   display: flex;
-  flex-direction: row;
   margin: 2rem;
   justify-content: center;
-  Button {
-    margin: 1rem;
-  }
+  gap: 1rem;
 `;
 
 export default CrawlDataDetail;

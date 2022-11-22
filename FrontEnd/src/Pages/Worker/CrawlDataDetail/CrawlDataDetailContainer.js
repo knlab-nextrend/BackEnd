@@ -11,6 +11,7 @@ import { useParams, useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
 import { LoadingWrapper } from "../../../Components/LoadingWrapper";
+import { STATUS_CODE_SET } from "Data/crawlStatus";
 
 function CrawlDataDetailContainer() {
   /* 
@@ -30,33 +31,6 @@ function CrawlDataDetailContainer() {
 
   const [docs, setDocs] = useState({}); // 폼에 default 값으로 출력할 데이터를 객체로 전달. 관리 편하게
   const [isLeave, setIsLeave] = useState(false); // 페이지 이동 및 나가기 여부
-
-  const STATUS_CODE_SET = {
-    2: {
-      type: "refine",
-      title: "데이터 정제 진행",
-    },
-    3: {
-      type: "refine",
-      title: "데이터 정제 진행",
-    },
-    4: {
-      type: "register",
-      title: "데이터 등록 진행",
-    },
-    5: {
-      type: "register",
-      title: "데이터 등록 진행",
-    },
-    6: {
-      type: "archive",
-      title: "아카이브 데이터 조회 및 수정",
-    },
-    8: {
-      type: "curation",
-      title: "큐레이션 데이터 조회 및 수정",
-    },
-  };
 
   /* 데이터 불러오기 */
   const dataFetch = () => {
@@ -121,6 +95,8 @@ function CrawlDataDetailContainer() {
   };
 
   const dataKeep = () => {
+    if (!window.confirm("해당 데이터를 보류하시겠습니까?")) return;
+
     CrawlDataKeepApi(_id, statusCode).then((res) => {
       alert("해당 데이터에 대한 작업이 보류되었습니다.");
       if (statusCode === "6") {
@@ -132,21 +108,23 @@ function CrawlDataDetailContainer() {
   };
 
   const dataReject = () => {
-    if (window.confirm("해당 데이터를 버리시겠습니까?")) {
-      CrawlDataRejectApi(_id, statusCode).then((res) => {
-        alert("해당 데이터가 성공적으로 삭제되었습니다.");
-        if (statusCode === "6") {
-          history.push(`/archive`); // 목록으로 돌아가기
-        } else if (statusCode === "8") {
-          history.push(`/curation`);
-        } else {
-          history.push(`/crawl/${statusCode}`); // 목록으로 돌아가기
-        }
-      });
-    }
+    if (!window.confirm("해당 데이터를 버리시겠습니까?")) return;
+
+    CrawlDataRejectApi(_id, statusCode).then((res) => {
+      alert("해당 데이터가 성공적으로 삭제되었습니다.");
+      if (statusCode === "6") {
+        history.push(`/archive`); // 목록으로 돌아가기
+      } else if (statusCode === "8") {
+        history.push(`/curation`);
+      } else {
+        history.push(`/crawl/${statusCode}`); // 목록으로 돌아가기
+      }
+    });
   };
 
   const dataStage = () => {
+    if (!window.confirm("작업을 완료하시겠습니까?")) return;
+
     const _crawlDataFormDocs = crawlDataFormRef.current.getCrawlFormData();
     if (_crawlDataFormDocs.doc_recomment)
       CrawlDataStageApi(statusCode, _id, _crawlDataFormDocs).then((res) => {
@@ -163,17 +141,17 @@ function CrawlDataDetailContainer() {
 
   const cancel = () => {
     if (
-      window.confirm("작업을 중단하시겠습니까?\n변경사항은 저장되지 않습니다.")
-    ) {
-      //documentDetachImageApi(itemId);
+      !window.confirm("작업을 중단하시겠습니까?\n변경사항은 저장되지 않습니다.")
+    )
+      return;
+    //documentDetachImageApi(itemId);
+    history.push(`/crawl/${statusCode}`); // 목록으로 돌아가기
+    if (statusCode === "6") {
+      history.push(`/archive`); // 목록으로 돌아가기
+    } else if (statusCode === "8") {
+      history.push(`/curation`);
+    } else {
       history.push(`/crawl/${statusCode}`); // 목록으로 돌아가기
-      if (statusCode === "6") {
-        history.push(`/archive`); // 목록으로 돌아가기
-      } else if (statusCode === "8") {
-        history.push(`/curation`);
-      } else {
-        history.push(`/crawl/${statusCode}`); // 목록으로 돌아가기
-      }
     }
   };
 
@@ -216,7 +194,6 @@ function CrawlDataDetailContainer() {
         dataStage={dataStage}
         cancel={cancel}
         crawlDataFormRef={crawlDataFormRef}
-        STATUS_CODE_SET={STATUS_CODE_SET}
         statusCode={statusCode}
         type={STATUS_CODE_SET[statusCode].type}
         _id={_id}

@@ -7,8 +7,9 @@ import React, {
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { setModal, setModalData, setCategoryModalType } from "../Modules/modal";
-import { MdSettings} from "react-icons/md";
+import { MdSettings } from "react-icons/md";
 import Editor from "./Editor";
+import { myColors, tailwindColors } from "styles/colors";
 
 /* forwordRef는 부모 컴포넌트에서 자식 컴포넌트를 컨트롤하기 위해 */
 function CrawlDataForm({ docs, type, _id }, ref) {
@@ -108,7 +109,7 @@ function CrawlDataForm({ docs, type, _id }, ref) {
     setDocPublishing(e.target.value);
   };
   const _docRecommentHandler = (e) => {
-    e.target.value = e.target.value.replace(/[^A-Za-z]/ig, '')
+    e.target.value = e.target.value.replace(/[^A-Za-z]/gi, "");
     setDocRecomment(e.target.value);
   };
   const _docPublishDateHandler = (e) => {
@@ -233,9 +234,7 @@ function CrawlDataForm({ docs, type, _id }, ref) {
       setDocKeywordString(docs.doc_keyword && docs.doc_keyword.join(", "));
       setDocThumbnail(docs.doc_thumbnail);
       setDocThumbnailSelect(
-        type === "archive"
-          ? docs.doc_thumbnail[0]
-          : docs.doc_thumbnail
+        type === "archive" ? docs.doc_thumbnail[0] : docs.doc_thumbnail
       );
       setDocOriginSummary(docs.doc_origin_summary);
       setDocKorSummary(docs.doc_kor_summary);
@@ -312,529 +311,551 @@ function CrawlDataForm({ docs, type, _id }, ref) {
   }, [docTopic]);
 
   return (
-    <>
-      <Wrapper>
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">원제목</p>
-            <input
-              value={docOriginTitle}
-              onChange={_docOriginTitleHandler}
-              className="form"
-              type="text"
-              placeholder="원문 제목을 입력하세요"
-            />
-          </CustomFormItem>
-          <CustomFormItem>
-            <p className="title">한글제목</p>
-            <input
-              value={docKorTitle}
-              onChange={_docKorTitleHandler}
-              className="form"
-              type="text"
-              placeholder="한글 제목을 입력하세요"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">원문 요약</p>
-            <input
-              value={docOriginSummary}
-              onChange={_docOriginSummaryHandler}
-              className="form"
-              type="text"
-              placeholder="원문 요약을 입력하세요"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">한글 요약</p>
-            <input
-              value={docKorSummary}
-              onChange={_docKorSummaryHandler}
-              className="form"
-              type="text"
-              placeholder="한글 요약을 입력하세요"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        {type !== "refine" && (
-          <>
-            <CustomFormRow>
-              <CustomFormItem>
-                <div className="title">
-                  <p>문서 정책 분류</p>
-                  <button
-                    onClick={() => {
-                      _openCategoryModal("doc_category");
-                    }}
-                  >
-                    <MdSettings /> 설정
-                  </button>
-                </div>
-                <div className="form notInput">
-                  {docCategory.map((item, index) => {
-                    return <CustomList key={index}>{item.CT_NM}</CustomList>;
-                  })}
-                </div>
-              </CustomFormItem>
-              <CustomFormItem>
-                <div className="title">
-                  <p>문서 토픽 분류</p>
-                  <button
-                    onClick={() => {
-                      _openCategoryModal("doc_topic");
-                    }}
-                  >
-                    <MdSettings /> 설정
-                  </button>
-                </div>
-                <div className="form notInput">
-                  {docTopic.map((item, index) => {
-                    return <CustomList key={index}>{item.CT_NM}</CustomList>;
-                  })}
-                </div>
-              </CustomFormItem>
-            </CustomFormRow>
-            <CustomFormRow>
-              <CustomFormItem>
-                <div className="title">
-                  <p>문서 대상 국가</p>
-                  <button
-                    onClick={() => {
-                      _openCategoryModal("doc_country");
-                    }}
-                  >
-                    <MdSettings /> 설정
-                  </button>
-                </div>
-                <div className="form notInput">
-                  {docCountry.map((item, index) => {
-                    return <CustomList key={index}>{item.CT_NM}</CustomList>;
-                  })}
-                </div>
-              </CustomFormItem>
-              <CustomFormItem>
-                <div className="title">
-                  <p>문서 발급 국가</p>
-                  <button
-                    onClick={() => {
-                      _openCategoryModal("doc_publish_country");
-                    }}
-                  >
-                    <MdSettings /> 설정
-                  </button>
-                </div>
-                <div className="form notInput">
-                  {docPublishCountry.map((item, index) => {
-                    return <CustomList key={index}>{item.CT_NM}</CustomList>;
-                  })}
-                </div>
-              </CustomFormItem>
-            </CustomFormRow>
-            <CustomFormRow>
-              <CustomFormItem>
-                <div className="title">
-                  <p>문서 유형 분류</p>
-                  <button
-                    onClick={() => {
-                      _openCategoryModal("doc_content_type");
-                    }}
-                  >
-                    <MdSettings /> 설정
-                  </button>
-                </div>
-                <div className="form notInput">
-                  {docContentType.map((item, index) => {
-                    return <CustomList key={index}>{item.CT_NM}</CustomList>;
-                  })}
-                </div>
-              </CustomFormItem>
-              <CustomFormItem>
-                <div className="title">
-                  <p>문서 내용 구분 분류</p>
-                  <button
-                    onClick={() => {
-                      _openCategoryModal("doc_content_category");
-                    }}
-                  >
-                    <MdSettings /> 설정
-                  </button>
-                </div>
-                <div className="form notInput">
-                  {docContentCategory.map((item, index) => {
-                    return <CustomList key={index}>{item.CT_NM}</CustomList>;
-                  })}
-                </div>
-              </CustomFormItem>
-            </CustomFormRow>
-            <CustomFormRow>
-              <CustomFormItem>
-                <div className="title">
-                  <p>기관맞춤형 분류</p>
-                  <button
-                    onClick={() => {
-                      _openCategoryModal("doc_custom");
-                    }}
-                  >
-                    <MdSettings /> 설정
-                  </button>
-                </div>
-                <div className="form notInput">
-                  {docCustom.map((item, index) => {
-                    return <CustomList key={index}>{item.CT_NM}</CustomList>;
-                  })}
-                </div>
-              </CustomFormItem>
-            </CustomFormRow>
-          </>
-        )}
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">문서 위치 URL</p>
-            <input
-              value={docUrl}
-              onChange={_docUrlHandler}
-              className="form"
-              type="text"
-              placeholder="문서 파일이 위치한 URL을 입력하세요"
-            />
-          </CustomFormItem>
-          <CustomFormItem>
-            <p className="title">문서 안내 URL</p>
-            <input
-              value={docUrlIntro}
-              onChange={_docUrlIntroHandler}
-              className="form"
-              type="text"
-              placeholder="문서 안내 URL을 입력하세요"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <div className="title">
-              <p>HOST 도메인</p>
-              <button
-                onClick={() => {
-                  _openHostSelectModal();
-                }}
-              >
-                <MdSettings /> 설정
-              </button>
-            </div>
-            <div className="form notInput">{docHost && docHost.HOST}</div>
-          </CustomFormItem>
-          <CustomFormItem>
-            <p className="title">발급기관 명</p>
-            <input
-              value={docPublisher}
-              onChange={_docPublisherHandler}
-              className="form"
-              type="text"
-              placeholder="발급기관명을 입력해주세요."
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <div className="title">
-              <p>언어</p>
-              <button
-                onClick={() => {
-                  _openCategoryModal("doc_language");
-                }}
-              >
-                <MdSettings /> 선택
-              </button>
-            </div>
-            <div className="form notInput">
-              {docLanguage.map((item, index) => {
-                return <CustomList key={index}>{item.CT_NM}</CustomList>;
-              })}
-            </div>
-          </CustomFormItem>
-          <CustomFormItem>
-            <p className="title">페이지 수</p>
-            <input
-              value={docPage}
-              onChange={_docPageHandler}
-              className="form"
-              placeholder="문서의 페이지 수를 입력하세요"
-              type="number"
-              min="0"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">원문 작성일</p>
-            <input
-              value={docWriteDate}
-              onChange={_docWriteDateHandler}
-              className="form"
-              type="date"
-              placeholder="원문이 작성된 날짜를 입력하세요"
-            />
-          </CustomFormItem>
-          <CustomFormItem>
-            <p className="title">원문 발행일</p>
-            <input
-              value={docPublishDate}
-              onChange={_docPublishDateHandler}
-              className="form"
-              type="date"
-              placeholder="원문이 발행된 날짜를 입력하세요"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">데이터 수집일</p>
-            <input
-              value={docCollectDate}
-              onChange={_docCollectDateHandler}
-              className="form"
-              type="date"
-              placeholder="데이터를 수집한 날짜를 입력하세요"
-            />
-          </CustomFormItem>
-          <CustomFormItem>
-            <p className="title">서비스 등록일</p>
-            <input
-              value={docRegisterDate}
-              onChange={_docRegisterDateHandler}
-              className="form"
-              type="date"
-              placeholder="서비스에 문서를 등록한 날짜를 입력하세요"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">조사과제명</p>
-            <input
-              value={docProject}
-              onChange={_docProjectHandler}
-              className="form"
-              type="text"
-              placeholder="조사과제명을 입력하세요"
-            />
-          </CustomFormItem>
-          <CustomFormItem>
-            <p className="title">주문형 조사과제명의 세부과업명 </p>
-            <input
-              value={docPublishing}
-              onChange={_docPublishingHandler}
-              className="form"
-              type="text"
-              placeholder="주문형 조사과제명의 세부과업명을 입력하세요"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">연관문서 제목</p>
-            <input
-              value={docRelateTitle}
-              onChange={_docRelateTitleHandler}
-              className="form"
-              type="text"
-              placeholder="해당 문서와 연관된 문서의 제목을 입력하세요"
-            />
-          </CustomFormItem>
-          <CustomFormItem>
-            <p className="title">연관문서 URL </p>
-            <input
-              value={docRelateUrl}
-              onChange={_docRelateUrlHandler}
-              className="form"
-              type="text"
-              placeholder="해당 문서와 연관된 문서가 위치한 URL을 입력하세요"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">묶음문서 제목</p>
-            <input
-              value={docBundleTitle}
-              onChange={_docBundleTitleHandler}
-              className="form"
-              type="text"
-              placeholder="묶음 문서의 제목을 입력하세요"
-            />
-          </CustomFormItem>
-          <CustomFormItem>
-            <p className="title">묶음문서 URL </p>
-            <input
-              value={docBundleUrl}
-              onChange={_docBundleUrlHandler}
-              className="form"
-              type="text"
-              placeholder="묶음 문서가 위치한 URL을 입력하세요"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">큐레이션 추천문서</p>
-            <input
-              className="form"
-              type="text"
-              value={docRecomment}
-              onChange={_docRecommentHandler}
-              maxlength = "1"
-              placeholder="큐레이션 추천 등급을 입력하세요. (알파벳 하나만 입력가능)"
-            />
-          </CustomFormItem>
-          <CustomFormItem>
-            <p className="title">서지사항 </p>
-            <input
-              value={docBiblio}
-              onChange={_docBiblioHandler}
-              className="form"
-              type="text"
-              placeholder="문서의 서지사항을 입력하세요"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">키워드</p>
-            <input
-              className="form"
-              type="text"
-              placeholder="문서의 키워드를 입력하세요"
-              value={docKeywordString}
-              onChange={_docKeywordStringHandler}
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        <CustomFormRow>
-          <CustomFormItem>
-            <p className="title">관리자 메모</p>
-            <input
-              className="form"
-              type="text"
-              value={docMemo}
-              onChange={_docMemoHandler}
-              placeholder="관리자 전용 메모를 입력하세요"
-            />
-          </CustomFormItem>
-        </CustomFormRow>
-        {(type === "curation" || type === "archive") && (
-          <>
-            <CustomFormRow>
-              <CustomFormItem>
-                <p className="title">내용</p>
+    <Wrap>
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">원제목</p>
+          <input
+            value={docOriginTitle}
+            onChange={_docOriginTitleHandler}
+            className="form"
+            type="text"
+            placeholder="원문 제목을 입력하세요"
+          />
+        </CustomFormItem>
+        <CustomFormItem>
+          <p className="title">한글제목</p>
+          <input
+            value={docKorTitle}
+            onChange={_docKorTitleHandler}
+            className="form"
+            type="text"
+            placeholder="한글 제목을 입력하세요"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">원문 요약</p>
+          <input
+            value={docOriginSummary}
+            onChange={_docOriginSummaryHandler}
+            className="form"
+            type="text"
+            placeholder="원문 요약을 입력하세요"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">한글 요약</p>
+          <input
+            value={docKorSummary}
+            onChange={_docKorSummaryHandler}
+            className="form"
+            type="text"
+            placeholder="한글 요약을 입력하세요"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      {type !== "refine" && (
+        <>
+          <CustomFormRow>
+            <CustomFormItem>
+              <div className="title">
+                <p>문서 정책 분류</p>
+                <button
+                  onClick={() => {
+                    _openCategoryModal("doc_category");
+                  }}
+                >
+                  <MdSettings /> 설정
+                </button>
+              </div>
+              <div className="form notInput">
+                {docCategory.map((item, index) => {
+                  return <CustomList key={index}>{item.CT_NM}</CustomList>;
+                })}
+              </div>
+            </CustomFormItem>
+            <CustomFormItem>
+              <div className="title">
+                <p>문서 토픽 분류</p>
+                <button
+                  onClick={() => {
+                    _openCategoryModal("doc_topic");
+                  }}
+                >
+                  <MdSettings /> 설정
+                </button>
+              </div>
+              <div className="form notInput">
+                {docTopic.map((item, index) => {
+                  return <CustomList key={index}>{item.CT_NM}</CustomList>;
+                })}
+              </div>
+            </CustomFormItem>
+          </CustomFormRow>
+          <CustomFormRow>
+            <CustomFormItem>
+              <div className="title">
+                <p>문서 대상 국가</p>
+                <button
+                  onClick={() => {
+                    _openCategoryModal("doc_country");
+                  }}
+                >
+                  <MdSettings /> 설정
+                </button>
+              </div>
+              <div className="form notInput">
+                {docCountry.map((item, index) => {
+                  return <CustomList key={index}>{item.CT_NM}</CustomList>;
+                })}
+              </div>
+            </CustomFormItem>
+            <CustomFormItem>
+              <div className="title">
+                <p>문서 발급 국가</p>
+                <button
+                  onClick={() => {
+                    _openCategoryModal("doc_publish_country");
+                  }}
+                >
+                  <MdSettings /> 설정
+                </button>
+              </div>
+              <div className="form notInput">
+                {docPublishCountry.map((item, index) => {
+                  return <CustomList key={index}>{item.CT_NM}</CustomList>;
+                })}
+              </div>
+            </CustomFormItem>
+          </CustomFormRow>
+          <CustomFormRow>
+            <CustomFormItem>
+              <div className="title">
+                <p>문서 유형 분류</p>
+                <button
+                  onClick={() => {
+                    _openCategoryModal("doc_content_type");
+                  }}
+                >
+                  <MdSettings /> 설정
+                </button>
+              </div>
+              <div className="form notInput">
+                {docContentType.map((item, index) => {
+                  return <CustomList key={index}>{item.CT_NM}</CustomList>;
+                })}
+              </div>
+            </CustomFormItem>
+            <CustomFormItem>
+              <div className="title">
+                <p>문서 내용 구분 분류</p>
+                <button
+                  onClick={() => {
+                    _openCategoryModal("doc_content_category");
+                  }}
+                >
+                  <MdSettings /> 설정
+                </button>
+              </div>
+              <div className="form notInput">
+                {docContentCategory.map((item, index) => {
+                  return <CustomList key={index}>{item.CT_NM}</CustomList>;
+                })}
+              </div>
+            </CustomFormItem>
+          </CustomFormRow>
+          <CustomFormRow>
+            <CustomFormItem>
+              <div className="title">
+                <p>기관맞춤형 분류</p>
+                <button
+                  onClick={() => {
+                    _openCategoryModal("doc_custom");
+                  }}
+                >
+                  <MdSettings /> 설정
+                </button>
+              </div>
+              <div className="form notInput">
+                {docCustom.map((item, index) => {
+                  return <CustomList key={index}>{item.CT_NM}</CustomList>;
+                })}
+              </div>
+            </CustomFormItem>
+          </CustomFormRow>
+        </>
+      )}
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">문서 위치 URL</p>
+          <input
+            value={docUrl}
+            onChange={_docUrlHandler}
+            className="form"
+            type="text"
+            placeholder="문서 파일이 위치한 URL을 입력하세요"
+          />
+        </CustomFormItem>
+        <CustomFormItem>
+          <p className="title">문서 안내 URL</p>
+          <input
+            value={docUrlIntro}
+            onChange={_docUrlIntroHandler}
+            className="form"
+            type="text"
+            placeholder="문서 안내 URL을 입력하세요"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <div className="title">
+            <p>HOST 도메인</p>
+            <button
+              onClick={() => {
+                _openHostSelectModal();
+              }}
+            >
+              <MdSettings /> 설정
+            </button>
+          </div>
+          <div className="form notInput">{docHost && docHost.HOST}</div>
+        </CustomFormItem>
+        <CustomFormItem>
+          <p className="title">발급기관 명</p>
+          <input
+            value={docPublisher}
+            onChange={_docPublisherHandler}
+            className="form"
+            type="text"
+            placeholder="발급기관명을 입력해주세요."
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <div className="title">
+            <p>언어</p>
+            <button
+              onClick={() => {
+                _openCategoryModal("doc_language");
+              }}
+            >
+              <MdSettings /> 선택
+            </button>
+          </div>
+          <div className="form notInput">
+            {docLanguage.map((item, index) => {
+              return <CustomList key={index}>{item.CT_NM}</CustomList>;
+            })}
+          </div>
+        </CustomFormItem>
+        <CustomFormItem>
+          <p className="title">페이지 수</p>
+          <input
+            value={docPage}
+            onChange={_docPageHandler}
+            className="form"
+            placeholder="문서의 페이지 수를 입력하세요"
+            type="number"
+            min="0"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">원문 작성일</p>
+          <input
+            value={docWriteDate}
+            onChange={_docWriteDateHandler}
+            className="form"
+            type="date"
+            placeholder="원문이 작성된 날짜를 입력하세요"
+          />
+        </CustomFormItem>
+        <CustomFormItem>
+          <p className="title">원문 발행일</p>
+          <input
+            value={docPublishDate}
+            onChange={_docPublishDateHandler}
+            className="form"
+            type="date"
+            placeholder="원문이 발행된 날짜를 입력하세요"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">데이터 수집일</p>
+          <input
+            value={docCollectDate}
+            onChange={_docCollectDateHandler}
+            className="form"
+            type="date"
+            placeholder="데이터를 수집한 날짜를 입력하세요"
+          />
+        </CustomFormItem>
+        <CustomFormItem>
+          <p className="title">서비스 등록일</p>
+          <input
+            value={docRegisterDate}
+            onChange={_docRegisterDateHandler}
+            className="form"
+            type="date"
+            placeholder="서비스에 문서를 등록한 날짜를 입력하세요"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">조사과제명</p>
+          <input
+            value={docProject}
+            onChange={_docProjectHandler}
+            className="form"
+            type="text"
+            placeholder="조사과제명을 입력하세요"
+          />
+        </CustomFormItem>
+        <CustomFormItem>
+          <p className="title">주문형 조사과제명의 세부과업명 </p>
+          <input
+            value={docPublishing}
+            onChange={_docPublishingHandler}
+            className="form"
+            type="text"
+            placeholder="주문형 조사과제명의 세부과업명을 입력하세요"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">연관문서 제목</p>
+          <input
+            value={docRelateTitle}
+            onChange={_docRelateTitleHandler}
+            className="form"
+            type="text"
+            placeholder="해당 문서와 연관된 문서의 제목을 입력하세요"
+          />
+        </CustomFormItem>
+        <CustomFormItem>
+          <p className="title">연관문서 URL </p>
+          <input
+            value={docRelateUrl}
+            onChange={_docRelateUrlHandler}
+            className="form"
+            type="text"
+            placeholder="해당 문서와 연관된 문서가 위치한 URL을 입력하세요"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">묶음문서 제목</p>
+          <input
+            value={docBundleTitle}
+            onChange={_docBundleTitleHandler}
+            className="form"
+            type="text"
+            placeholder="묶음 문서의 제목을 입력하세요"
+          />
+        </CustomFormItem>
+        <CustomFormItem>
+          <p className="title">묶음문서 URL </p>
+          <input
+            value={docBundleUrl}
+            onChange={_docBundleUrlHandler}
+            className="form"
+            type="text"
+            placeholder="묶음 문서가 위치한 URL을 입력하세요"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">큐레이션 추천문서</p>
+          <input
+            className="form"
+            type="text"
+            value={docRecomment}
+            onChange={_docRecommentHandler}
+            maxlength="1"
+            placeholder="큐레이션 추천 등급을 입력하세요. (알파벳 하나만 입력가능)"
+          />
+        </CustomFormItem>
+        <CustomFormItem>
+          <p className="title">서지사항 </p>
+          <input
+            value={docBiblio}
+            onChange={_docBiblioHandler}
+            className="form"
+            type="text"
+            placeholder="문서의 서지사항을 입력하세요"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">키워드</p>
+          <input
+            className="form"
+            type="text"
+            placeholder="문서의 키워드를 입력하세요"
+            value={docKeywordString}
+            onChange={_docKeywordStringHandler}
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      <CustomFormRow>
+        <CustomFormItem>
+          <p className="title">관리자 메모</p>
+          <input
+            className="form"
+            type="text"
+            value={docMemo}
+            onChange={_docMemoHandler}
+            placeholder="관리자 전용 메모를 입력하세요"
+          />
+        </CustomFormItem>
+      </CustomFormRow>
+      {(type === "curation" || type === "archive") && (
+        <>
+          <CustomFormRow>
+            <CustomFormItem>
+              <p className="title">내용</p>
+              <div className="content-box">
                 <Editor
                   data={docContent}
                   _docContentHandler={_docContentHandler}
                   _id={_id}
                 />
-              </CustomFormItem>
-            </CustomFormRow>
-            <CustomFormRow>
-              <CustomFormItem>
-                <p className="title">표지 파일</p>
-                <ImageContainer>
-                  {type === "curation" ? (
-                    <label>
-                      <img className="cover" src={`http://${docThumbnail}`} />
-                    </label>
-                  ) : (
-                    docThumbnail.map((item, index) => {
-                      return (
-                        <div key={index}>
-                          <input
-                            type="radio"
-                            id={index}
-                            value={item}
-                            name="cover"
-                            onChange={_docThumbnailSelectHandler}
-                            checked={docThumbnailSelect === item}
+              </div>
+            </CustomFormItem>
+          </CustomFormRow>
+          <CustomFormRow>
+            <CustomFormItem>
+              <p className="title">표지 파일</p>
+              <ImageContainer>
+                {type === "curation" ? (
+                  <label>
+                    <img
+                      className="cover"
+                      src={`http://${docThumbnail}`}
+                      alt="썸네일"
+                    />
+                  </label>
+                ) : (
+                  docThumbnail.map((item, index) => {
+                    return (
+                      <ThumbnailWrap
+                        selected={docThumbnailSelect === item}
+                        key={index}
+                      >
+                        <input
+                          type="radio"
+                          id={index}
+                          value={item}
+                          name="cover"
+                          onChange={_docThumbnailSelectHandler}
+                          checked={docThumbnailSelect === item}
+                        />
+                        <label htmlFor={index}>
+                          <img
+                            className="cover"
+                            src={`http://${item}`}
+                            alt="썸네일"
                           />
-                          <label htmlFor={index}>
-                            <img className="cover" src={`http://${item}`} />
-                          </label>
-                        </div>
-                      );
-                    })
-                  )}
-                </ImageContainer>
-              </CustomFormItem>
-            </CustomFormRow>
-          </>
-        )}
-      </Wrapper>
-    </>
+                        </label>
+                      </ThumbnailWrap>
+                    );
+                  })
+                )}
+              </ImageContainer>
+            </CustomFormItem>
+          </CustomFormRow>
+        </>
+      )}
+    </Wrap>
   );
 }
 
-const Wrapper = styled.div`
+const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-width: 1024px;
+  border: 1px solid ${tailwindColors["grey-400"]};
 `;
 const CustomFormItem = styled.div`
+  flex: 1;
   display: flex;
   align-items: center;
   min-height: 3rem;
   overflow: hidden;
-  width: 100%;
-  font-size: 12px;
-  border-bottom: dotted 1px #ccc;
+  font-size: 14px;
+  border-bottom: dotted 1px ${tailwindColors["grey-300"]};
+
   .title {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin: 0;
-    background-color: rgba(0, 0, 0, 0.02);
+    width: 10rem;
     height: 100%;
-    min-width: 10rem;
-    border-right: solid 2px #d6d6d6;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    background-color: ${tailwindColors["grey-300"]};
+    text-align: center;
+
     button {
       display: inherit;
       align-items: center;
+      height: 1.5rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 7.5rem;
+      background-color: ${tailwindColors["grey-400"]};
     }
   }
+
+  & .content-box {
+    flex: 1;
+  }
+
   .form {
-    background-color: #eeffdb;
-    width: 100%;
-    padding-left: 1rem;
+    flex: 1;
+    background-color: ${tailwindColors.white};
+    padding: 0.5rem 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
     border: none;
     height: 100%;
-    &:focus {
-      outline: none;
-    }
   }
   .textarea {
     padding-top: 2rem;
   }
   .notInput {
-    background-color: white;
-    height: 5rem;
+    flex-wrap: wrap;
     justify-content: left;
+    column-gap: 0.5rem;
+    row-gap: 0.2rem;
+    background-color: ${tailwindColors.white};
   }
 `;
 
 const CustomFormRow = styled.div`
   display: flex;
-  flex-direction: row;
   width: 100%;
 `;
 
 const CustomList = styled.div`
   padding: 0.5rem 1rem;
-  margin: 0.5rem;
-  background-color: #eee;
+  background-color: ${tailwindColors["grey-300"]};
   min-width: 4rem;
   text-align: center;
   border-radius: 1rem;
@@ -844,21 +865,15 @@ const CustomList = styled.div`
 `;
 
 const ImageContainer = styled.div`
+  flex: 1;
   display: flex;
-  margin: 2rem;
+  flex-wrap: wrap;
+  padding: 2rem;
+  background-color: ${tailwindColors.white};
+
   input[type="radio"] {
     margin: 10px;
     display: none;
-  }
-  input:checked + label > img {
-    border: solid 2px #009999;
-  }
-  input + label > img {
-    transition: all 0.2s;
-    &:hover {
-      transform: scale(1.1);
-      border: solid 2px red;
-    }
   }
 
   label {
@@ -866,7 +881,18 @@ const ImageContainer = styled.div`
     img {
       cursor: pointer;
       height: 20rem;
+      object-fit: contain;
     }
+  }
+`;
+
+const ThumbnailWrap = styled.div`
+  height: 20rem;
+  border: ${(props) => props.selected && `0.3rem solid ${myColors.red}`};
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-0.5rem);
   }
 `;
 
