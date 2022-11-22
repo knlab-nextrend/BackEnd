@@ -1,6 +1,4 @@
 import React from "react";
-import FormHeader from "../../../Components/FormHeader";
-import SearchBar from "../../../Components/SearchBar";
 import styled from "styled-components";
 import {
   MdUpload,
@@ -10,6 +8,11 @@ import {
   MdOutlineCheck,
   MdClose,
 } from "react-icons/md";
+import { BsTranslate } from "react-icons/bs";
+
+import SearchBar from "Components/SearchBar";
+import { WorkerContentHeader } from "Components/WorkerContentHeader";
+
 function MultilingualDictionary({
   dataAddOpen,
   dataAddOpenHandler,
@@ -26,29 +29,38 @@ function MultilingualDictionary({
   addWord,
   addWordDataHandler,
   wordDataUpload,
-  wordDataDownload
+  wordDataDownload,
 }) {
   return (
-    <>
-      <FormHeader type={"view"} title={"다국어 사전 관리"} />
-      <Wrapper>
+    <Wrap>
+      <WorkerContentHeader title="다국어 사전 관리" Icon={BsTranslate} />
+      <Content>
         <ContentContainer>
           <div className="content-title">
             <div className="main-title">
-              검색에 사용할 다국어 단어 정의를 추가해주세요. 검색은 검색어를 포함한 결과를 표출합니다.
+              검색에 사용할 다국어 단어 정의를 추가해주세요. 검색은 검색어를
+              포함한 결과를 표출합니다.
             </div>
           </div>
           <div className="content-body">
             <DictionaryFunctionWrapper>
               <ShortSearchBar>
-                <SearchBar keywordHandler={keywordHandler} searchAction={search}/>
+                <SearchBar
+                  keywordHandler={keywordHandler}
+                  searchAction={search}
+                />
               </ShortSearchBar>
               <DictionaryFunctionBtnWrapper>
                 <label htmlFor="excel-upload">
                   <MdUpload size="20" />
                   사전 데이터 일괄 업로드
                 </label>
-                <input id="excel-upload" type="file" accept=".xlsx" onChange={wordDataUpload}/>
+                <input
+                  id="excel-upload"
+                  type="file"
+                  accept=".xlsx"
+                  onChange={wordDataUpload}
+                />
                 <button onClick={wordDataDownload}>
                   <MdDownload size="20" />
                   사전 데이터 다운로드
@@ -70,9 +82,7 @@ function MultilingualDictionary({
                   <th className="select">
                     <input type="checkbox" />
                   </th>
-                  <th>
-                    다국어 단어 정의
-                  </th>
+                  <th>다국어 단어 정의</th>
                   <th className="setting">관리</th>
                 </tr>
               </thead>
@@ -151,17 +161,27 @@ function MultilingualDictionary({
             </DataAddContainer>
           </div>
         </ContentContainer>
-      </Wrapper>
-    </>
+      </Content>
+    </Wrap>
   );
 }
 
-const Wrapper = styled.div`
+const Wrap = styled.div`
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 1024px;
+  width: 100%;
+  padding: 1.5rem 3rem;
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+
   font-size: 14px;
-  min-height: 1280px;
-  background-color: #eee;
-  color: rgb(59, 59, 59);
 `;
 
 const ShortSearchBar = styled.div`
@@ -198,11 +218,12 @@ const DictionaryFunctionWrapper = styled.div`
 `;
 const DictionaryFunctionBtnWrapper = styled.div`
   display: flex;
-  input[type=file]{
-    display:none;
+  input[type="file"] {
+    display: none;
   }
-  button,label {
-    cursor:pointer;
+  button,
+  label {
+    cursor: pointer;
     margin: 0.5rem;
     font-size: 12px;
     display: flex;
@@ -271,25 +292,25 @@ const DictonaryDataTable = styled.table`
 
 const DataAddContainer = styled.div`
   display: flex;
-  margin:1rem;
-  & *{
-    margin-right:1rem;
+  margin: 1rem;
+  & * {
+    margin-right: 1rem;
   }
   button {
-    padding:0.5rem;
+    padding: 0.5rem;
     font-size: 12px;
     background-color: #435269;
     color: white;
     border: solid 1px rgba(0, 0, 0, 0.1);
     border-radius: 4px;
-    cursor:pointer;
+    cursor: pointer;
   }
-  input[type=text]{
-    height:85%;
-    min-width:300px;
-    padding-left:0.5rem;
-    &:focus{
-      outline:none;
+  input[type="text"] {
+    height: 85%;
+    min-width: 300px;
+    padding-left: 0.5rem;
+    &:focus {
+      outline: none;
     }
   }
 `;

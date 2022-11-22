@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { CrawlDataListFetchApi, sessionHandler } from "../../../Utils/api";
-import CrawlDataList from "./CrawlDataList";
 import { useDispatch } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
-import { LoadingWrapper } from "../../../Components/LoadingWrapper";
+
+import { CrawlDataListFetchApi, sessionHandler } from "Utils/api";
+import { LoadingWrapper } from "Components/LoadingWrapper";
+
+import CrawlDataList from "./CrawlDataList";
 
 function CrawlDataListContainer() {
   const dispatch = useDispatch();
@@ -30,29 +32,6 @@ function CrawlDataListContainer() {
     const code = isKeep ? Number(statusCode) + 1 : Number(statusCode);
     setCurrentCode(code);
   }, [isKeep]);
-
-  const STATUS_CODE_SET = {
-    2: {
-      type: "refine",
-      mainTitle: "크롤데이터 정제 작업 데이터 목록",
-      title: "크롤데이터 정제 진행",
-    },
-    3: {
-      type: "refine",
-      mainTitle: "크롤데이터 정제 작업 데이터 목록",
-      title: "크롤데이터 정제 진행",
-    },
-    4: {
-      type: "register",
-      mainTitle: "크롤데이터 등록(아카이빙) 작업 데이터 목록",
-      title: "크롤데이터 등록(아카이빙) 진행",
-    },
-    5: {
-      type: "register",
-      mainTitle: "크롤데이터 등록(아카이빙) 작업 데이터 목록",
-      title: "크롤데이터 등록(아카이빙) 진행",
-    },
-  };
 
   const dataCleansing = (rawData) => {
     let _crawlDataList = [];
@@ -121,7 +100,6 @@ function CrawlDataListContainer() {
         setListSize={setListSize}
         pageNo={pageNo}
         setPageNo={setPageNo}
-        STATUS_CODE_SET={STATUS_CODE_SET}
         onChangeKeepToggle={onChangeKeepToggle}
         isKeep={isKeep}
         dataFilterFetch={dataFilterFetch}

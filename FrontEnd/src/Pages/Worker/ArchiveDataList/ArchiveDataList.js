@@ -1,13 +1,16 @@
 import React from "react";
-import FormHeader from "../../../Components/FormHeader";
-import Pagination from "../../../Components/Pagination";
-import DataFilter from "../../../Components/DataFilter";
-import DataTable from "../../../Components/DataTable";
-import ToggleButton from "../../../Components/ToggleButton";
-import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { HiOutlineExternalLink, HiOutlineDocumentSearch } from "react-icons/hi";
+import styled from "styled-components";
+import { HiOutlineDocumentSearch } from "react-icons/hi";
 import { CgFileDocument } from "react-icons/cg";
+import { BsInboxes } from "react-icons/bs";
+
+import Pagination from "Components/Pagination";
+import DataFilter from "Components/DataFilter";
+import DataTable from "Components/DataTable";
+import ToggleButton from "Components/ToggleButton";
+import { WorkerContentHeader } from "Components/WorkerContentHeader";
+
 function ArchiveDataList({
   archiveDataList,
   statusCode,
@@ -24,13 +27,9 @@ function ArchiveDataList({
     setListSize(e.target.value);
   };
   return (
-    <>
-      <FormHeader
-        type="view"
-        title={"큐레이션 데이터 등록(아카이브 데이터 조회)"}
-      />
-
-      <Wrapper>
+    <Wrap>
+      <WorkerContentHeader title="아카이브" Icon={BsInboxes} />
+      <Content>
         <RowContainer>
           <Row>
             <div className="result-count">
@@ -85,10 +84,27 @@ function ArchiveDataList({
             </SearchResultNotthingContainer>
           </>
         )}
-      </Wrapper>
-    </>
+      </Content>
+    </Wrap>
   );
 }
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 1024px;
+  width: 100%;
+  padding: 1.5rem 3rem;
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  font-size: 14px;
+`;
 
 const SearchResultNotthingContainer = styled.div`
   display: flex;
@@ -135,14 +151,6 @@ const Row = styled.div`
     padding: 0.5rem;
     border: solid 1px #d6d6d6;
   }
-`;
-
-const Wrapper = styled.div`
-  margin: 0 5rem 5rem 5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 14px;
 `;
 
 const TableWrapper = styled.div`
