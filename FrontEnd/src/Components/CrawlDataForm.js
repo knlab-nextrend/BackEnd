@@ -744,7 +744,7 @@ function CrawlDataForm({ docs, type, _id }, ref) {
                 {type === "curation" ? (
                   <label>
                     <img
-                      className="cover"
+                      className="curation-thumbnail"
                       src={`http://${docThumbnail}`}
                       alt="썸네일"
                     />
@@ -877,22 +877,27 @@ const ImageContainer = styled.div`
   }
 
   label {
-    margin-right: 2rem;
     img {
       cursor: pointer;
-      height: 20rem;
       object-fit: contain;
     }
+  }
+  .curation-thumbnail {
+    height: 20rem;
   }
 `;
 
 const ThumbnailWrap = styled.div`
   height: 20rem;
-  border: ${(props) => props.selected && `0.3rem solid ${myColors.red}`};
   transition: transform 0.2s;
 
   &:hover {
     transform: translateY(-0.5rem);
+  }
+
+  & img {
+    border: ${(props) => props.selected && `0.3rem solid ${myColors.red}`};
+    height: 100%;
   }
 `;
 
