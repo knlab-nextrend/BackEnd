@@ -7,9 +7,9 @@ import Pagination from "Components/Pagination";
 import NoData from "Components/NoData";
 import DataFilter from "Components/DataFilter";
 import DataTable from "Components/DataTable";
-import ToggleButton from "Components/ToggleButton";
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
 import { SearchResultCount } from "Components/SearchResultCount";
+import { Tab } from "Components/Tab";
 
 function CrawlDataScreening({
   dcCount,
@@ -25,8 +25,8 @@ function CrawlDataScreening({
   onChangeCheckedAll,
   checkedAll,
   onChangeEach,
-  isKeep,
-  onChangeKeepToggle,
+  selectedTab,
+  onClickTab,
   dataFilterFetch,
 }) {
   const _listSizeHandler = (e) => {
@@ -40,12 +40,6 @@ function CrawlDataScreening({
         <RowContainer>
           <Row>
             <div className="action-group">
-              <ToggleButton
-                mode1={"스크리닝 대기"}
-                mode2={"스크리닝 보류"}
-                action={onChangeKeepToggle}
-                checked={isKeep}
-              />
               <ScreeningButton
                 className="screening-button"
                 onClick={stageScreeningData}
@@ -72,6 +66,18 @@ function CrawlDataScreening({
             <DataFilter type={"screening"} dataFilterFetch={dataFilterFetch} />
           </Row>
         </RowContainer>
+        <Tab>
+          <Tab.Item
+            label="대기"
+            selected={selectedTab === "스크리닝 대기"}
+            onClick={() => onClickTab("스크리닝 대기")}
+          />
+          <Tab.Item
+            label="보류"
+            selected={selectedTab === "스크리닝 보류"}
+            onClick={() => onClickTab("스크리닝 보류")}
+          />
+        </Tab>
         {screeningData.length !== 0 ? (
           <>
             <DataTable

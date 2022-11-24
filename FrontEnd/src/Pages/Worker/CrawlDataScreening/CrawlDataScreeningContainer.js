@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { trackPromise } from "react-promise-tracker";
+import { LoadingWrapper } from "Components/LoadingWrapper";
+
 import {
   ScreeningDataFetchApi,
   ScreeningDataStageApi,
   ScreeningDataDeleteApi,
   ScreeningDataKeepApi,
   sessionHandler,
-} from "../../../Utils/api";
+} from "Utils/api";
 import CrawlDataScreening from "./CrawlDataScreening";
-import { useDispatch } from "react-redux";
-import { trackPromise } from "react-promise-tracker";
-import { LoadingWrapper } from "../../../Components/LoadingWrapper";
+
+const TAB_VALUES = {
+  "스크리닝 대기": false,
+  "스크리닝 보류": true,
+};
 
 function CrawlDataScreeningContainer() {
   const dispatch = useDispatch();
@@ -25,16 +31,19 @@ function CrawlDataScreeningContainer() {
 
   /* 완료, 보류, 삭제 전체선택 구현하기 */
 
-  const [isKeep, setIsKeep] = useState(false);
+  const [isKeep, setIsKeep] = useState(TAB_VALUES["스크리닝 대기"]);
   const [itemList, setItemList] = useState([]); // {id,status} 객체 리스트로 구성되어 있음.
   const [checkedAll, setCheckedAll] = useState("delete"); // 전체선택 기본값은 delete
   const [stageDataList, setStageDataList] = useState([]);
   const [keepDataList, setKeepDataList] = useState([]);
   const [deleteDataList, setDeleteDataList] = useState([]); // 기본 값은 delete
+  const [selectedTab, setSelectedTab] = useState("스크리닝 대기");
 
-  const onChangeKeepToggle = () => {
-    setIsKeep(!isKeep);
+  const onClickTab = (tabName) => {
+    setSelectedTab(tabName);
+    setIsKeep(TAB_VALUES[tabName]);
   };
+
   const onChangeCheckedAll = (e) => {
     if (e.target.checked) {
       setCheckedAll(e.target.value);
@@ -181,8 +190,8 @@ function CrawlDataScreeningContainer() {
         stageDataList={stageDataList}
         keepDataList={keepDataList}
         deleteDataList={deleteDataList}
-        isKeep={isKeep}
-        onChangeKeepToggle={onChangeKeepToggle}
+        selectedTab={selectedTab}
+        onClickTab={onClickTab}
         dataFilterFetch={dataFilterFetch}
       />
     </LoadingWrapper>

@@ -5,16 +5,17 @@ import { BsJournals } from "react-icons/bs";
 import { MdCalendarViewDay } from "react-icons/md";
 import { RiFileList2Line } from "react-icons/ri";
 
-import { myColors, tailwindColors } from "styles/colors";
+import { myColors } from "styles/colors";
 import Pagination from "Components/Pagination";
 import CurationDataCard from "Components/CurationDataCard";
 import CurationDataCard2 from "Components/CurationDataCard2";
 import NoData from "Components/NoData";
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
+import { SearchResultCount } from "Components/SearchResultCount";
+import { Tab } from "Components/Tab";
 
 import { CurationTable } from "./_CurationTable";
 import { CurationSearch } from "./_Search";
-import { SearchResultCount } from "Components/SearchResultCount";
 
 function CurationDataList({
   curationDataList,
@@ -95,13 +96,24 @@ function CurationDataList({
         onSubmitSearch={onSubmitSearch}
       />
       <RowWrap justify="space-between">
-        <TabGroup>
-          {["전체", "크롤 데이터", "수동 데이터"].map((v) => (
-            <Tab selected={selectedTab === v} onClick={() => onClickTab(v)}>
-              {v}
-            </Tab>
-          ))}
-        </TabGroup>
+        <Tab>
+          <Tab.Item
+            label="전체"
+            selected={selectedTab === "전체"}
+            onClick={() => onClickTab("전체")}
+          />
+          <Tab.Item
+            label="크롤 데이터"
+            selected={selectedTab === "크롤 데이터"}
+            onClick={() => onClickTab("크롤 데이터")}
+          />
+          <Tab.Item
+            label="수동 데이터"
+            selected={selectedTab === "수동 데이터"}
+            onClick={() => onClickTab("수동 데이터")}
+          />
+        </Tab>
+
         <select
           className="list-size"
           value={listSize}
@@ -129,6 +141,7 @@ function CurationDataList({
               {curationDataList.map((item, index) => {
                 return (
                   <CustomLink
+                    key={index}
                     to={`/${
                       userInfo.permission !== 0 ? "curation" : "library"
                     }/${item._id}`}
@@ -146,6 +159,7 @@ function CurationDataList({
               {curationDataList.map((item, index) => {
                 return (
                   <CustomLink
+                    key={index}
                     to={`/${
                       userInfo.permission !== 0 ? "curation" : "library"
                     }/${item._id}`}
@@ -217,17 +231,12 @@ const RowWrap = styled.div`
   }
 `;
 
-const CurationListWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-size: 14px;
-  width: 100%;
-`;
 const CurationCard1Wrapper = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
 `;
+
 const CurationCard2Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -237,23 +246,6 @@ const CurationCard2Wrapper = styled.div`
 const CustomLink = styled(Link)`
   text-decoration: none;
   color: black;
-`;
-
-const TabGroup = styled.div`
-  display: flex;
-  align-items: center;
-  align-self: flex-start;
-`;
-
-const Tab = styled.div`
-  padding: 0.5rem 1rem;
-  border-bottom: 0.2rem solid ${tailwindColors.white};
-  border-bottom-color: ${(props) => props.selected && myColors.blue400};
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: ${(props) =>
-    props.selected ? myColors.blue400 : tailwindColors["grey-600"]};
-  cursor: pointer;
 `;
 
 const PaginationWrap = styled.div`

@@ -6,10 +6,10 @@ import { STATUS_CODE_SET } from "Data/crawlStatus";
 import Pagination from "Components/Pagination";
 import NoData from "Components/NoData";
 import DataFilter from "Components/DataFilter";
-import ToggleButton from "Components/ToggleButton";
 import DataTable from "Components/DataTable";
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
 import { SearchResultCount } from "Components/SearchResultCount";
+import { Tab } from "Components/Tab";
 
 function CrawlDataList({
   statusCode,
@@ -19,8 +19,8 @@ function CrawlDataList({
   pageNo,
   setPageNo,
   crawlDataList,
-  onChangeKeepToggle,
-  isKeep,
+  selectedTab,
+  onClickTab,
   dataFilterFetch,
 }) {
   const _listSizeHandler = (e) => {
@@ -38,12 +38,6 @@ function CrawlDataList({
         <RowContainer>
           <Row>
             <div className="action-group">
-              <ToggleButton
-                mode1={"대기"}
-                mode2={"보류"}
-                action={onChangeKeepToggle}
-                checked={isKeep}
-              />
               <select
                 className="list-size"
                 value={listSize}
@@ -66,6 +60,19 @@ function CrawlDataList({
             />
           </Row>
         </RowContainer>
+        <Tab>
+          <Tab.Item
+            label="대기"
+            selected={selectedTab === "대기"}
+            onClick={() => onClickTab("대기")}
+          />
+          <Tab.Item
+            label="보류"
+            selected={selectedTab === "보류"}
+            onClick={() => onClickTab("보류")}
+          />
+        </Tab>
+
         {crawlDataList.length !== 0 ? (
           <>
             <SearchResult>

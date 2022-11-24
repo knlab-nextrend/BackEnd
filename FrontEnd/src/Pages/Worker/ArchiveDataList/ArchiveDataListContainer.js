@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 import ArchiveDataList from "./ArchiveDataList";
-import { CrawlDataListFetchApi, sessionHandler } from "../../../Utils/api";
 import { useDispatch } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
-import { LoadingWrapper } from "../../../Components/LoadingWrapper";
+
+import { CrawlDataListFetchApi, sessionHandler } from "Utils/api";
+import { LoadingWrapper } from "Components/LoadingWrapper";
+
+const TAB_VALUES = {
+  "아카이브 문서": 6,
+  "큐레이션 선정 문서": 7,
+};
+
+const STATUS_CODE = 6;
 
 function ArchiveDataListContainer() {
   const dispatch = useDispatch();
@@ -14,13 +22,12 @@ function ArchiveDataListContainer() {
   const [dcCount, setDcCount] = useState(0); // document 총 개수
   const [pageNo, setPageNo] = useState(1); // 현재 활성화 된 페이지 번호
   const [listSize, setListSize] = useState(10); // 한 페이지에 나타낼 document 개수
+  const [selectedTab, setSelectedTab] = useState("아카이브 문서");
 
-  const [isRequest, setIsRequest] = useState(false); // 큐레이션 선정 여부
-  const onChangeRequestToggle = () => {
-    setIsRequest(!isRequest);
+  const onClickTab = (tabName) => {
+    setSelectedTab(tabName);
   };
-  const statusCode = 6;
-  const [currentCode, setCurrentCode] = useState(statusCode);
+
   /* 데이터 정제하기 */
   const dataCleansing = (rawData) => {
     let _archiveDataList = [];
@@ -57,14 +64,19 @@ function ArchiveDataListContainer() {
   /* 데이터 불러오기 */
   const dataFetch = (searchObj = null) => {
     trackPromise(
-      CrawlDataListFetchApi(currentCode, listSize, pageNo, searchObj)
+      CrawlDataListFetchApi(
+        TAB_VALUES[selectedTab],
+        listSize,
+        pageNo,
+        searchObj
+      )
         .then((res) => {
           dataCleansing(res.data);
         })
         .catch((err) => {
           sessionHandler(err, dispatch).then((res) => {
             CrawlDataListFetchApi(
-              currentCode,
+              TAB_VALUES[selectedTab],
               listSize,
               pageNo,
               searchObj
@@ -78,26 +90,21 @@ function ArchiveDataListContainer() {
 
   useEffect(() => {
     dataFetch(searchObj);
-  }, [currentCode, pageNo, listSize, searchObj]);
-
-  useEffect(() => {
-    const code = isRequest ? Number(statusCode) + 1 : Number(statusCode);
-    setCurrentCode(code);
-  }, [isRequest]);
+  }, [selectedTab, pageNo, listSize, searchObj]);
 
   return (
     <LoadingWrapper>
       <ArchiveDataList
         archiveDataList={archiveDataList}
-        statusCode={statusCode}
+        statusCode={STATUS_CODE}
         dcCount={dcCount}
         listSize={listSize}
         setListSize={setListSize}
         pageNo={pageNo}
         setPageNo={setPageNo}
         dataFilterFetch={dataFilterFetch}
-        onChangeRequestToggle={onChangeRequestToggle}
-        isRequest={isRequest}
+        selectedTab={selectedTab}
+        onClickTab={onClickTab}
       />
     </LoadingWrapper>
   );

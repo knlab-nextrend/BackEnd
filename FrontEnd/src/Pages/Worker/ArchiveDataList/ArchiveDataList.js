@@ -7,9 +7,9 @@ import { BsInboxes } from "react-icons/bs";
 import Pagination from "Components/Pagination";
 import DataFilter from "Components/DataFilter";
 import DataTable from "Components/DataTable";
-import ToggleButton from "Components/ToggleButton";
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
 import { SearchResultCount } from "Components/SearchResultCount";
+import { Tab } from "Components/Tab";
 
 function ArchiveDataList({
   archiveDataList,
@@ -20,8 +20,8 @@ function ArchiveDataList({
   pageNo,
   setPageNo,
   dataFilterFetch,
-  onChangeRequestToggle,
-  isRequest,
+  selectedTab,
+  onClickTab,
 }) {
   const _listSizeHandler = (e) => {
     setListSize(e.target.value);
@@ -34,12 +34,6 @@ function ArchiveDataList({
         <RowContainer>
           <Row>
             <div className="action-group">
-              <ToggleButton
-                mode1={"아카이브 문서"}
-                mode2={"큐레이션 선정 문서"}
-                action={onChangeRequestToggle}
-                checked={isRequest}
-              />
               <select
                 className="list-size"
                 value={listSize}
@@ -59,6 +53,18 @@ function ArchiveDataList({
             <DataFilter dataFilterFetch={dataFilterFetch} type="archive" />
           </Row>
         </RowContainer>
+        <Tab>
+          <Tab.Item
+            label="아카이브 문서"
+            selected={selectedTab === "아카이브 문서"}
+            onClick={() => onClickTab("아카이브 문서")}
+          />
+          <Tab.Item
+            label="큐레이션 선정 문서"
+            onClick={() => onClickTab("큐레이션 선정 문서")}
+            selected={selectedTab === "큐레이션 선정 문서"}
+          />
+        </Tab>
         {archiveDataList.length !== 0 ? (
           <>
             <DataTable
