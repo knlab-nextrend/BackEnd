@@ -3,6 +3,8 @@ import styled from "styled-components";
 import SearchBar from "../SearchBar";
 import { HostManagementApi } from "../../Utils/api";
 import { useDispatch } from "react-redux";
+import { myColors, tailwindColors } from "styles/colors";
+import { BsCheckLg } from "react-icons/bs";
 function HostSelectModal({ executeModal, closeModal }) {
   const [keyword, setKeyword] = useState("");
   const [hostList, setHostList] = useState([]); // 검색 결과 호스트 목록
@@ -18,7 +20,8 @@ function HostSelectModal({ executeModal, closeModal }) {
   const keywordHandler = (e) => {
     setKeyword(e.target.value);
   };
-  const searchHost = () => {
+  const searchHost = (e) => {
+    e.preventDefault();
     let searchObj = { like: keyword };
     HostManagementApi(searchObj, "GET").then((res) => {
       setHostList(res.data);
@@ -31,8 +34,7 @@ function HostSelectModal({ executeModal, closeModal }) {
         <Modalheader>
           <ModalTitle>HOST 검색</ModalTitle>
           <ModalSubTitle>
-            HOST 도메인의 일부를 검색하여 결과를 확인하고, 값을
-            등록해주세요.
+            HOST 도메인의 일부를 검색하여 결과를 확인하고, 값을 등록해주세요.
           </ModalSubTitle>
         </Modalheader>
         <ModalBody>
@@ -48,25 +50,26 @@ function HostSelectModal({ executeModal, closeModal }) {
                 return (
                   <SearchResultRow
                     key={index}
+                    selected={selectHost === item}
                     onClick={() => {
                       clickHandler(item);
                     }}
                   >
                     <div>
-                      {item.NAME} ({item.HOST})
+                      <span>{`${item.NAME ?? ""} (${item.HOST})`}</span>
+                      {selectHost === item && <BsCheckLg />}
                     </div>
                   </SearchResultRow>
                 );
               })
             )}
           </SearchResultWrapper>
-          {selectHost!==null && <div>{selectHost.NAME} ({selectHost.HOST})</div>}
         </ModalBody>
         <ModalActions>
-          <Button color="#435269" onClick={saveCategory}>
+          <Button color={myColors.blue500} onClick={saveCategory}>
             <p>저장</p>
           </Button>
-          <Button color="#bfbfbf" onClick={closeModal}>
+          <Button color={tailwindColors["grey-400"]} onClick={closeModal}>
             <p>취소</p>
           </Button>
         </ModalActions>
@@ -108,18 +111,16 @@ const ModalBody = styled.div`
 const ModalActions = styled.div`
   display: flex;
   justify-content: center;
-  flex-direction: row;
+  gap: 1rem;
 `;
 
 const Button = styled.button`
+  width: 5rem;
+  padding: 0.5rem 1rem;
   background-color: ${(props) => props.color || "grey"};
-  cursor: pointer;
-  min-width: 5rem;
-  border: none;
-  border-radius: 4px;
-  color: white;
   font-weight: bold;
-  margin: 0 0.5rem 0 0.5rem;
+  color: white;
+  cursor: pointer;
 `;
 
 const SearchResultWrapper = styled.div`
@@ -133,6 +134,13 @@ const SearchResultWrapper = styled.div`
 const SearchResultRow = styled.div`
   padding: 1rem;
   border-bottom: solid 1px #d6d6d6;
+  background-color: ${(props) => props.selected && myColors.blue100};
+  font-weight: ${(props) => props.selected && "bold"};
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 `;
 
 export default HostSelectModal;
