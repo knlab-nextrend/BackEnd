@@ -79,6 +79,12 @@ function Pagination({ dcCount, listSize, pageNo, setPageNo, pageSize = 10 }) {
     setCurrentPageNumberList(getPageNumberList(currentPageGroup));
   }, [pageCount, currentPageGroup]);
 
+  //listSize나 Tab전환에 의해서 pageNo가 바뀌었을 때 제자리를 찾아가기 위해
+  useEffect(() => {
+    const newPageGroup = parseInt((pageNo - 1) / pageSize);
+    setCurrentPageGroup(newPageGroup);
+  }, [pageNo, pageSize]);
+
   return (
     <PaginationContainer>
       <ButtonGroup>

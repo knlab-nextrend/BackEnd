@@ -14,7 +14,7 @@ import { Tab } from "Components/Tab";
 function CrawlDataScreening({
   dcCount,
   listSize,
-  setListSize,
+  onChangeListSize,
   pageNo,
   setPageNo,
   screeningData,
@@ -29,9 +29,6 @@ function CrawlDataScreening({
   onClickTab,
   dataFilterFetch,
 }) {
-  const _listSizeHandler = (e) => {
-    setListSize(e.target.value);
-  };
   return (
     <Wrap>
       <WorkerContentHeader title="크롤 데이터 스크리닝" Icon={BsEye} />
@@ -47,37 +44,39 @@ function CrawlDataScreening({
                 <AiOutlineCheck />
                 스크리닝 완료
               </ScreeningButton>
-              <select
-                className="list-size"
-                value={listSize}
-                onChange={_listSizeHandler}
-              >
-                <option disabled>리스트 사이즈</option>
-                <option value={2}>2건</option>
-                <option value={10}>10건</option>
-                <option value={30}>30건</option>
-                <option value={50}>50건</option>
-                <option value={75}>75건</option>
-                <option value={100}>100건</option>
-              </select>
             </div>
           </Row>
           <Row>
             <DataFilter type={"screening"} dataFilterFetch={dataFilterFetch} />
           </Row>
         </RowContainer>
-        <Tab>
-          <Tab.Item
-            label="대기"
-            selected={selectedTab === "스크리닝 대기"}
-            onClick={() => onClickTab("스크리닝 대기")}
-          />
-          <Tab.Item
-            label="보류"
-            selected={selectedTab === "스크리닝 보류"}
-            onClick={() => onClickTab("스크리닝 보류")}
-          />
-        </Tab>
+        <RowWrap justify="space-between">
+          <Tab>
+            <Tab.Item
+              label="대기"
+              selected={selectedTab === "스크리닝 대기"}
+              onClick={() => onClickTab("스크리닝 대기")}
+            />
+            <Tab.Item
+              label="보류"
+              selected={selectedTab === "스크리닝 보류"}
+              onClick={() => onClickTab("스크리닝 보류")}
+            />
+          </Tab>
+          <select
+            className="list-size"
+            value={listSize}
+            onChange={(e) => onChangeListSize(e)}
+          >
+            <option disabled>리스트 사이즈</option>
+            <option value={2}>2건</option>
+            <option value={10}>10건</option>
+            <option value={30}>30건</option>
+            <option value={50}>50건</option>
+            <option value={75}>75건</option>
+            <option value={100}>100건</option>
+          </select>
+        </RowWrap>
         {screeningData.length !== 0 ? (
           <>
             <DataTable
@@ -132,6 +131,21 @@ const Content = styled.div`
   font-size: 14px;
 `;
 
+const RowWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: ${(props) => props.justify};
+  gap: ${(props) => props.gap};
+  width: 100%;
+  margin-top: 1rem;
+
+  .list-size {
+    padding: 0.5rem;
+    border: solid 1px #d6d6d6;
+    font-size: 1rem;
+  }
+`;
+
 const ScreeningButton = styled.button`
   margin: 0 0.5rem 0 0.5rem;
   padding: 0.5rem;
@@ -175,11 +189,6 @@ const Row = styled.div`
   }
   .action-group {
     display: flex;
-  }
-  .list-size {
-    margin: 0 0.5rem 0 0.5rem;
-    padding: 0.5rem;
-    border: solid 1px #d6d6d6;
   }
 `;
 

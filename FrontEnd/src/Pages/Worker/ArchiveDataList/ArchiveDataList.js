@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { CgFileDocument } from "react-icons/cg";
 import { BsInboxes } from "react-icons/bs";
@@ -15,7 +14,7 @@ function ArchiveDataList({
   archiveDataList,
   statusCode,
   dcCount,
-  setListSize,
+  onChangeListSize,
   listSize,
   pageNo,
   setPageNo,
@@ -23,48 +22,44 @@ function ArchiveDataList({
   selectedTab,
   onClickTab,
 }) {
-  const _listSizeHandler = (e) => {
-    setListSize(e.target.value);
-  };
   return (
     <Wrap>
       <WorkerContentHeader title="아카이브" Icon={BsInboxes} />
       <Content>
         <SearchResultCount count={dcCount} />
         <RowContainer>
-          <Row>
-            <div className="action-group">
-              <select
-                className="list-size"
-                value={listSize}
-                onChange={_listSizeHandler}
-              >
-                <option disabled>리스트 사이즈</option>
-                <option value={2}>2건</option>
-                <option value={10}>10건</option>
-                <option value={30}>30건</option>
-                <option value={50}>50건</option>
-                <option value={75}>75건</option>
-                <option value={100}>100건</option>
-              </select>
-            </div>
-          </Row>
+          <Row></Row>
           <Row>
             <DataFilter dataFilterFetch={dataFilterFetch} type="archive" />
           </Row>
         </RowContainer>
-        <Tab>
-          <Tab.Item
-            label="아카이브 문서"
-            selected={selectedTab === "아카이브 문서"}
-            onClick={() => onClickTab("아카이브 문서")}
-          />
-          <Tab.Item
-            label="큐레이션 선정 문서"
-            onClick={() => onClickTab("큐레이션 선정 문서")}
-            selected={selectedTab === "큐레이션 선정 문서"}
-          />
-        </Tab>
+        <RowWrap justify="space-between">
+          <Tab>
+            <Tab.Item
+              label="아카이브 문서"
+              selected={selectedTab === "아카이브 문서"}
+              onClick={() => onClickTab("아카이브 문서")}
+            />
+            <Tab.Item
+              label="큐레이션 선정 문서"
+              onClick={() => onClickTab("큐레이션 선정 문서")}
+              selected={selectedTab === "큐레이션 선정 문서"}
+            />
+          </Tab>
+          <select
+            className="list-size"
+            value={listSize}
+            onChange={(e) => onChangeListSize(e)}
+          >
+            <option disabled>리스트 사이즈</option>
+            <option value={2}>2건</option>
+            <option value={10}>10건</option>
+            <option value={30}>30건</option>
+            <option value={50}>50건</option>
+            <option value={75}>75건</option>
+            <option value={100}>100건</option>
+          </select>
+        </RowWrap>
         {archiveDataList.length !== 0 ? (
           <>
             <DataTable
@@ -72,12 +67,14 @@ function ArchiveDataList({
               tableData={archiveDataList}
               statusCode={statusCode}
             />
-            <Pagination
-              dcCount={dcCount}
-              listSize={listSize}
-              pageNo={pageNo}
-              setPageNo={setPageNo}
-            />
+            <PaginationWrap>
+              <Pagination
+                dcCount={dcCount}
+                listSize={listSize}
+                pageNo={pageNo}
+                setPageNo={setPageNo}
+              />
+            </PaginationWrap>
           </>
         ) : (
           <>
@@ -156,50 +153,23 @@ const Row = styled.div`
   }
 `;
 
-const TableWrapper = styled.div`
+const RowWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: ${(props) => props.justify};
+  gap: ${(props) => props.gap};
   width: 100%;
-  max-height: 65rem;
-  overflow: auto;
-  box-shadow: rgb(9 30 66 / 25%) 0px 1px 1px;
-`;
-const CustomTable = styled.table`
-  width: 100%;
-  text-align: center;
-  border-collapse: collapse;
-  tr {
-    height: 3rem;
-  }
-  thead {
-    border-bottom: solid 1px #d6d6d6;
-    position: sticky;
-    top: 0px;
-    background-color: white;
-  }
-  tbody {
-    tr:nth-child(2n) {
-      background-color: #eee;
-    }
-    tr {
-      &:hover {
-        cursor: pointer;
-        background-color: #d6d6d6;
-      }
-    }
+  margin-top: 1rem;
 
-    tr > td > span {
-      margin: 0.2rem;
-    }
+  .list-size {
+    padding: 0.5rem;
+    border: solid 1px #d6d6d6;
+    font-size: 1rem;
   }
 `;
-const CustomLink = styled(Link)`
-  color: black;
-`;
-const SearchResultTitle = styled.div`
-  width: 100%;
-  p {
-    font-size: 20px;
-    font-weight: bold;
-  }
+
+const PaginationWrap = styled.div`
+  margin-top: 1.5rem;
 `;
 
 export default ArchiveDataList;

@@ -28,16 +28,12 @@ function CurationDataList({
   handleRowClick,
   userInfo,
   dataFilterFetch,
-  setListSize,
+  onChangeListSize,
   setSearchInput,
   onSearch,
   selectedTab,
   onClickTab,
 }) {
-  const _listSizeHandler = (e) => {
-    setListSize(e.target.value);
-  };
-
   const onSubmitSearch = (e) => {
     e.preventDefault();
     onSearch();
@@ -117,7 +113,7 @@ function CurationDataList({
         <select
           className="list-size"
           value={listSize}
-          onChange={_listSizeHandler}
+          onChange={(e) => onChangeListSize(e)}
         >
           <option disabled>리스트 사이즈</option>
           <option value={2}>2건</option>

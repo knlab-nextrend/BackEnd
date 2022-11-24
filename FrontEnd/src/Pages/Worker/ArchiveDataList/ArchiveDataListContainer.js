@@ -25,7 +25,16 @@ function ArchiveDataListContainer() {
   const [selectedTab, setSelectedTab] = useState("아카이브 문서");
 
   const onClickTab = (tabName) => {
+    if (selectedTab === tabName) return;
+
     setSelectedTab(tabName);
+    setPageNo(1);
+  };
+
+  const onChangeListSize = (e) => {
+    const newListSize = e.target.value;
+    setListSize(newListSize);
+    setPageNo(1);
   };
 
   /* 데이터 정제하기 */
@@ -99,7 +108,7 @@ function ArchiveDataListContainer() {
         statusCode={STATUS_CODE}
         dcCount={dcCount}
         listSize={listSize}
-        setListSize={setListSize}
+        onChangeListSize={onChangeListSize}
         pageNo={pageNo}
         setPageNo={setPageNo}
         dataFilterFetch={dataFilterFetch}

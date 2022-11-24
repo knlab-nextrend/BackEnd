@@ -31,12 +31,22 @@ function CrawlDataListContainer() {
   const [selectedTab, setSelectedTab] = useState("대기");
 
   const onClickTab = (tabName) => {
+    if (selectedTab === tabName) return;
+
     setSelectedTab(tabName);
     //보류면 statusCode + 1 대기면 기본 statusCode
     const newCode = TAB_VALUES[tabName]
       ? Number(statusCode) + 1
       : Number(statusCode);
     setCurrentCode(newCode);
+
+    setPageNo(1);
+  };
+
+  const onChangeListSize = (e) => {
+    const newListSize = e.target.value;
+    setListSize(newListSize);
+    setPageNo(1);
   };
 
   const dataCleansing = (rawData) => {
@@ -96,6 +106,7 @@ function CrawlDataListContainer() {
   useEffect(() => {
     dataFetch(searchObj);
   }, [pageNo, currentCode, listSize, searchObj]);
+
   return (
     <LoadingWrapper>
       <CrawlDataList
@@ -103,7 +114,7 @@ function CrawlDataListContainer() {
         crawlDataList={crawlDataList}
         dcCount={dcCount}
         listSize={listSize}
-        setListSize={setListSize}
+        onChangeListSize={onChangeListSize}
         pageNo={pageNo}
         setPageNo={setPageNo}
         selectedTab={selectedTab}
