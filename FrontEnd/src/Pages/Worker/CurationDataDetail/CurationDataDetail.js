@@ -115,10 +115,10 @@ function CurationDataDetail({ docs, permission, goDataManage }) {
               <Info>
                 <div className="title">
                   <span>•</span>
-                  <span>발행 국가 :</span>
+                  <span>대상 국가 :</span>
                 </div>
                 <div className="content">
-                  {valueOrDefaultValue(docs.doc_publish_country_list)}
+                  {valueOrDefaultValue(docs.doc_country_list)}
                 </div>
               </Info>
               <Info>
