@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { HiOutlineDocumentSearch } from "react-icons/hi";
 import { CgFileDocument } from "react-icons/cg";
 import { BsInboxes } from "react-icons/bs";
 
@@ -10,6 +9,7 @@ import DataFilter from "Components/DataFilter";
 import DataTable from "Components/DataTable";
 import ToggleButton from "Components/ToggleButton";
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
+import { SearchResultCount } from "Components/SearchResultCount";
 
 function ArchiveDataList({
   archiveDataList,
@@ -30,12 +30,9 @@ function ArchiveDataList({
     <Wrap>
       <WorkerContentHeader title="아카이브" Icon={BsInboxes} />
       <Content>
+        <SearchResultCount count={dcCount} />
         <RowContainer>
           <Row>
-            <div className="result-count">
-              <HiOutlineDocumentSearch />
-              검색 결과 ({dcCount}건)
-            </div>
             <div className="action-group">
               <ToggleButton
                 mode1={"아카이브 문서"}

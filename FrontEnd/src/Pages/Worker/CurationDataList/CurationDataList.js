@@ -1,19 +1,21 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import Pagination from "../../../Components/Pagination";
-import { HiOutlineDocumentSearch, HiSearch } from "react-icons/hi";
+import { BsJournals } from "react-icons/bs";
 import { MdCalendarViewDay } from "react-icons/md";
 import { RiFileList2Line } from "react-icons/ri";
-import DataFilter from "../../../Components/DataFilter";
-import CurationDataCard from "../../../Components/CurationDataCard";
-import CurationDataCard2 from "../../../Components/CurationDataCard2";
-import NoData from "../../../Components/NoData";
-import { WorkerContentHeader } from "Components/WorkerContentHeader";
-import { BsJournals } from "react-icons/bs";
-import { CurationTable } from "./_CurationTable";
+
 import { myColors, tailwindColors } from "styles/colors";
+import Pagination from "Components/Pagination";
+import CurationDataCard from "Components/CurationDataCard";
+import CurationDataCard2 from "Components/CurationDataCard2";
+import NoData from "Components/NoData";
+import { WorkerContentHeader } from "Components/WorkerContentHeader";
+
+import { CurationTable } from "./_CurationTable";
 import { CurationSearch } from "./_Search";
+import { SearchResultCount } from "Components/SearchResultCount";
+
 function CurationDataList({
   curationDataList,
   dcCount,
@@ -86,10 +88,7 @@ function CurationDataList({
           </label>
         </ViewType>
       </WorkerContentHeader>
-      <ResultWrap>
-        <HiOutlineDocumentSearch />
-        <span> 검색 결과</span> <span>({dcCount}건)</span>
-      </ResultWrap>
+      <SearchResultCount count={dcCount} />
       {/* <DataFilter type={"curation"} dataFilterFetch={dataFilterFetch} /> */}
       <CurationSearch
         onChangeSearchInput={onChangeSearch}
@@ -182,20 +181,6 @@ const Wrap = styled.div`
   min-width: 1024px;
   width: 100%;
   padding: 1.5rem 3rem;
-`;
-
-const ResultWrap = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 1rem 0;
-  font-size: 1.5rem;
-  font-weight: bold;
-  white-space: nowrap;
-
-  & > span:nth-of-type(2) {
-    color: ${myColors.red};
-  }
 `;
 
 const ViewType = styled.div`

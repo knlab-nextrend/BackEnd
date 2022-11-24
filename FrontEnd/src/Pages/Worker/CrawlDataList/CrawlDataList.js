@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { HiOutlineDocumentSearch } from "react-icons/hi";
 
 import { STATUS_CODE_SET } from "Data/crawlStatus";
 import Pagination from "Components/Pagination";
@@ -10,6 +9,7 @@ import DataFilter from "Components/DataFilter";
 import ToggleButton from "Components/ToggleButton";
 import DataTable from "Components/DataTable";
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
+import { SearchResultCount } from "Components/SearchResultCount";
 
 function CrawlDataList({
   statusCode,
@@ -33,12 +33,10 @@ function CrawlDataList({
         Icon={STATUS_CODE_SET[statusCode].icon}
       />
       <Content>
+        <SearchResultCount count={dcCount} />
+
         <RowContainer>
           <Row>
-            <div className="result-count">
-              <HiOutlineDocumentSearch />
-              검색 결과 ({dcCount}건)
-            </div>
             <div className="action-group">
               <ToggleButton
                 mode1={"대기"}

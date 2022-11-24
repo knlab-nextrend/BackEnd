@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BsEye } from "react-icons/bs";
-import { HiOutlineDocumentSearch } from "react-icons/hi";
 
 import Pagination from "Components/Pagination";
 import NoData from "Components/NoData";
@@ -10,6 +9,7 @@ import DataFilter from "Components/DataFilter";
 import DataTable from "Components/DataTable";
 import ToggleButton from "Components/ToggleButton";
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
+import { SearchResultCount } from "Components/SearchResultCount";
 
 function CrawlDataScreening({
   dcCount,
@@ -36,12 +36,9 @@ function CrawlDataScreening({
     <Wrap>
       <WorkerContentHeader title="크롤 데이터 스크리닝" Icon={BsEye} />
       <Content>
+        <SearchResultCount count={dcCount} />
         <RowContainer>
           <Row>
-            <div className="result-count">
-              <HiOutlineDocumentSearch />
-              검색 결과 ({dcCount}건)
-            </div>
             <div className="action-group">
               <ToggleButton
                 mode1={"스크리닝 대기"}
