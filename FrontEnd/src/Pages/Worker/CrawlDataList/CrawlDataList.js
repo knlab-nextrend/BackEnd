@@ -1,15 +1,16 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import CrawlDataCard from "../../../Components/LegacyComponents/CrawlDataCard";
-import FormHeader from "../../../Components/FormHeader";
-import Pagination from "../../../Components/Pagination";
-import Tab from "../../../Components/LegacyComponents/Tab";
-import NoData from "../../../Components/NoData";
-import DataFilter from "../../../Components/DataFilter";
 import { HiOutlineDocumentSearch } from "react-icons/hi";
-import ToggleButton from "../../../Components/ToggleButton";
-import DataTable from "../../../Components/DataTable";
+
+import { STATUS_CODE_SET } from "Data/crawlStatus";
+import Pagination from "Components/Pagination";
+import NoData from "Components/NoData";
+import DataFilter from "Components/DataFilter";
+import ToggleButton from "Components/ToggleButton";
+import DataTable from "Components/DataTable";
+import { WorkerContentHeader } from "Components/WorkerContentHeader";
+
 function CrawlDataList({
   statusCode,
   dcCount,
@@ -18,7 +19,6 @@ function CrawlDataList({
   pageNo,
   setPageNo,
   crawlDataList,
-  STATUS_CODE_SET,
   onChangeKeepToggle,
   isKeep,
   dataFilterFetch,
@@ -27,9 +27,12 @@ function CrawlDataList({
     setListSize(e.target.value);
   };
   return (
-    <>
-      <FormHeader type="view" title={STATUS_CODE_SET[statusCode].mainTitle} />
-      <Wrapper>
+    <Wrap>
+      <WorkerContentHeader
+        title={STATUS_CODE_SET[statusCode].mainTitle}
+        Icon={STATUS_CODE_SET[statusCode].icon}
+      />
+      <Content>
         <RowContainer>
           <Row>
             <div className="result-count">
@@ -84,10 +87,26 @@ function CrawlDataList({
         ) : (
           <NoData />
         )}
-      </Wrapper>
-    </>
+      </Content>
+    </Wrap>
   );
 }
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 1024px;
+  width: 100%;
+  padding: 1.5rem 3rem;
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+`;
 
 /* status에 따라 라우팅을... 다르게 해야하네요 ㅎ; */
 
@@ -103,12 +122,7 @@ const CustomLink = styled(Link)`
     text-decoration: none;
   }
 `;
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 5rem 0 5rem;
-`;
+
 const SearchResultTitle = styled.div`
   width: 100%;
   p {

@@ -14,6 +14,8 @@ import {
   AiOutlineCheckCircle,
   AiOutlineCloseCircle,
 } from "react-icons/ai";
+import { WorkerContentHeader } from "Components/WorkerContentHeader";
+import { BsTable } from "react-icons/bs";
 
 function ExcelDataRegister({
   readExcel,
@@ -66,8 +68,8 @@ function ExcelDataRegister({
     deleteExcelData();
   };
   return (
-    <>
-      <FormHeader type={"view"} title={"엑셀 데이터 등록"} />
+    <Wrap>
+      <WorkerContentHeader title="엑셀 데이터 등록" Icon={BsTable} />
       <Wrapper>
         {/* <----- 엑셀 등록 단계 -----> */}
         {step === 1 && (
@@ -310,9 +312,11 @@ function ExcelDataRegister({
           </UploadContainer>
         )}
 
-        <ButtonContainer>
+        <ButtonContainer isLastStage={step}>
           {step !== 1 && <button onClick={prevStep}>{"< 이전 단계"}</button>}
-          <button onClick={nextStep}>{"다음 단계 >"}</button>
+          <button onClick={nextStep}>
+            {step === 5 ? "업로드" : "다음 단계 >"}
+          </button>
         </ButtonContainer>
 
         {/* 아래쪽 컨테이너 아직 사용안함 */}
@@ -333,14 +337,24 @@ function ExcelDataRegister({
           </BodyContainer>
         </UploadContainer> */}
       </Wrapper>
-    </>
+    </Wrap>
   );
 }
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 1024px;
+  width: 100%;
+  padding: 1.5rem 3rem;
+`;
 
 const ButtonContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+  margin-top: 1rem;
   button {
     background-color: grey;
     color: white;
@@ -358,6 +372,7 @@ const ButtonContainer = styled.div`
     }
   }
 `;
+
 const FileList = styled.div`
   width: 90%;
   margin: 2rem auto;
@@ -391,25 +406,32 @@ const FileCard = styled.div`
     }
   }
   .file-delete-button {
-    background-color: #d0021b;
     border: none;
     width: 0;
-    border-radius: 40px;
+    border-radius: 1.25rem;
     display: none;
+    background-color: #d0021b;
     cursor: pointer;
   }
   &:hover {
     .file-delete-button {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 2.5rem;
+      height: 2.5rem;
     }
     .file-availability {
       display: none;
     }
   }
 `;
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  width: 100%;
+`;
+
 const UploadContainer = styled.div`
+  margin-top: 2rem;
   @keyframes loadEffect2 {
     0% {
       opacity: 0;
@@ -425,9 +447,7 @@ const UploadContainer = styled.div`
     }
   }
   animation: 0.6s ease-in-out loadEffect2;
-  border-radius: 4px;
   box-shadow: rgb(9 30 66 / 25%) 0px 1px 1px;
-  margin: 1rem;
 `;
 const HeaderContainer = styled.div`
   border-top-left-radius: 4px;
@@ -512,6 +532,7 @@ const BodyContainer = styled.div`
       padding-right: 1rem;
       width: 5rem;
       justify-content: center;
+      white-space: nowrap;
     }
     span {
       padding-left: 1rem;
