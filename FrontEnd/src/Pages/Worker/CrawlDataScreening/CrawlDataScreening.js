@@ -6,10 +6,11 @@ import { BsEye } from "react-icons/bs";
 import Pagination from "Components/Pagination";
 import NoData from "Components/NoData";
 import DataFilter from "Components/DataFilter";
-import DataTable from "Components/DataTable";
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
 import { SearchResultCount } from "Components/SearchResultCount";
 import { Tab } from "Components/Tab";
+import { myColors } from "styles/colors";
+import { ScreeningTable } from "./_table";
 
 function CrawlDataScreening({
   dcCount,
@@ -28,6 +29,8 @@ function CrawlDataScreening({
   selectedTab,
   onClickTab,
   dataFilterFetch,
+  sort,
+  sortState,
 }) {
   return (
     <Wrap>
@@ -35,17 +38,6 @@ function CrawlDataScreening({
       <Content>
         <SearchResultCount count={dcCount} />
         <RowContainer>
-          <Row>
-            <div className="action-group">
-              <ScreeningButton
-                className="screening-button"
-                onClick={stageScreeningData}
-              >
-                <AiOutlineCheck />
-                스크리닝 완료
-              </ScreeningButton>
-            </div>
-          </Row>
           <Row>
             <DataFilter type={"screening"} dataFilterFetch={dataFilterFetch} />
           </Row>
@@ -79,32 +71,29 @@ function CrawlDataScreening({
         </RowWrap>
         {screeningData.length !== 0 ? (
           <>
-            <DataTable
-              tableData={screeningData}
+            <ScreeningTable
+              screeningData={screeningData}
               stageDataList={stageDataList}
               keepDataList={keepDataList}
               deleteDataList={deleteDataList}
               onChangeCheckedAll={onChangeCheckedAll}
               checkedAll={checkedAll}
               onChangeEach={onChangeEach}
-              type="screening"
+              sort={sort}
+              sortState={sortState}
             />
             <BottomWrap>
-              <ScreeningButton
-                className="screening-button"
-                onClick={stageScreeningData}
-              >
+              <ScreeningButton onClick={stageScreeningData}>
                 <AiOutlineCheck />
                 스크리닝 완료
               </ScreeningButton>
+              <Pagination
+                dcCount={dcCount}
+                listSize={listSize}
+                pageNo={pageNo}
+                setPageNo={setPageNo}
+              />
             </BottomWrap>
-
-            <Pagination
-              dcCount={dcCount}
-              listSize={listSize}
-              pageNo={pageNo}
-              setPageNo={setPageNo}
-            />
           </>
         ) : (
           <NoData />
@@ -118,8 +107,8 @@ const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 1024px;
   width: 100%;
+  min-width: 52rem;
   padding: 1.5rem 3rem;
 `;
 
@@ -146,22 +135,25 @@ const RowWrap = styled.div`
   }
 `;
 
-const ScreeningButton = styled.button`
-  margin: 0 0.5rem 0 0.5rem;
-  padding: 0.5rem;
-  color: white;
-  font-weight: bold;
-  background-color: #435269;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-`;
 const BottomWrap = styled.div`
-  width: 100%;
   display: flex;
-  justify-content: right;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   margin-top: 1rem;
 `;
+
+const ScreeningButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: ${myColors.blue500};
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+`;
+
 const RowContainer = styled.div`
   border: solid 1px #d6d6d6;
   margin-top: 1rem;

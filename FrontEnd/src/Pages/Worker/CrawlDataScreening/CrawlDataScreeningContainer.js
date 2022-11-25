@@ -17,8 +17,56 @@ const TAB_VALUES = {
   "스크리닝 보류": true,
 };
 
+const pageSorts = {
+  asc: (rows) => [...rows].sort((a, b) => a.doc_page - b.doc_page),
+  desc: (rows) => [...rows].sort((a, b) => b.doc_page - a.doc_page),
+};
+
+const languageSort = {
+  asc: (rows) =>
+    [...rows].sort((a, b) =>
+      a.doc_language < b.doc_language
+        ? -1
+        : a.doc_language < b.doc_language
+        ? 1
+        : 0
+    ),
+  desc: (rows) =>
+    [...rows].sort((a, b) =>
+      a.doc_language > b.doc_language
+        ? -1
+        : a.doc_language > b.doc_language
+        ? 1
+        : 0
+    ),
+};
+
+const dateSort = {
+  asc: (rows) =>
+    [...rows].sort(
+      (a, b) =>
+        new Date(a.doc_collect_date).getTime() -
+        new Date(b.doc_collect_date).getTime()
+    ),
+  desc: (rows) =>
+    [...rows].sort(
+      (a, b) =>
+        new Date(b.doc_collect_date).getTime() -
+        new Date(a.doc_collect_date).getTime()
+    ),
+};
+
+const screeningSortRules = {
+  page: pageSorts,
+  language: languageSort,
+  date: dateSort,
+};
+
+export const SORT_ORDER = ["asc", "desc"];
+
 function CrawlDataScreeningContainer() {
   const [screeningData, setScreeningData] = useState([]); // 현재 보여질 데이터
+  const [unsortedData, setUnsortedData] = useState([]);
   const [searchObj, setSearchObj] = useState(null); // 검색 옵션
   /* 페이지네이션 */
   const [dcCount, setDcCount] = useState(0); // document 총 개수
@@ -32,6 +80,8 @@ function CrawlDataScreeningContainer() {
   const [deleteDataList, setDeleteDataList] = useState([]); // 기본 값은 delete
   const [selectedTab, setSelectedTab] = useState("스크리닝 대기");
   const [isKeep, setIsKeep] = useState(TAB_VALUES["스크리닝 대기"]);
+  /* 정렬 */
+  const [sortState, setSortState] = useState({ type: null, order: 0 });
 
   const dispatch = useDispatch();
 
@@ -41,11 +91,33 @@ function CrawlDataScreeningContainer() {
     setSelectedTab(tabName);
     setIsKeep(TAB_VALUES[tabName]);
     setPageNo(1);
+    setSortState({ type: null, order: 0 });
   };
 
   const onChangeListSize = (e) => {
     setListSize(e.target.value);
     setPageNo(1);
+    setSortState({ type: null, order: 0 });
+  };
+
+  const sort = (type) => {
+    if (sortState.type !== type) {
+      const order = 0;
+      const newScreeningData =
+        screeningSortRules[type][SORT_ORDER[order]](unsortedData);
+      setSortState({ type, order });
+      setScreeningData(newScreeningData);
+    } else if (sortState.order === 1) {
+      setSortState({ type: null, order: 0 });
+      setScreeningData(unsortedData);
+    } else {
+      const order = sortState.order + 1;
+      const newScreeningData =
+        screeningSortRules[type][SORT_ORDER[order]](unsortedData);
+      setSortState((prev) => ({ ...prev, order }));
+      setScreeningData(newScreeningData);
+    }
+    setCheckedAll("delete");
   };
 
   const onChangeCheckedAll = (e) => {
@@ -62,6 +134,7 @@ function CrawlDataScreeningContainer() {
     const _newItemList = [...itemList];
     _newItemList[_index].status = type;
     setItemList(_newItemList);
+    console.log(_newItemList);
   };
 
   const dataFilterFetch = (searchObj) => {
@@ -129,8 +202,10 @@ function CrawlDataScreeningContainer() {
       };
       _screeningData.push(obj);
     });
+
     setDcCount(_dcCount);
     setScreeningData(_screeningData);
+    setUnsortedData(_screeningData);
   };
 
   /* pageNo, listSize 가 변경되었을 때 데이터를 다시 불러옴 */
@@ -141,10 +216,10 @@ function CrawlDataScreeningContainer() {
 
   /* 데이터를 불러오는데 성공하였을 경우 각 데이터의 id값과 해당 데이터의 status를 list에 먼저 세팅해줌*/
   useEffect(() => {
-    let _itemList = [];
-    screeningData.forEach((item) => {
-      _itemList.push({ item_id: item.item_id, status: "delete" });
-    });
+    const _itemList = screeningData.map((item) => ({
+      item_id: item.item_id,
+      status: "delete",
+    }));
     setItemList(_itemList);
   }, [screeningData]);
 
@@ -195,6 +270,8 @@ function CrawlDataScreeningContainer() {
         selectedTab={selectedTab}
         onClickTab={onClickTab}
         dataFilterFetch={dataFilterFetch}
+        sort={sort}
+        sortState={sortState}
       />
     </LoadingWrapper>
   );

@@ -127,6 +127,7 @@ function Pagination({ dcCount, listSize, pageNo, setPageNo, pageSize = 10 }) {
 
 const PaginationContainer = styled.div`
   display: flex;
+  align-items: center;
   gap: 0.5rem;
 `;
 

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FaFilter } from "react-icons/fa";
 import { MdSettings } from "react-icons/md";
-import { AiOutlinePlus, AiOutlineMinus, AiOutlineSearch } from "react-icons/ai";
-import { CategoryOptionFetchApi } from "../Utils/api";
 import { useDispatch, useSelector } from "react-redux";
-import { setModal, setModalData, setCategoryModalType } from "../Modules/modal";
+import { AiOutlinePlus, AiOutlineMinus, AiOutlineSearch } from "react-icons/ai";
+
+import { setModal, setModalData, setCategoryModalType } from "Modules/modal";
 
 function DataFilter({ dataFilterFetch = null, type }) {
   const dispatch = useDispatch();
@@ -651,7 +651,7 @@ const CustomButton = styled.button`
   border-radius: 4px;
 `;
 const FilterBody = styled.div`
-  padding: 1rem 0 1rem 0;
+  padding: 1rem 0;
 `;
 const FilterActions = styled.div`
   padding: 0.5rem 0 0.5rem 0;
@@ -663,10 +663,7 @@ const FilterActions = styled.div`
   }
 `;
 
-const FilterBodyWrapper = styled.div`
-  width: 100%;
-  margin: 0 auto;
-`;
+const FilterBodyWrapper = styled.div``;
 
 const ActionButton = styled.button`
   margin: 4px;
@@ -693,9 +690,7 @@ const OptionRow = styled.div`
 
 const OptionCol = styled.div`
   display: flex;
-  flex-direction: row;
-  width: 100%;
-  margin: 0 0.5rem 0 0.5rem;
+  margin: 0 0.5rem;
 `;
 
 const OptionTitle = styled.div`
@@ -717,9 +712,8 @@ const OptionInput = styled.input`
   display: flex;
   align-items: center;
   height: 100%;
-  width: 100%;
   border: solid 1px #d6d6d6;
-  margin: 0 0.5rem 0 0.5rem;
+  margin: 0 0.5rem;
   padding-left: 0.5rem;
 `;
 
@@ -727,9 +721,8 @@ const OptionSelect = styled.select`
   display: flex;
   align-items: center;
   height: 100%;
-  width: 100%;
   border: solid 1px #d6d6d6;
-  margin: 0 0.5rem 0 0.5rem;
+  margin: 0 0.5rem;
   padding-left: 0.5rem;
 `;
 
