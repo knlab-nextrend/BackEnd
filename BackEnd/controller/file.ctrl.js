@@ -124,7 +124,7 @@ const docImageAttach = async (req, res) => {
 }
 
 const uploadExcelData = async (req, res) => {
-    
+
     let pdfs = req.files.pdfs;
     let thumbnails = req.files.thumbnails;
 
@@ -147,7 +147,6 @@ const uploadExcelData = async (req, res) => {
             meta.pdf = pdf;
             meta.thumbnail = thumbnail;
         })
-        
         try {
             const tableError = await uploadCtrl.checkUploadTable();
             if (tableError) {
@@ -179,7 +178,6 @@ const uploadExcelData = async (req, res) => {
                     // 업로드 실패시 throw
                     throw 'error occured put file to nas storage';
                 } 
-
 
                 //서버에 임시로 받아져있는 파일들 삭제
                 fileCtrl.unlinkFile(meta.thumbnail.path);
@@ -263,17 +261,17 @@ const getExcelDetail = async (req,res)=>{
 
 const migration = async (req, res) =>{
 
-    let [results, fields]= await phpDB.execute(`select a.IDX as item_id, a.STAT as status, \
-     a.DC_TITLE_OR as doc_origin_title, a.DC_TITLE_KR as doc_kor_title ,a.DC_SMRY_KR as doc_kor_summary, \
-     a.DC_DT_COLLECT as doc_collect_date, a.DC_DT_WRITE as doc_publish_date, \ 
-     a.DC_DT_REGI as doc_register_date, a.DC_URL_LOC as doc_url, \
-     a.DC_AGENCY as doc_publisher ,a.DC_PAGE as doc_page, \
-     a.DC_TYPE as doc_content_type , \
-     a.DC_CONTENT as doc_content ,a.DC_HIT as doc_hit ,a.DC_LINK as doc_bundle_url,a.DC_CAT as doc_content_category,
-     b.CT_NM as doc_custom, \
-     b.CT_NM as doc_category, a.DC_COUNTRY as doc_country,\
-     a.DC_KEYWORD as doc_keyowrd ,a.DC_MEMO1 as doc_file ,a.DC_MEMO2 as doc_thumbnail \
-     from nt_document_list a left join nt_categorys b on a.DC_CODE=b.CODE where a.stat < 9 limit 5`);
+    let [results, fields]= await phpDB.execute(`select a.IDX as item_id, a.STAT as status, 
+     a.DC_TITLE_OR as doc_origin_title, a.DC_TITLE_KR as doc_kor_title ,a.DC_SMRY_KR as doc_kor_summary, 
+     a.DC_DT_COLLECT as doc_collect_date, a.DC_DT_WRITE as doc_publish_date, 
+     a.DC_DT_REGI as doc_register_date, a.DC_URL_LOC as doc_url, 
+     a.DC_AGENCY as doc_publisher ,a.DC_PAGE as doc_page, 
+     a.DC_TYPE as doc_content_type , 
+     a.DC_CONTENT as doc_content, a.DC_HIT as doc_hit ,a.DC_LINK as doc_bundle_url,a.DC_CAT as doc_content_category,
+     b.CT_NM as doc_custom, a.DC_MEMO1 as doc_thumbnail, a.DC_MEMO2 as doc_file,
+     b.CT_NM as doc_category, a.DC_COUNTRY as doc_country,
+     a.DC_KEYWORD as doc_keyowrd ,a.DC_MEMO1 as doc_file ,a.DC_MEMO2 as doc_thumbnail 
+     from nt_document_list a left join nt_categorys b on a.DC_CODE=b.CODE where a.stat < 9`);
 
     for(let i = 0; i < results.length; i++){
         const date = new Date(Number(results[i].doc_publish_date) * 1000)
@@ -282,36 +280,50 @@ const migration = async (req, res) =>{
             doc_publish_country:3,
             doc_category:1,
             doc_language:4,
-            doc_content_type:2,
             doc_custom:6,
             doc_content_category:2,
+            doc_content_type:2,
             doc_topic:5
         };
-
+        
         for (const [key,catType] of Object.entries(fieldList)){
             if(results[i][key] == undefined) {
-                results[i][key] = null;    
+                let [categorys, fields]= await promiseDB.execute(`select * from login.nt_categorys where CT_NM=? and TYPE=?`,["기타", fieldList[key]]);
+                results[i][key] = [categorys[0].CODE];
                 continue;
             }
-            let [categorys, fields]= await promiseDB.execute(`select * from login.nt_categorys where CT_NM=? and TYPE=?`,[results[i][key], catType]);
-            categorys = categorys.map((code)=>code.CODE);
-            results[i][key] = categorys;
             
-        }
+            let arr = []
+            for(const st of results[i][key].split(new RegExp(',\|/'))){
+                let [categorys, fields]= await promiseDB.execute(`select * from login.nt_categorys where CT_NM=? and TYPE=?`,[st.trim(), fieldList[key]]);
+                arr.push(categorys[0] ? categorys[0].CODE : null);
+            }
+            results[i][key] = arr;
+            //값이 안들어가면 기타에 넣음
+            if(!results[i][key][0]){
+                let [categorys, fields]= await promiseDB.execute(`select * from login.nt_categorys where CT_NM=? and TYPE=?`,["기타", fieldList[key]]);
+                results[i][key] = [categorys[0].CODE];
+            }
 
-        let keywords = results[i].doc_keyowrd.split(",").map(str=>str.trim())
+        }
+        let keywords = null
+        if(results[i].doc_keyowrd)
+            keywords = results[i].doc_keyowrd.split(",").map(str=>str.trim())
         results[i] = {
             ...results[i],
             is_crawled: false,
+            doc_thumbnail : (results[i].doc_thumbnail != null ? "1.214.203.131:3330/files/legacy/thumbnails/" + results[i].doc_thumbnail : null),
+            doc_file : (results[i].doc_file != null ? "1.214.203.131:3330/files/legacy/pdfs/" + results[i].doc_file : null),
+            doc_page : (results[i].doc_page instanceof Number ? results[i].doc_page : null),
             doc_publish_date : dayjs(Number(results[i].doc_publish_date) * 1000).locale('se-kr').format().split('+')[0], 
-            doc_keyowrd : keywords
+            doc_register_date : dayjs(Number(results[i].doc_register_date) * 1000).locale('se-kr').format().split('+')[0], 
+            doc_keyowrd : keywords,
         }
-        
-        //const _id = await esCtrl.Index(results[i], 8, false, true);
-        //await uploadCtrl.updateId(_id, results[i].item_id);
+        const uploadedData = await uploadCtrl.insertUploadedFile(results[i].doc_thumbnail, 69);
+        const _id = await esCtrl.Index(results[i], 8, false, true);
+        await uploadCtrl.updateId(_id, results[i].item_id);
     }
     res.send(results)
-    
 }
 
 module.exports = {

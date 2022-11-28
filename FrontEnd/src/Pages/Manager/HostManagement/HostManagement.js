@@ -1,19 +1,10 @@
 import React from "react";
-import FormHeader from "../../../Components/FormHeader";
-import SearchBar from "../../../Components/SearchBar";
 import { FaFilter } from "react-icons/fa";
 import styled from "styled-components";
-import {
-  MdUpload,
-  MdDownload,
-  MdOutlineModeEditOutline,
-  MdOutlineDeleteOutline,
-  MdOutlineCheck,
-  MdClose,
-  MdSettings,
-  MdOutlineSearch,
-  MdSync,
-} from "react-icons/md";
+import { MdUpload, MdSettings, MdOutlineSearch, MdSync } from "react-icons/md";
+import { WorkerContentHeader } from "Components/WorkerContentHeader";
+import { AiOutlineRobot } from "react-icons/ai";
+import { myColors, tailwindColors } from "styles/colors";
 function HostManagement({
   currentHostList,
   filterOpen,
@@ -37,10 +28,10 @@ function HostManagement({
   hostTestList,
 }) {
   return (
-    <>
-      <FormHeader type={"view"} title={"HOST 목록 관리"} />
+    <Wrap>
+      <WorkerContentHeader title={"HOST 목록 관리"} Icon={AiOutlineRobot} />
       <Wrapper>
-        <ContentContainer>
+        {/* <ContentContainer>
           <div className="content-title">
             <div className="main-title">크롤링 HOST 테스트 등록 / 결과</div>
             <div className="sub-title">
@@ -245,7 +236,7 @@ function HostManagement({
               </tbody>
             </DictonaryDataTable>
           </div>
-        </ContentContainer>
+        </ContentContainer> */}
         <ContentContainer>
           <div className="content-title">
             <div className="main-title">현재 작동중인 크롤링 HOST 목록</div>
@@ -266,7 +257,6 @@ function HostManagement({
                   nextrend 서비스와 크롤러 동기화
                 </button>
               </DictionaryFunctionBtnWrapper>
-
             </DictionaryFunctionWrapper>
             {filterOpen && (
               <FilterWrapper>
@@ -361,10 +351,14 @@ function HostManagement({
                     <>
                       <tr>
                         <td>{host.host}</td>
-                        <td>{host.lang.length!==0 && host.lang[0].CT_NM}</td>
-                        <td>{host.country.length!==0 && host.country[0].CT_NM}</td>
+                        <td>{host.lang.length !== 0 && host.lang[0].CT_NM}</td>
+                        <td>
+                          {host.country.length !== 0 && host.country[0].CT_NM}
+                        </td>
                         <td>{host.name}</td>
-                        <td>{host.category.length!==0 && host.category[0].CT_NM}</td>
+                        <td>
+                          {host.category.length !== 0 && host.category[0].CT_NM}
+                        </td>
                         <td>{host.workCycle}</td>
                         <td>
                           <ActionButton
@@ -372,7 +366,8 @@ function HostManagement({
                               _registerHostOpenHandler(host);
                             }}
                           >
-                            <MdSettings/>관리
+                            <MdSettings />
+                            관리
                           </ActionButton>
                         </td>
                       </tr>
@@ -482,27 +477,30 @@ function HostManagement({
           </div>
         </ContentContainer>
       </Wrapper>
-    </>
+    </Wrap>
   );
 }
 
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 1280px;
+  width: 100%;
+  padding: 1.5rem 3rem;
+`;
+
 const Wrapper = styled.div`
-  font-size: 14px;
-  min-height: 1280px;
-  background-color: #eee;
-  color: rgb(59, 59, 59);
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-height: 1280px;
+  margin-top: 2rem;
+  font-size: 14px;
 `;
 
 const LineBox = styled.div`
-  /* border: solid 1px #d6d6d6;
-  border-radius: 4px; */
+  border: 1px solid ${tailwindColors["grey-300"]};
   background-color: white;
-  margin: 1rem;
-  border-radius: 4px;
-  box-shadow: 0 0 0.875rem 0 rgba(33, 37, 41, 0.05);
 `;
 
 const ContentContainer = styled(LineBox)`
@@ -510,11 +508,11 @@ const ContentContainer = styled(LineBox)`
     border-bottom: 1px solid #d6d6d6;
     padding: 1rem;
     .main-title {
-      font-size: 16px;
+      font-size: 1.2rem;
       font-weight: bold;
     }
     .sub-title {
-      font-size: 14px;
+      font-size: 1rem;
     }
   }
   .content-body {
@@ -525,25 +523,35 @@ const ContentContainer = styled(LineBox)`
 const DictionaryFunctionWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  min-height: 3rem;
 `;
+
 const DictionaryFunctionBtnWrapper = styled.div`
   display: flex;
+  gap: 1rem;
   input[type="file"] {
     display: none;
   }
-  button,
+  height: 2rem;
   label {
-    cursor: pointer;
-    margin: 0.5rem;
-    font-size: 12px;
     display: flex;
     align-items: center;
-    background-color: #435269;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: ${myColors.blue500};
+    font-size: 14px;
     color: white;
-    border: solid 1px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    padding: 0 0.5rem 0 0.5rem;
+    cursor: pointer;
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    background-color: ${myColors.blue500};
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
   }
 `;
 const DictonaryDataTable = styled.table`
@@ -562,7 +570,8 @@ const DictonaryDataTable = styled.table`
   td {
     border-bottom: solid 1px #eee;
     padding: 10px;
-    word-break: normal; word-wrap: break-word;
+    word-break: normal;
+    word-wrap: break-word;
   }
   tbody {
     tr:nth-child(even) {
@@ -618,66 +627,65 @@ const DictonaryDataTable = styled.table`
 `;
 
 const FilterWrapper = styled.div`
-  border: solid 1px #d6d6d6;
-  border-radius: 4px;
+  width: 100%;
   padding: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin: 1rem 0;
+  background-color: ${tailwindColors["grey-100"]};
 
   .filter-title {
-    color: #435269;
+    color: ${tailwindColors.black};
     font-weight: bold;
     display: flex;
     align-items: center;
+    gap: 0.5rem;
     margin-bottom: 1rem;
   }
   .filter-body {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
   }
   .filter-item {
     display: flex;
     align-items: center;
-    padding: 0.5rem;
-    height: 30px;
-    div {
-      min-width: 10rem;
+    width: 100%;
+    height: 2.5rem;
+    > div {
       display: flex;
       justify-content: center;
       align-items: center;
+      width: 8rem;
       height: 100%;
-      background-color: #d6d6d6;
-      font-size: 12px;
-      margin-right: 0.5rem;
-      padding-left: 5px;
-      padding-right: 5px;
+      padding: 0.5rem 1rem;
+      background-color: ${tailwindColors["grey-400"]};
+      font-size: 14px;
+      font-weight: bold;
       text-align: center;
       word-wrap: break-word;
     }
-    input,
-    select {
+    input {
+      flex: 1;
       display: flex;
       align-items: center;
       height: 100%;
-      width: 100%;
-      border: solid 1px #d6d6d6;
-      margin: 0 0.5rem 0 0.5rem;
-      padding-left: 0.5rem;
-      &:focus {
-        outline: none;
-      }
+
+      border: 1px solid ${tailwindColors["grey-400"]};
+      padding: 0 0.5rem;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
   .filter-action {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
+    margin-top: 1rem;
     button {
       cursor: pointer;
-      border-radius: 4px;
-      border: none;
-      background-color: #435269;
+      background-color: ${myColors.blue500};
       color: white;
-      padding: 0.5rem 1rem 0.5rem 1rem;
+      padding: 0.5rem 1rem;
     }
   }
 `;

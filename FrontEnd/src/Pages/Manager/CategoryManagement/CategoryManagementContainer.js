@@ -10,6 +10,16 @@ import {
 import { useDispatch } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
 import { LoadingWrapper } from "../../../Components/LoadingWrapper";
+
+export const CATEGOROY_CODE_LIST = {
+  정책분류: 1,
+  유형분류: 2,
+  국가분류: 3,
+  언어: 4,
+  토픽분류: 5,
+  기관맞춤형분류: 6,
+};
+
 function CategoryManagementContainer() {
   const dispatch = useDispatch();
 
@@ -18,15 +28,6 @@ function CategoryManagementContainer() {
   0일 경우 수정 할 항목이 지정되지 않은 상태이다.
   그러므로, 수정 확인 또는 수정 취소 시 해당 값을 0으로 다시 지정해 주어야 한다.
   */
-
-  const CATEGOROY_CODE_LIST = {
-    정책분류: 1,
-    유형분류: 2,
-    국가분류: 3,
-    언어: 4,
-    토픽분류: 5,
-    기관맞춤형분류: 6,
-  };
 
   const [addCategoryName, setAddCategoryName] = useState(""); // 새롭게 등록할 카테고리 이름
   const [editCategoryName, setEditCategoryName] = useState(""); // 수정할 카테고리 이름
@@ -152,7 +153,6 @@ function CategoryManagementContainer() {
   return (
     <LoadingWrapper>
       <CategoryManagement
-        CATEGOROY_CODE_LIST={CATEGOROY_CODE_LIST}
         categoryList={categoryList}
         type={type}
         typeHandler={typeHandler}

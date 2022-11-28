@@ -1,9 +1,11 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import CurationDataListContainer from "../../Common/CurationDataList/CurationDataListContainer";
+import UserCurationDataListContainer from "../CurationDataList/CurationDataListContainer";
 import UserArchiveDataList from "./UserArchiveDataList";
 import { HiOutlineArchive, HiOutlineDocumentDuplicate } from "react-icons/hi";
 import { LoadingWrapper } from "../../../Components/LoadingWrapper";
+import { myColors, tailwindColors } from "styles/colors";
+
 function UserOnlyDataLookUpPage({
   axisMenu,
   menuClickHandler,
@@ -69,7 +71,7 @@ function UserOnlyDataLookUpPage({
               curationRequest={curationRequest}
             />
           ) : (
-            <CurationDataListContainer className="list" axisObj={axisObj} />
+            <UserCurationDataListContainer className="list" axisObj={axisObj} />
           )}
         </ContentBody>
       </LoadingWrapper>
@@ -95,6 +97,7 @@ const Wrapper = styled.div`
   grid-template-columns: 200px auto;
   grid-template-rows: 50px minmax(1280px, auto);
 `;
+
 const ModeSwitchButton = styled.button`
   display: flex;
   position: fixed;
@@ -124,38 +127,45 @@ const ModeSwitchButton = styled.button`
     margin: 4px;
   }
 `;
+
 const AxisTitle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   grid-column: 1 / 2;
   grid-row: 1 / 2;
-  border-bottom: 0.5rem solid #435269;
+  background-color: ${myColors.blue500};
   color: #ffffff;
-  background-color: #435269;
+
   cursor: pointer;
+
   & > div {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     height: 100%;
+
     :hover {
       background-color: rgba(255, 255, 255, 0.2);
     }
   }
+
   ${(props) =>
     props.selected &&
     css`
-      & > div{
-        background-color:#ffffff;
-        color: #435269;
+      & > div {
+        background-color: #ffffff;
+        color: ${myColors.blue500};
         font-weight: bold;
-        :hover{
-          background-color:#ffffff;
+
+        :hover {
+          background-color: #ffffff;
         }
+      }
     `}
 `;
+
 const AxisMenuBar = styled.div`
   ${(props) =>
     props.axis === "X" &&
@@ -165,8 +175,7 @@ const AxisMenuBar = styled.div`
       flex-direction: row;
       grid-column: 2 / 3;
       grid-row: 1 / 2;
-      border-bottom: 0.5rem solid #435269;
-      background-color: #435269;
+      background-color: ${myColors.blue500};
       color: white;
     `}
   ${(props) =>
@@ -174,7 +183,7 @@ const AxisMenuBar = styled.div`
     css`
       display: flex;
       flex-direction: column;
-      background-color: #eee;
+      background-color: ${tailwindColors["grey-100"]};
       grid-column: 1 / 2;
       grid-row: 2 / 3;
     `}
@@ -195,7 +204,7 @@ const XAxismenuBarItem = styled.div`
     props.selected &&
     css`
       background-color: #ffffff;
-      color: #435269;
+      color: ${myColors.blue500};
       font-weight: bold;
       &:hover {
         background-color: #ffffff;
@@ -213,20 +222,17 @@ const YAxisMenuBarItem = styled.div`
   ${(props) =>
     props.selected &&
     css`
-      background-color: #d8dee6;
+      background-color: ${myColors.blue100};
       &:hover {
-        background-color: #d8dee6;
+        background-color: ${myColors.blue100};
       }
       font-weight: bold;
     `};
 `;
 
 const ContentBody = styled.div`
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
   display: flex;
   justify-content: center;
-  margin: 0 5rem 0 5rem;
 `;
 
 export default UserOnlyDataLookUpPage;

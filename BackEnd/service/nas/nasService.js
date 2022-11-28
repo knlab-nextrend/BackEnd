@@ -111,7 +111,7 @@ const getLogoFromFolder = (folderPath) => new Promise(async (resolve, reject) =>
                 // 폴더 속 파일이 없을 경우
                 resolve(false);
             }else{
-                resolve(webServer + "/files/user/logo" + folderPath + result[0].name);
+                resolve("http://" + webServer + "/files/user/logo" + folderPath + result[0].name);
             }
         }
     }

@@ -1,18 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-function Login({
-  _inputIDHandler,
-  _inputPWHandler,
-  loginFunc,
-  errorMsg,
-  onKeyPress,
-}) {
+import { myColors } from "styles/colors";
+function Login({ _inputIDHandler, _inputPWHandler, loginFunc, errorMsg }) {
   return (
     <>
-      <BackgroundContainer>
-        <LoginContainer>
+      <Wrap>
+        <LoginContainer onSubmit={(e) => loginFunc(e)}>
           <LogoContainer>
-            <img src={"../../img/logo4.png"} />
+            <img src={"../../img/logo4.png"} alt="넥스트렌드 로고" />
           </LogoContainer>
           <CustomInput
             type="text"
@@ -25,54 +20,42 @@ function Login({
             placeholder="패스워드를 입력하세요"
           />
           {errorMsg !== "" ? <ErrorMsg>{errorMsg}</ErrorMsg> : null}
-          <LoginButton
-            onKeyPress={onKeyPress}
-            onClick={loginFunc}
-            value="로그인"
-            type="button"
-          />
-          <PageIngoContainer>
-            <p>
-              <a href="http://knlab.co.kr/?act=info.page&pcode=sub3_1">
-                서비스 소개
-              </a>
-            </p>
-            <p>
-              powered by <a href="http://knlab.co.kr/">KN Lab.Inc</a>
-            </p>
-          </PageIngoContainer>
+          <LoginButton>로그인</LoginButton>
         </LoginContainer>
-      </BackgroundContainer>
+        <PageIngoContainer>
+          <p>
+            <a href="http://knlab.co.kr/?act=info.page&pcode=sub3_1">
+              서비스 소개
+            </a>
+          </p>
+          <p>
+            powered by <a href="http://knlab.co.kr/">KN Lab.Inc</a>
+          </p>
+        </PageIngoContainer>
+      </Wrap>
     </>
   );
 }
 
-const ErrorMsg = styled.p`
-  color: red;
-`;
-const PageIngoContainer = styled.div`
+const Wrap = styled.div`
   display: flex;
-  justify-content: space-between;
-  width: 90%;
-`;
-const BackgroundContainer = styled.div`
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   height: 100vh;
+  padding: 1rem;
   background-image: url("../../img/login_back.jpg");
   background-repeat: no-repeat;
   background-size: cover;
-  margin: 0;
-  padding: 0;
 `;
 
 const LoginContainer = styled.form`
   display: flex;
   flex-direction: column;
   max-width: 30rem;
-  position: relative;
-  top: 35vh;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
 `;
 
 const LogoContainer = styled.div`
@@ -82,20 +65,24 @@ const LogoContainer = styled.div`
   margin-bottom: 1rem;
 `;
 const CustomInput = styled.input`
-  border-radius: 30px;
-  min-width: 90%;
-  min-height: 3rem;
+  border-radius: 1.5rem;
+  width: 90%;
+  height: 3rem;
   border: solid 1px #d6d6d6;
   padding-left: 1rem;
   font-size: 16px;
   margin: 0.5rem 0 0.5rem 0;
-  &:focus {
-    outline: none;
-  }
 `;
 
-const LoginButton = styled(CustomInput)`
-  border: none;
+const LoginButton = styled.button`
+  width: 90%;
+  height: 3rem;
+  border-radius: 1.5rem;
+  border: solid 1px #d6d6d6;
+  padding: 0 1rem;
+  margin: 0.5rem 0;
+  font-size: 16px;
+
   cursor: pointer;
   background-color: #435269;
   color: white;
@@ -109,4 +96,22 @@ const LoginButton = styled(CustomInput)`
     transition: all 0.2s;
   }
 `;
+
+const PageIngoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 1rem;
+  column-gap: 10rem;
+  max-width: 30rem;
+  width: 100%;
+  & > p:hover {
+    text-decoration: underline;
+  }
+`;
+
+const ErrorMsg = styled.p`
+  color: ${myColors.red};
+`;
+
 export default Login;

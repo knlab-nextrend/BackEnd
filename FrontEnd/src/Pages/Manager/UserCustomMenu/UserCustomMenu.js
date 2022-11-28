@@ -1,6 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
-import FormHeader from "../../../Components/FormHeader";
+import { BsRulers } from "react-icons/bs";
+
+import { WorkerContentHeader } from "Components/WorkerContentHeader";
+
 function UserCustomMenu({
   userList,
   currentUserId,
@@ -8,12 +11,12 @@ function UserCustomMenu({
   openCategoryModal,
   previewAxisMenu,
   axisCategoryInfo,
-  saveUserAxisData
+  saveUserAxisData,
 }) {
   return (
-    <>
-      <FormHeader type={"view"} title={"맞춤형 화면 생성"} />
-      <Wrapper>
+    <Wrap>
+      <WorkerContentHeader title="맞춤형 화면 생성" Icon={BsRulers} />
+      <Content>
         <UserListCard>
           <div className="title">
             <div className="title-main">사용자 목록</div>
@@ -50,7 +53,8 @@ function UserCustomMenu({
             <div className="title-main">사용자 맞춤형 X축 및 Y축 설정</div>
             <div className="title-sub">
               해당 축에 표시할 분류를 선택하세요. 선택한 분류의 하위 분류가 해당
-              축의 메뉴로 표출됩니다. 클릭시 모달창이 뜹니다. X축과 Y축이 동일한 카테고리 타입을 가질 수 없습니다.
+              축의 메뉴로 표출됩니다. 클릭시 모달창이 뜹니다. X축과 Y축이 동일한
+              카테고리 타입을 가질 수 없습니다.
             </div>
           </div>
           <div className="content">
@@ -65,9 +69,13 @@ function UserCustomMenu({
                   X축 설정
                 </button>
                 <div className="axis-contents">
-                  <div className="category-info">{axisCategoryInfo.X.category_type || "선택없음"}</div>
+                  <div className="category-info">
+                    {axisCategoryInfo.X.category_type || "선택없음"}
+                  </div>
                   <div>{`>`}</div>
-                  <div className="category-code">{axisCategoryInfo.X.select_category_name || "선택없음"}</div>
+                  <div className="category-code">
+                    {axisCategoryInfo.X.select_category_name || "선택없음"}
+                  </div>
                 </div>
               </AxisCard>
               <AxisCard>
@@ -80,43 +88,56 @@ function UserCustomMenu({
                   Y축 설정
                 </button>
                 <div className="axis-contents">
-                  <div className="category-info">{axisCategoryInfo.Y.category_type || "선택없음"}</div>
+                  <div className="category-info">
+                    {axisCategoryInfo.Y.category_type || "선택없음"}
+                  </div>
                   <div>{`>`}</div>
-                  <div className="category-code">{axisCategoryInfo.Y.select_category_name || "선택없음"}</div>
+                  <div className="category-code">
+                    {axisCategoryInfo.Y.select_category_name || "선택없음"}
+                  </div>
                 </div>
               </AxisCard>
             </AxisCardWrapper>
             <PreviewMenuWrapper>
               <div className="axis-title">미리보기</div>
               <div className="axis-x-menu">
-                {previewAxisMenu.X.map((item,index) => {
+                {previewAxisMenu.X.map((item, index) => {
                   return <div key={index}>{item.ct_nm}</div>;
                 })}
               </div>
               <div className="axis-y-menu">
-              {previewAxisMenu.Y.map((item,index) => {
+                {previewAxisMenu.Y.map((item, index) => {
                   return <div key={index}>{item.ct_nm}</div>;
                 })}
               </div>
-              <div className="contents-body">해당 위치에 조건에 맞는 자료가 표출됩니다.</div>
+              <div className="contents-body">
+                해당 위치에 조건에 맞는 자료가 표출됩니다.
+              </div>
             </PreviewMenuWrapper>
             <div className="action">
               <SaveButton onClick={saveUserAxisData}>저장</SaveButton>
             </div>
           </div>
         </MenuCustomCard>
-      </Wrapper>
-    </>
+      </Content>
+    </Wrap>
   );
 }
 
-const Wrapper = styled.div`
+const Wrap = styled.div`
   display: flex;
-  padding: 1rem;
+  flex-direction: column;
+  align-items: center;
+  min-width: 1024px;
+  width: 100%;
+  padding: 1.5rem 3rem;
+`;
+
+const Content = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
   font-size: 14px;
-  min-height: 1280px;
-  background-color: #eee;
-  color: rgb(59, 59, 59);
 `;
 
 const PreviewMenuWrapper = styled.div`
@@ -132,7 +153,7 @@ const PreviewMenuWrapper = styled.div`
     grid-column: 1 / 2;
     grid-row: 1 / 2;
     color: #009999;
-    font-weight:bold;
+    font-weight: bold;
   }
   .axis-x-menu {
     display: flex;
@@ -171,9 +192,9 @@ const PreviewMenuWrapper = styled.div`
   .contents-body {
     grid-column: 2 / 3;
     grid-row: 2 / 3;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 `;
 const CardWrapper = styled.div`

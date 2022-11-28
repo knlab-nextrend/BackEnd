@@ -74,20 +74,44 @@ const CrawlDataListFetchApi = (
   pageNo,
   searchObj = null,
   general = false,
-  query
+  query,
+  isCrawled = null
 ) => {
   const params = {
-    listSize: listSize,
-    pageNo: pageNo,
+    listSize,
+    pageNo,
     ...searchObj,
     general,
     query,
+    is_crawled: isCrawled,
   };
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
     params,
   };
   return axios.get(`/crawl/list/${statusCode}`, config);
+};
+
+const userCustomCurationDataFetchApi = (
+  axis,
+  listSize = 10,
+  pageNo = 1,
+  archive = null,
+  query = null
+) => {
+  const general = query ? true : false;
+  const config = {
+    headers: { authorization: `Bearer ${getToken()}` },
+    params: {
+      axis,
+      statusCode: archive ? 6 : 8,
+      listSize,
+      pageNo,
+      query,
+      general,
+    },
+  };
+  return axios.get(`/nextrend/custom/search`, config);
 };
 
 /* 크롤데이터 버리기 */
@@ -229,6 +253,7 @@ const userAuthApi = () => {
 const sessionHandler = (err, dispatch) => {
   /* dispatch 를 사용하기 위해서 인자로 받아옴 */
   return new Promise((resolve, reject) => {
+    console.log(err)
     if (err.response.status === 401) {
       RefreshTokenApi()
         .then((res) => {
@@ -477,14 +502,6 @@ const HostTestApi = (data = null, method) => {
   }
 };
 
-const userCustomCurationDataFetchApi = (axis, archive = null) => {
-  const config = {
-    headers: { authorization: `Bearer ${getToken()}` },
-    params: { axis, statusCode: archive ? 6 : 8 },
-  };
-  return axios.get(`/nextrend/custom/search`, config);
-};
-
 const curationRequestApi = (_id) => {
   const body = {
     statusCode: 6,
@@ -543,6 +560,7 @@ const hostSyncApi = () => {
   };
   return axios.put(`/nextrend/host/sync/ `, config);
 };
+
 export {
   LoginApi,
   RefreshTokenApi,

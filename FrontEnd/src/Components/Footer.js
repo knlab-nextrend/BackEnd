@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
+import { myColors } from "styles/colors";
 
 function Footer() {
   return (
     <>
       <Wrapper>
         <FooterContent>
-          <Logo src={process.env.PUBLIC_URL + "/img/logo3.jpg"} />
           <FooterContainer>
             <ContentWrapper>
               <div className="title">회사명</div>
@@ -31,32 +31,27 @@ function Footer() {
 }
 
 const Wrapper = styled.footer`
-  padding: 3rem 0 3rem 0;
-  background-color: #435269;
+  padding: 2rem 0;
+  background-color: ${myColors.blue500};
   color: white;
-  height: 13rem;
 `;
 
-const Logo = styled.img`
-  height: 3rem;
-`;
 const FooterContainer = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 `;
-const FooterContent = styled.div` 
-width: 90%;
+const FooterContent = styled.div`
+  width: 90%;
   margin: 0 auto;
   & * {
-    margin-right:3rem;
+    margin-right: 3rem;
   }
-`
+`;
 const ContentWrapper = styled.div`
-  
   display: flex;
   align-items: right;
   font-size: 14px;
-  padding-top: 1rem;
   .title {
     font-weight: bold;
     min-width: 8rem;

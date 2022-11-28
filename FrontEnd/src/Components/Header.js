@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import { setLogout } from "../Modules/login";
 import { useHistory } from "react-router-dom";
+import { myColors, tailwindColors } from "styles/colors";
 
 function Header({ name, logo }) {
   const dispatch = useDispatch();
@@ -37,24 +38,23 @@ function Header({ name, logo }) {
 }
 
 const HeaderContainer = styled.header`
+  position: fixed; // 상단고정
+  z-index: 999; // 맨 위에
   display: flex;
   flex-direction: row;
-  height: 6rem;
-  border-bottom: solid 0.5rem #435269;
   align-items: center;
-  position: fixed; // 상단고정
-  background-color: white;
   width: 100%;
-  z-index: 999; // 맨 위에
+  height: 6rem;
+  background-color: ${tailwindColors.white};
+  box-shadow: rgba(99, 99, 99, 0.3) 0px 0px 8px 0px;
 `;
 
 const ContentWrapper = styled.div`
-  width: 90%;
-  margin: 0 auto;
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+  padding: 0 3rem;
   overflow: hidden;
 `;
 
@@ -76,9 +76,8 @@ const LoginInfo = styled.div`
     height: 2rem;
     border: none;
     padding: 0 1rem 0 1rem;
-    border-radius: 5px;
-    background-color: #435269;
-    color: white;
+    background-color: ${myColors.blue500};
+    color: ${tailwindColors.white};
     font-weight: bold;
     cursor: pointer;
   }

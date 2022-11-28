@@ -14,7 +14,6 @@ function ChartCard({ children }) {
 }
 
 const CardWrapper = styled.div`
-  margin: 1rem 0.5rem 1rem 0.5rem;
   border-radius: 4px;
   box-shadow: 0 0 0.875rem 0 rgba(33, 37, 41, 0.05);
   background-color: white;

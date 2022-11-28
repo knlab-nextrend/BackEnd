@@ -1,13 +1,16 @@
 import React from "react";
-import FormHeader from "../../../Components/FormHeader";
 import styled from "styled-components";
-import Pagination from "../../../Components/Pagination";
-import NoData from "../../../Components/NoData";
 import { AiOutlineCheck } from "react-icons/ai";
+import { BsEye } from "react-icons/bs";
 import { HiOutlineDocumentSearch } from "react-icons/hi";
-import DataFilter from "../../../Components/DataFilter";
-import DataTable from "../../../Components/DataTable";
-import ToggleButton from "../../../Components/ToggleButton";
+
+import Pagination from "Components/Pagination";
+import NoData from "Components/NoData";
+import DataFilter from "Components/DataFilter";
+import DataTable from "Components/DataTable";
+import ToggleButton from "Components/ToggleButton";
+import { WorkerContentHeader } from "Components/WorkerContentHeader";
+
 function CrawlDataScreening({
   dcCount,
   listSize,
@@ -30,9 +33,9 @@ function CrawlDataScreening({
     setListSize(e.target.value);
   };
   return (
-    <>
-      <FormHeader type="view" title={"크롤데이터 스크리닝 진행"} />
-      <Wrapper>
+    <Wrap>
+      <WorkerContentHeader title="크롤 데이터 스크리닝" Icon={BsEye} />
+      <Content>
         <RowContainer>
           <Row>
             <div className="result-count">
@@ -104,15 +107,25 @@ function CrawlDataScreening({
         ) : (
           <NoData />
         )}
-      </Wrapper>
-    </>
+      </Content>
+    </Wrap>
   );
 }
-const Wrapper = styled.div`
-  margin: 0 5rem 5rem 5rem;
+
+const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 1024px;
+  width: 100%;
+  padding: 1.5rem 3rem;
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
   font-size: 14px;
 `;
 

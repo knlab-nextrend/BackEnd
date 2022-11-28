@@ -1,15 +1,13 @@
 import React from "react";
 import { Switch, Redirect } from "react-router-dom";
-import PrivateRoute from "../../Route/PrivateRoute";
+import PrivateRoute from "routes/PrivateRoute";
 
 import CrawlDataDetailContainer from "./CrawlDataDetail/CrawlDataDetailContainer";
 import CrawlDataScreeningContainer from "./CrawlDataScreening/CrawlDataScreeningContainer";
 import CrawlDataListContainer from "./CrawlDataList/CrawlDataListContainer";
 import ArchiveDataListContainer from "./ArchiveDataList/ArchiveDataListContainer";
-import CurationDataListContainer from "../Common/CurationDataList/CurationDataListContainer";
-import CurationDataDetailContainer from "../Common/CurationDataDetail/CurationDataDetailContainer";
+import CurationDataDetailContainer from "./CurationDataDetail/CurationDataDetailContainer";
 import AdminCurationDataList from "./AdminCurationDataList";
-import { LoadingWrapper } from "../../Components/LoadingWrapper";
 
 function WorkerSection() {
   return (

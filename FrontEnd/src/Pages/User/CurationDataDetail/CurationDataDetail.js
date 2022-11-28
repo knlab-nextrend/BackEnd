@@ -5,7 +5,7 @@ import { GrFormView } from "react-icons/gr";
 import { AiOutlineLink } from "react-icons/ai";
 import Editor from "../../../Components/Editor";
 
-function CurationDataDetail({ docs, permission, goDataManage }) {
+function UserCurationDataDetail({ docs, permission, goDataManage }) {
   return (
     <>
       <FormHeader type="view" title={"큐레이션 데이터 상세 조회"} />
@@ -302,4 +302,4 @@ const ContentRow = styled.div`
   }
 `;
 
-export default CurationDataDetail;
+export default UserCurationDataDetail;

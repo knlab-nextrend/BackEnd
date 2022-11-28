@@ -13,7 +13,8 @@ import LineGraph from "./LineGraph";
 import styled from "styled-components";
 import Duration from "../../../Components/DashboardComponents/Duration";
 import { ResponsivePie } from "@nivo/pie"; // 원형차트 임시...
-import {FaSort} from "react-icons/fa"
+import { FaSort } from "react-icons/fa";
+import { myColors } from "styles/colors";
 
 function Dashboard({
   countryPieChartData,
@@ -44,7 +45,7 @@ function Dashboard({
   crawlCountSort,
 }) {
   return (
-    <>
+    <Wrap>
       <Tab>
         <div className="button-group">
           <TabButton
@@ -98,7 +99,7 @@ function Dashboard({
                 >
                   <Map getCountryMapChartData={getCountryMapChartData} />
                 </TitleCard>
-                <div>
+                <div className="country-left-section">
                   <ChartCard>
                     <ResponsivePie
                       data={countryPieChartData}
@@ -353,18 +354,18 @@ function Dashboard({
             >
               <CrawlStatusTable>
                 <colgroup>
-                  <col width="10%"/>
-                  <col width="30%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="5%"/>
-                  <col width="15%"/>
-                  <col width="10%"/>
-                </colgroup> 
+                  <col width="10%" />
+                  <col width="30%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="15%" />
+                  <col width="10%" />
+                </colgroup>
                 <thead>
                   <tr>
                     <th rowSpan={2}>HOST ID</th>
@@ -374,13 +375,69 @@ function Dashboard({
                     <th rowSpan={2}>크롤링 상태</th>
                   </tr>
                   <tr>
-                    <th>URL<FaSort className="sort-btn" onClick={()=>{crawlCountSort("url")}}/></th>
-                    <th>HTML<FaSort className="sort-btn" onClick={()=>{crawlCountSort("html")}}/></th>
-                    <th>PDF<FaSort className="sort-btn" onClick={()=>{crawlCountSort("pdf")}}/></th>
-                    <th>WORD<FaSort className="sort-btn" onClick={()=>{crawlCountSort("word")}}/></th>
-                    <th>EXCEL<FaSort className="sort-btn" onClick={()=>{crawlCountSort("excel")}}/></th>
-                    <th>PPT<FaSort className="sort-btn" onClick={()=>{crawlCountSort("ppt")}}/></th>
-                    <th>ETC<FaSort className="sort-btn" onClick={()=>{crawlCountSort("etc")}}/></th>
+                    <th>
+                      URL
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("url");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      HTML
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("html");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      PDF
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("pdf");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      WORD
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("word");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      EXCEL
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("excel");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      PPT
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("ppt");
+                        }}
+                      />
+                    </th>
+                    <th>
+                      ETC
+                      <FaSort
+                        className="sort-btn"
+                        onClick={() => {
+                          crawlCountSort("etc");
+                        }}
+                      />
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -403,7 +460,9 @@ function Dashboard({
                           <td>{item.ppt}</td>
                           <td>{item.etc}</td>
                           <td>{item.created_at}</td>
-                          <td style={{fontWeight:"bold"}}>{item.status.toUpperCase()}</td>
+                          <td style={{ fontWeight: "bold" }}>
+                            {item.status.toUpperCase()}
+                          </td>
                         </tr>
                         {selectedHostId === item.job_id && (
                           <tr key={index + 999}>
@@ -440,19 +499,35 @@ function Dashboard({
           </>
         )}
       </Wrapper>
-    </>
+    </Wrap>
   );
 }
 
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 1280px;
+`;
+
 const Wrapper = styled.div`
-  background-color: #eee;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   min-height: 1280px;
+  padding: 1.5rem 3rem;
+  background-color: #eee;
 `;
 
 const CountryContentWrapper = styled.div`
   display: grid;
   grid-template-columns: 7fr 3fr;
+  gap: 0.5rem;
+
+  & .country-left-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 `;
 
 const Tab = styled.div`
@@ -461,14 +536,14 @@ const Tab = styled.div`
   align-items: bottom;
   display: flex;
   align-items: end;
-  padding: 0 1.5rem 0 1.5rem;
+  padding: 0 3rem;
   .button-group {
   }
 `;
 const TabButton = styled.button`
-  color: ${(props) => (props.active ? "#435269" : "rgb(59,59,59)")};
+  color: ${(props) => props.active && myColors.blue400};
   border: none;
-  border-bottom: ${(props) => (props.active ? "solid 3px #435269;" : "none")};
+  border-bottom: ${(props) => props.active && `solid 3px ${myColors.blue400};`};
   font-weight: bold;
   background-color: white;
   cursor: pointer;
@@ -538,8 +613,8 @@ const CrawlStatusTable = styled.table`
     padding: 1rem;
     min-width: 190px;
   }
-  .sort-btn{
-    cursor:pointer;
+  .sort-btn {
+    cursor: pointer;
   }
 `;
 
@@ -548,17 +623,18 @@ const LineGraphOnlyOneWrapper = styled.div`
 `;
 
 const LineGraphWrapper = styled.div`
-  padding: 3rem;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  row-gap: 2rem;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
 
   .graph-title-container {
     display: flex;
     flex-direction: column;
+    padding-top: 1rem;
     .graph-title {
       display: flex;
       padding-left: 3rem;
-      font-size: 14px;
       font-weight: bold;
       color: #435269;
     }
