@@ -128,10 +128,15 @@ const uploadExcelData = async (req, res) => {
     let pdfs = req.files.pdfs;
     let thumbnails = req.files.thumbnails;
 
+    const metaData = JSON.parse(req.body.meta);
+
+    //pdf, 썸네일 값이 있으면 NAS에 저장 후 es에 저장
     if (pdfs && thumbnails) {
-        const metaData = JSON.parse(req.body.meta);
+        
         const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
 
+        //meta = es에 들어갈 데이터
+        //es에 맞는 pdf와 thumbnail을 설정함
         metaData.forEach((meta)=>{
             let pdf = pdfs.filter(pdf=>pdf.originalname === meta.pdf_file_name);
             pdf = pdf ? pdf[0] : null;
@@ -148,6 +153,8 @@ const uploadExcelData = async (req, res) => {
             if (tableError) {
                 throw 'some problems with upload table';
             }
+            
+            //meta마다 pdf랑 썸네일 업로드
             metaData.forEach(async (meta)=>{
                 let folderPath = folderDate + '/' + meta.dc_domain + '/';
                 
@@ -182,27 +189,32 @@ const uploadExcelData = async (req, res) => {
                 const itemId = uploadedData.insertId;
                 await poliCtrl.insertUploadData(itemId, meta.dc_page);
 
-                meta.is_crawled = false;
                 meta.doc_file = folderPath + meta.pdf.filename + '.pdf';
                 meta.doc_thumbnail = folderPath + meta.thumbnail.filename + ".png";
                 meta.item_id= itemId;
 
                 delete meta.pdf;
                 delete meta.thumbnail;
-                
+
+                meta.is_crawled = false;
                 const _id = await esCtrl.Index(meta, 8, false, true);
                 await uploadCtrl.updateId(_id, itemId);
             })
         } catch (e) {
             res.status(400).send({ message: e });
         }
+    } 
+    //pdf, 썸네일 값이 없으면 es에만 저장 
+    else{
+        metaData.forEach(async (meta)=>{
 
+            meta.is_crawled = false;
+            const _id = await esCtrl.Index(meta, 8, false, true);
+            
+        })
 
-        res.send();
-    } else {
-        res.status(400).send({"message" : "파일이 제대로 전달되지 않았습니다."});
     }
-
+    res.send();
 }
 
 const getExcelData = async (req, res)=>{
