@@ -4,6 +4,7 @@ import XLSX from "xlsx";
 import { uploadExcelDataApi, categoryListFetchApi } from "../../../Utils/api";
 import resolve from "resolve";
 import { useHistory } from "react-router-dom";
+import { uploadExcel } from "services/api/excel";
 
 function ExcelDataRegisterContainer() {
   const [excelData, setExcelData] = useState([]);
@@ -162,57 +163,83 @@ function ExcelDataRegisterContainer() {
     thumbnails.forEach((thumbnaiil) => files.append("thumbnails", thumbnaiil));
     files.append("meta", JSON.stringify(excelData));
     console.log(excelData);
-    uploadExcelDataApi(files)
+    uploadExcel(files)
       .then((res) => {
         console.log(res);
+        alert("엑셀 데이터 업로드에 성공했습니다");
         history.push("/curation");
       })
       .catch((err) => {
+        console.error(err);
         alert("엑셀 데이터 업로드에 실패했습니다");
         window.location.reload();
       });
+    // uploadExcelDataApi(files)
+    //   .then((res) => {
+    //     console.log(res);
+    //     history.push("/curation");
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //     alert("엑셀 데이터 업로드에 실패했습니다");
+    //     window.location.reload();
+    //   });
+  };
+  const toNextStep = {
+    1: () => {
+      if (errorList.length > 0) {
+        alert("잘못된 셀을 수정 후 다시 업로드 해주세요");
+      } else {
+        setStep((prev) => prev + 1);
+      }
+    },
+    2: () => {
+      if (pdfData.length === 0) {
+        setStep((prev) => prev + 2);
+      } else {
+        setStep((prev) => prev + 1);
+      }
+    },
+    3: () => {
+      if (pdfMetaData.some((data) => !data.available)) {
+        alert("등록 불가능한 파일을 제거해주세요");
+      } else {
+        setStep((prev) => prev + 1);
+      }
+    },
+    4: () => {
+      if (thumbnails.length === 0) {
+        setStep((prev) => prev + 2);
+      } else {
+        setStep((prev) => prev + 1);
+      }
+    },
+    5: () => {
+      if (thumbnailMetaData.some((data) => !data.available)) {
+        alert("등록 불가능한 파일을 제거해주세요");
+      } else {
+        setStep((prev) => prev + 1);
+      }
+    },
+    6: () => {
+      upload();
+    },
   };
 
   const nextStep = () => {
-    if (step === 1) {
-      if (errorList.length > 0) {
-        alert("잘못된 셀을 수정 후 다시 업로드 해주세요");
-        return;
-      }
-      if (excelData.length === 0) {
-        alert("엑셀 데이터 등록 해주세요.");
-        return;
-      }
-    }
-    if (step === 2 && pdfData.length === 0) {
-      alert("PDF 파일을 등록 해주세요.");
-      return;
-    }
-    if (step === 3) {
-      if (pdfMetaData.some((data) => !data.available)) {
-        alert("등록 불가능한 파일을 제거해주세요");
-        return;
-      }
-    }
-    if (step === 4 && thumbnails.length === 0) {
-      alert("이미지 파일을 등록 해주세요.");
-      return;
-    }
-    if (step === 5) {
-      if (thumbnailMetaData.some((data) => !data.available)) {
-        alert("등록 불가능한 파일을 제거해주세요");
-        return;
-      }
-      upload();
-      return;
-    }
-    setStep((prev) => prev + 1);
+    toNextStep[step]();
   };
+
   const prevStep = () => {
     if (step === 1) {
       return;
     }
-    setStep((prev) => prev - 1);
+    if (
+      (step === 4 && pdfData.length === 0) ||
+      (step === 6 && thumbnails.length === 0)
+    ) {
+      setStep((prev) => prev - 2);
+    } else setStep((prev) => prev - 1);
   };
 
   const findCategoryCode = async (카테고리타입, 분류리스트) => {
@@ -473,7 +500,7 @@ const EXCEL_SCHEMA = {
   },
 
   pdf_file_name: {
-    isRequired: true,
+    isRequired: false,
     type: DATA_TYPE.STRING,
     validate: (v) => {
       const result = {};
@@ -485,7 +512,7 @@ const EXCEL_SCHEMA = {
   },
 
   thumbnail_file_name: {
-    isRequired: true,
+    isRequired: false,
     type: DATA_TYPE.STRING,
     validate: (fileName) => {
       const result = {};
