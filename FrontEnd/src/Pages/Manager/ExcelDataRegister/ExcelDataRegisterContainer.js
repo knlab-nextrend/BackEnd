@@ -473,7 +473,7 @@ const EXCEL_SCHEMA = {
   },
 
   pdf_file_name: {
-    isRequired: true,
+    isRequired: false,
     type: DATA_TYPE.STRING,
     validate: (v) => {
       const result = {};
@@ -485,7 +485,7 @@ const EXCEL_SCHEMA = {
   },
 
   thumbnail_file_name: {
-    isRequired: true,
+    isRequired: false,
     type: DATA_TYPE.STRING,
     validate: (fileName) => {
       const result = {};
