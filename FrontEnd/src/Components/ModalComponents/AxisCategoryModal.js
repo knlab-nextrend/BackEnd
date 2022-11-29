@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { BsCheckLg } from "react-icons/bs";
-import { getCategryListAPI } from "../../api/category/category";
+import { getCategryListAPI } from "services/api/category/category";
 import { sessionHandler } from "../../Utils/api";
 import { myColors, tailwindColors } from "styles/colors";
 

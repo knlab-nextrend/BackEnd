@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getToken } from "../../Utils/tokens";
+import { getToken } from "Utils/tokens";
 
 export const getCategryListAPI = (code = null) => {
   let config = {
