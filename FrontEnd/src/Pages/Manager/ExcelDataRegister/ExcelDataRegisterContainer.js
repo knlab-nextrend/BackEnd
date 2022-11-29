@@ -185,43 +185,61 @@ function ExcelDataRegisterContainer() {
     //     window.location.reload();
     //   });
   };
-
-  const nextStep = () => {
-    if (step === 1) {
+  const toNextStep = {
+    1: () => {
       if (errorList.length > 0) {
         alert("잘못된 셀을 수정 후 다시 업로드 해주세요");
-        return;
+      } else {
+        setStep((prev) => prev + 1);
       }
-      if (excelData.length === 0) {
-        alert("엑셀 데이터 등록 해주세요.");
-        return;
+    },
+    2: () => {
+      if (pdfData.length === 0) {
+        setStep((prev) => prev + 2);
+      } else {
+        setStep((prev) => prev + 1);
       }
-    }
-    if (step === 2 && pdfData.length === 0) {
-      setStep((prev) => prev + 2);
-      return;
-    }
-    if (step === 3) {
+    },
+    3: () => {
       if (pdfMetaData.some((data) => !data.available)) {
         alert("등록 불가능한 파일을 제거해주세요");
-        return;
+      } else {
+        setStep((prev) => prev + 1);
       }
-    }
-    if (step === 5) {
+    },
+    4: () => {
+      if (thumbnails.length === 0) {
+        setStep((prev) => prev + 2);
+      } else {
+        setStep((prev) => prev + 1);
+      }
+    },
+    5: () => {
       if (thumbnailMetaData.some((data) => !data.available)) {
         alert("등록 불가능한 파일을 제거해주세요");
-        return;
+      } else {
+        setStep((prev) => prev + 1);
       }
+    },
+    6: () => {
       upload();
-      return;
-    }
-    setStep((prev) => prev + 1);
+    },
   };
+
+  const nextStep = () => {
+    toNextStep[step]();
+  };
+
   const prevStep = () => {
     if (step === 1) {
       return;
     }
-    setStep((prev) => prev - 1);
+    if (
+      (step === 4 && pdfData.length === 0) ||
+      (step === 6 && thumbnails.length === 0)
+    ) {
+      setStep((prev) => prev - 2);
+    } else setStep((prev) => prev - 1);
   };
 
   const findCategoryCode = async (카테고리타입, 분류리스트) => {

@@ -311,10 +311,45 @@ function ExcelDataRegister({
           </UploadContainer>
         )}
 
+        {step === 6 && (
+          <UploadContainer>
+            <HeaderContainer color="#435269">
+              <div className="step">STEP 6</div>
+              <div className="title">
+                <AiOutlineSearch size="30" color="#fff" />
+                <div className="bold">최종</div>
+                <div>검토</div>
+              </div>
+            </HeaderContainer>
+            <BodyContainer>
+              <div className="explain">
+                <span>
+                  등록될 문서의 원재목과 한글제목만 간략히 표현됩니다.
+                </span>
+              </div>
+              <FileList>
+                {excelData.map((row, index) => {
+                  return (
+                    <FileCard>
+                      <div className="file-container">
+                        <HiOutlineDocumentText size="40" color="#d6d6d6" />
+                        <div className="file-info">
+                          <div>{row.doc_kor_title}</div>
+                          <div>{row.doc_origin_title}</div>
+                        </div>
+                      </div>
+                    </FileCard>
+                  );
+                })}
+              </FileList>
+            </BodyContainer>
+          </UploadContainer>
+        )}
+
         <ButtonContainer isLastStage={step}>
           {step !== 1 && <button onClick={prevStep}>{"< 이전 단계"}</button>}
           <button onClick={nextStep}>
-            {step === 5 ? "업로드" : "다음 단계 >"}
+            {step === 6 ? "업로드" : "다음 단계 >"}
           </button>
         </ButtonContainer>
 
