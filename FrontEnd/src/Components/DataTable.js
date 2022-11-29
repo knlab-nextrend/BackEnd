@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { HiOutlineExternalLink } from "react-icons/hi";
 import { Link } from "react-router-dom";
+
 function DataTable({
   tableData,
   type,
@@ -26,10 +27,12 @@ function DataTable({
                   <th>정책 분류</th>
                 </>
               )}
-              {(type === "register" || type==="archive") && <th>한글제목</th>}
+              {(type === "register" || type === "archive") && <th>한글제목</th>}
               {type !== "screening" && <th className="dc_title_or">원제목</th>}
               <th>원문 요약</th>
-              <th className="dc_publisher">{type==="screening"?"HOST명":"발급기관명"}</th>
+              <th className="dc_publisher">
+                {type === "screening" ? "HOST명" : "발급기관명"}
+              </th>
               <th className="lang">언어</th>
               <th className="dc_dt_collect">원문수집일</th>
               <th className="dc_page">페이지 수</th>
@@ -84,8 +87,10 @@ function DataTable({
                       <td>{item.doc_country_list}</td>
                       <td>{item.doc_category_list}</td>
                     </>
-                        )}
-                  {(type === "register" || type==="archive") && <td>{item.doc_kor_title}</td>}
+                  )}
+                  {(type === "register" || type === "archive") && (
+                    <td>{item.doc_kor_title}</td>
+                  )}
                   {type !== "screening" && (
                     <td>
                       <Link to={`/crawl/${statusCode}/${item._id}`}>
@@ -95,9 +100,14 @@ function DataTable({
                   )}
                   <td>{item.doc_origin_summary}</td>
                   <td>
-                  {type==="screening"?item.doc_host:item.doc_publisher }
+                    {type === "screening" ? item.doc_host : item.doc_publisher}
                   </td>
-                  <td>{type==="screening"?item.doc_language : item.doc_language.length!==0 && item.doc_language[0].CT_NM }</td>
+                  <td>
+                    {type === "screening"
+                      ? item.doc_language
+                      : item.doc_language.length !== 0 &&
+                        item.doc_language[0].CT_NM}
+                  </td>
                   <td>{item.doc_collect_date}</td>
                   <td>{item.doc_page}쪽</td>
                   {type === "screening" && (
@@ -139,7 +149,7 @@ function DataTable({
                   )}
 
                   <td>
-                    <a href={item.doc_url} target="_blank">
+                    <a href={item.doc_url} target="_blank" rel="noreferrer">
                       <HiOutlineExternalLink size="24" color="#435269" />
                     </a>
                   </td>
@@ -154,7 +164,6 @@ function DataTable({
 }
 
 const TableWrapper = styled.div`
-  margin-top: 1rem;
   width: 100%;
   max-height: 65rem;
   overflow: auto;
@@ -162,7 +171,7 @@ const TableWrapper = styled.div`
   border-radius: 4px;
   border: solid 1px #eee;
   font-size: 14px;
-  text-align:center;
+  text-align: center;
 `;
 
 const Badge = styled.div`
@@ -186,8 +195,8 @@ const CustomTable = styled.table`
   .dc_dt_collect {
     width: 6rem;
   }
-  .dc_publisher{
-    width:10rem;
+  .dc_publisher {
+    width: 10rem;
   }
   .dc_page,
   .dc_url_loc {
@@ -210,7 +219,7 @@ const CustomTable = styled.table`
   }
   th,
   td {
-    word-break:break-all;
+    word-break: break-all;
     padding-left: 1rem;
     a {
       color: black;

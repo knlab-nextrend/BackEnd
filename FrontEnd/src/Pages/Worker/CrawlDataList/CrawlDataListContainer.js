@@ -8,6 +8,12 @@ import { LoadingWrapper } from "Components/LoadingWrapper";
 
 import CrawlDataList from "./CrawlDataList";
 
+// data를 fetch할 때 보류면 statuscode+1을 한다.
+const TAB_VALUES = {
+  대기: false,
+  보류: true,
+};
+
 function CrawlDataListContainer() {
   const dispatch = useDispatch();
   /* 현재 보여질 데이터 */
@@ -22,16 +28,26 @@ function CrawlDataListContainer() {
   const [dcCount, setDcCount] = useState(0); // document 총 개수
   const [pageNo, setPageNo] = useState(1); // 현재 활성화 된 페이지 번호
   const [listSize, setListSize] = useState(10); // 한 페이지에 나타낼 document 개수
+  const [selectedTab, setSelectedTab] = useState("대기");
 
-  const [isKeep, setIsKeep] = useState(false);
-  const onChangeKeepToggle = () => {
-    setIsKeep(!isKeep);
+  const onClickTab = (tabName) => {
+    if (selectedTab === tabName) return;
+
+    setSelectedTab(tabName);
+    //보류면 statusCode + 1 대기면 기본 statusCode
+    const newCode = TAB_VALUES[tabName]
+      ? Number(statusCode) + 1
+      : Number(statusCode);
+    setCurrentCode(newCode);
+
+    setPageNo(1);
   };
 
-  useEffect(() => {
-    const code = isKeep ? Number(statusCode) + 1 : Number(statusCode);
-    setCurrentCode(code);
-  }, [isKeep]);
+  const onChangeListSize = (e) => {
+    const newListSize = e.target.value;
+    setListSize(newListSize);
+    setPageNo(1);
+  };
 
   const dataCleansing = (rawData) => {
     let _crawlDataList = [];
@@ -90,6 +106,7 @@ function CrawlDataListContainer() {
   useEffect(() => {
     dataFetch(searchObj);
   }, [pageNo, currentCode, listSize, searchObj]);
+
   return (
     <LoadingWrapper>
       <CrawlDataList
@@ -97,11 +114,11 @@ function CrawlDataListContainer() {
         crawlDataList={crawlDataList}
         dcCount={dcCount}
         listSize={listSize}
-        setListSize={setListSize}
+        onChangeListSize={onChangeListSize}
         pageNo={pageNo}
         setPageNo={setPageNo}
-        onChangeKeepToggle={onChangeKeepToggle}
-        isKeep={isKeep}
+        selectedTab={selectedTab}
+        onClickTab={onClickTab}
         dataFilterFetch={dataFilterFetch}
       />
     </LoadingWrapper>

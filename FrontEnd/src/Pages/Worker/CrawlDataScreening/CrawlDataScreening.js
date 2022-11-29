@@ -2,19 +2,20 @@ import React from "react";
 import styled from "styled-components";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BsEye } from "react-icons/bs";
-import { HiOutlineDocumentSearch } from "react-icons/hi";
 
 import Pagination from "Components/Pagination";
 import NoData from "Components/NoData";
 import DataFilter from "Components/DataFilter";
-import DataTable from "Components/DataTable";
-import ToggleButton from "Components/ToggleButton";
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
+import { SearchResultCount } from "Components/SearchResultCount";
+import { Tab } from "Components/Tab";
+import { myColors } from "styles/colors";
+import { ScreeningTable } from "./_table";
 
 function CrawlDataScreening({
   dcCount,
   listSize,
-  setListSize,
+  onChangeListSize,
   pageNo,
   setPageNo,
   screeningData,
@@ -25,84 +26,74 @@ function CrawlDataScreening({
   onChangeCheckedAll,
   checkedAll,
   onChangeEach,
-  isKeep,
-  onChangeKeepToggle,
+  selectedTab,
+  onClickTab,
   dataFilterFetch,
+  sort,
+  sortState,
 }) {
-  const _listSizeHandler = (e) => {
-    setListSize(e.target.value);
-  };
   return (
     <Wrap>
       <WorkerContentHeader title="크롤 데이터 스크리닝" Icon={BsEye} />
       <Content>
+        <SearchResultCount count={dcCount} />
         <RowContainer>
-          <Row>
-            <div className="result-count">
-              <HiOutlineDocumentSearch />
-              검색 결과 ({dcCount}건)
-            </div>
-            <div className="action-group">
-              <ToggleButton
-                mode1={"스크리닝 대기"}
-                mode2={"스크리닝 보류"}
-                action={onChangeKeepToggle}
-                checked={isKeep}
-              />
-              <ScreeningButton
-                className="screening-button"
-                onClick={stageScreeningData}
-              >
-                <AiOutlineCheck />
-                스크리닝 완료
-              </ScreeningButton>
-              <select
-                className="list-size"
-                value={listSize}
-                onChange={_listSizeHandler}
-              >
-                <option disabled>리스트 사이즈</option>
-                <option value={2}>2건</option>
-                <option value={10}>10건</option>
-                <option value={30}>30건</option>
-                <option value={50}>50건</option>
-                <option value={75}>75건</option>
-                <option value={100}>100건</option>
-              </select>
-            </div>
-          </Row>
           <Row>
             <DataFilter type={"screening"} dataFilterFetch={dataFilterFetch} />
           </Row>
         </RowContainer>
+        <RowWrap justify="space-between">
+          <Tab>
+            <Tab.Item
+              label="대기"
+              selected={selectedTab === "스크리닝 대기"}
+              onClick={() => onClickTab("스크리닝 대기")}
+            />
+            <Tab.Item
+              label="보류"
+              selected={selectedTab === "스크리닝 보류"}
+              onClick={() => onClickTab("스크리닝 보류")}
+            />
+          </Tab>
+          <select
+            className="list-size"
+            value={listSize}
+            onChange={(e) => onChangeListSize(e)}
+          >
+            <option disabled>리스트 사이즈</option>
+            <option value={2}>2건</option>
+            <option value={10}>10건</option>
+            <option value={30}>30건</option>
+            <option value={50}>50건</option>
+            <option value={75}>75건</option>
+            <option value={100}>100건</option>
+          </select>
+        </RowWrap>
         {screeningData.length !== 0 ? (
           <>
-            <DataTable
-              tableData={screeningData}
+            <ScreeningTable
+              screeningData={screeningData}
               stageDataList={stageDataList}
               keepDataList={keepDataList}
               deleteDataList={deleteDataList}
               onChangeCheckedAll={onChangeCheckedAll}
               checkedAll={checkedAll}
               onChangeEach={onChangeEach}
-              type="screening"
+              sort={sort}
+              sortState={sortState}
             />
             <BottomWrap>
-              <ScreeningButton
-                className="screening-button"
-                onClick={stageScreeningData}
-              >
+              <ScreeningButton onClick={stageScreeningData}>
                 <AiOutlineCheck />
                 스크리닝 완료
               </ScreeningButton>
+              <Pagination
+                dcCount={dcCount}
+                listSize={listSize}
+                pageNo={pageNo}
+                setPageNo={setPageNo}
+              />
             </BottomWrap>
-
-            <Pagination
-              dcCount={dcCount}
-              listSize={listSize}
-              pageNo={pageNo}
-              setPageNo={setPageNo}
-            />
           </>
         ) : (
           <NoData />
@@ -116,8 +107,8 @@ const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 1024px;
   width: 100%;
+  min-width: 52rem;
   padding: 1.5rem 3rem;
 `;
 
@@ -129,22 +120,40 @@ const Content = styled.div`
   font-size: 14px;
 `;
 
-const ScreeningButton = styled.button`
-  margin: 0 0.5rem 0 0.5rem;
-  padding: 0.5rem;
-  color: white;
-  font-weight: bold;
-  background-color: #435269;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-`;
-const BottomWrap = styled.div`
-  width: 100%;
+const RowWrap = styled.div`
   display: flex;
-  justify-content: right;
+  align-items: center;
+  justify-content: ${(props) => props.justify};
+  gap: ${(props) => props.gap};
+  width: 100%;
+  margin-top: 1rem;
+
+  .list-size {
+    padding: 0.5rem;
+    border: solid 1px #d6d6d6;
+    font-size: 1rem;
+  }
+`;
+
+const BottomWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   margin-top: 1rem;
 `;
+
+const ScreeningButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: ${myColors.blue500};
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+`;
+
 const RowContainer = styled.div`
   border: solid 1px #d6d6d6;
   margin-top: 1rem;
@@ -172,11 +181,6 @@ const Row = styled.div`
   }
   .action-group {
     display: flex;
-  }
-  .list-size {
-    margin: 0 0.5rem 0 0.5rem;
-    padding: 0.5rem;
-    border: solid 1px #d6d6d6;
   }
 `;
 

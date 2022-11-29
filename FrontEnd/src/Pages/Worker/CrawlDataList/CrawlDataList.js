@@ -1,31 +1,28 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { HiOutlineDocumentSearch } from "react-icons/hi";
 
 import { STATUS_CODE_SET } from "Data/crawlStatus";
 import Pagination from "Components/Pagination";
 import NoData from "Components/NoData";
 import DataFilter from "Components/DataFilter";
-import ToggleButton from "Components/ToggleButton";
 import DataTable from "Components/DataTable";
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
+import { SearchResultCount } from "Components/SearchResultCount";
+import { Tab } from "Components/Tab";
 
 function CrawlDataList({
   statusCode,
   dcCount,
-  setListSize,
   listSize,
+  onChangeListSize,
   pageNo,
   setPageNo,
   crawlDataList,
-  onChangeKeepToggle,
-  isKeep,
+  selectedTab,
+  onClickTab,
   dataFilterFetch,
 }) {
-  const _listSizeHandler = (e) => {
-    setListSize(e.target.value);
-  };
   return (
     <Wrap>
       <WorkerContentHeader
@@ -33,34 +30,9 @@ function CrawlDataList({
         Icon={STATUS_CODE_SET[statusCode].icon}
       />
       <Content>
+        <SearchResultCount count={dcCount} />
+
         <RowContainer>
-          <Row>
-            <div className="result-count">
-              <HiOutlineDocumentSearch />
-              검색 결과 ({dcCount}건)
-            </div>
-            <div className="action-group">
-              <ToggleButton
-                mode1={"대기"}
-                mode2={"보류"}
-                action={onChangeKeepToggle}
-                checked={isKeep}
-              />
-              <select
-                className="list-size"
-                value={listSize}
-                onChange={_listSizeHandler}
-              >
-                <option disabled>리스트 사이즈</option>
-                <option value={2}>2건</option>
-                <option value={10}>10건</option>
-                <option value={30}>30건</option>
-                <option value={50}>50건</option>
-                <option value={75}>75건</option>
-                <option value={100}>100건</option>
-              </select>
-            </div>
-          </Row>
           <Row>
             <DataFilter
               type={STATUS_CODE_SET[statusCode].type}
@@ -68,6 +40,33 @@ function CrawlDataList({
             />
           </Row>
         </RowContainer>
+        <RowWrap justify="space-between">
+          <Tab>
+            <Tab.Item
+              label="대기"
+              selected={selectedTab === "대기"}
+              onClick={() => onClickTab("대기")}
+            />
+            <Tab.Item
+              label="보류"
+              selected={selectedTab === "보류"}
+              onClick={() => onClickTab("보류")}
+            />
+          </Tab>
+          <select
+            className="list-size"
+            value={listSize}
+            onChange={(e) => onChangeListSize(e)}
+          >
+            <option disabled>리스트 사이즈</option>
+            <option value={2}>2건</option>
+            <option value={10}>10건</option>
+            <option value={30}>30건</option>
+            <option value={50}>50건</option>
+            <option value={75}>75건</option>
+            <option value={100}>100건</option>
+          </select>
+        </RowWrap>
         {crawlDataList.length !== 0 ? (
           <>
             <SearchResult>
@@ -77,12 +76,14 @@ function CrawlDataList({
                 statusCode={statusCode}
               />
             </SearchResult>
-            <Pagination
-              dcCount={dcCount}
-              listSize={listSize}
-              pageNo={pageNo}
-              setPageNo={setPageNo}
-            />
+            <PaginationWrap>
+              <Pagination
+                dcCount={dcCount}
+                listSize={listSize}
+                pageNo={pageNo}
+                setPageNo={setPageNo}
+              />
+            </PaginationWrap>
           </>
         ) : (
           <NoData />
@@ -156,22 +157,25 @@ const Row = styled.div`
   &:last-child {
     border: none;
   }
+`;
 
-  .result-count {
-    font-size: 16px;
-    font-weight: bold;
-    * {
-      padding-right: 0.5rem;
-    }
-  }
-  .action-group {
-    display: flex;
-  }
+const RowWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: ${(props) => props.justify};
+  gap: ${(props) => props.gap};
+  width: 100%;
+  margin-top: 1rem;
+
   .list-size {
-    margin: 0 0.5rem 0 0.5rem;
     padding: 0.5rem;
     border: solid 1px #d6d6d6;
+    font-size: 1rem;
   }
+`;
+
+const PaginationWrap = styled.div`
+  margin-top: 1.5rem;
 `;
 
 export default CrawlDataList;

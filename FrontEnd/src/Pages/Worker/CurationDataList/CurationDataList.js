@@ -1,19 +1,22 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import Pagination from "../../../Components/Pagination";
-import { HiOutlineDocumentSearch, HiSearch } from "react-icons/hi";
+import { BsJournals } from "react-icons/bs";
 import { MdCalendarViewDay } from "react-icons/md";
 import { RiFileList2Line } from "react-icons/ri";
-import DataFilter from "../../../Components/DataFilter";
-import CurationDataCard from "../../../Components/CurationDataCard";
-import CurationDataCard2 from "../../../Components/CurationDataCard2";
-import NoData from "../../../Components/NoData";
+
+import { myColors } from "styles/colors";
+import Pagination from "Components/Pagination";
+import CurationDataCard from "Components/CurationDataCard";
+import CurationDataCard2 from "Components/CurationDataCard2";
+import NoData from "Components/NoData";
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
-import { BsJournals } from "react-icons/bs";
+import { SearchResultCount } from "Components/SearchResultCount";
+import { Tab } from "Components/Tab";
+
 import { CurationTable } from "./_CurationTable";
-import { myColors, tailwindColors } from "styles/colors";
 import { CurationSearch } from "./_Search";
+
 function CurationDataList({
   curationDataList,
   dcCount,
@@ -25,16 +28,12 @@ function CurationDataList({
   handleRowClick,
   userInfo,
   dataFilterFetch,
-  setListSize,
+  onChangeListSize,
   setSearchInput,
   onSearch,
   selectedTab,
   onClickTab,
 }) {
-  const _listSizeHandler = (e) => {
-    setListSize(e.target.value);
-  };
-
   const onSubmitSearch = (e) => {
     e.preventDefault();
     onSearch();
@@ -86,27 +85,35 @@ function CurationDataList({
           </label>
         </ViewType>
       </WorkerContentHeader>
-      <ResultWrap>
-        <HiOutlineDocumentSearch />
-        <span> 검색 결과</span> <span>({dcCount}건)</span>
-      </ResultWrap>
+      <SearchResultCount count={dcCount} />
       {/* <DataFilter type={"curation"} dataFilterFetch={dataFilterFetch} /> */}
       <CurationSearch
         onChangeSearchInput={onChangeSearch}
         onSubmitSearch={onSubmitSearch}
       />
       <RowWrap justify="space-between">
-        <TabGroup>
-          {["전체", "크롤 데이터", "수동 데이터"].map((v) => (
-            <Tab selected={selectedTab === v} onClick={() => onClickTab(v)}>
-              {v}
-            </Tab>
-          ))}
-        </TabGroup>
+        <Tab>
+          <Tab.Item
+            label="전체"
+            selected={selectedTab === "전체"}
+            onClick={() => onClickTab("전체")}
+          />
+          <Tab.Item
+            label="크롤 데이터"
+            selected={selectedTab === "크롤 데이터"}
+            onClick={() => onClickTab("크롤 데이터")}
+          />
+          <Tab.Item
+            label="수동 데이터"
+            selected={selectedTab === "수동 데이터"}
+            onClick={() => onClickTab("수동 데이터")}
+          />
+        </Tab>
+
         <select
           className="list-size"
           value={listSize}
-          onChange={_listSizeHandler}
+          onChange={(e) => onChangeListSize(e)}
         >
           <option disabled>리스트 사이즈</option>
           <option value={2}>2건</option>
@@ -130,6 +137,7 @@ function CurationDataList({
               {curationDataList.map((item, index) => {
                 return (
                   <CustomLink
+                    key={index}
                     to={`/${
                       userInfo.permission !== 0 ? "curation" : "library"
                     }/${item._id}`}
@@ -147,6 +155,7 @@ function CurationDataList({
               {curationDataList.map((item, index) => {
                 return (
                   <CustomLink
+                    key={index}
                     to={`/${
                       userInfo.permission !== 0 ? "curation" : "library"
                     }/${item._id}`}
@@ -184,20 +193,6 @@ const Wrap = styled.div`
   padding: 1.5rem 3rem;
 `;
 
-const ResultWrap = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 1rem 0;
-  font-size: 1.5rem;
-  font-weight: bold;
-  white-space: nowrap;
-
-  & > span:nth-of-type(2) {
-    color: ${myColors.red};
-  }
-`;
-
 const ViewType = styled.div`
   display: flex;
   font-size: 14px;
@@ -232,17 +227,12 @@ const RowWrap = styled.div`
   }
 `;
 
-const CurationListWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-size: 14px;
-  width: 100%;
-`;
 const CurationCard1Wrapper = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
 `;
+
 const CurationCard2Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -252,23 +242,6 @@ const CurationCard2Wrapper = styled.div`
 const CustomLink = styled(Link)`
   text-decoration: none;
   color: black;
-`;
-
-const TabGroup = styled.div`
-  display: flex;
-  align-items: center;
-  align-self: flex-start;
-`;
-
-const Tab = styled.div`
-  padding: 0.5rem 1rem;
-  border-bottom: 0.2rem solid ${tailwindColors.white};
-  border-bottom-color: ${(props) => props.selected && myColors.blue400};
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: ${(props) =>
-    props.selected ? myColors.blue400 : tailwindColors["grey-600"]};
-  cursor: pointer;
 `;
 
 const PaginationWrap = styled.div`
