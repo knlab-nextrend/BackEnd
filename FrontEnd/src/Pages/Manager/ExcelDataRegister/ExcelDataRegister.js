@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import FormHeader from "../../../Components/FormHeader";
 import { HiOutlineDocumentText } from "react-icons/hi";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import {

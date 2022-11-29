@@ -168,6 +168,7 @@ function ExcelDataRegisterContainer() {
         history.push("/curation");
       })
       .catch((err) => {
+        console.error(err);
         alert("엑셀 데이터 업로드에 실패했습니다");
         window.location.reload();
       });
@@ -185,7 +186,7 @@ function ExcelDataRegisterContainer() {
       }
     }
     if (step === 2 && pdfData.length === 0) {
-      alert("PDF 파일을 등록 해주세요.");
+      setStep((prev) => prev + 2);
       return;
     }
     if (step === 3) {
@@ -193,10 +194,6 @@ function ExcelDataRegisterContainer() {
         alert("등록 불가능한 파일을 제거해주세요");
         return;
       }
-    }
-    if (step === 4 && thumbnails.length === 0) {
-      alert("이미지 파일을 등록 해주세요.");
-      return;
     }
     if (step === 5) {
       if (thumbnailMetaData.some((data) => !data.available)) {
