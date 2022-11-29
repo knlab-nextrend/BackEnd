@@ -4,6 +4,7 @@ import XLSX from "xlsx";
 import { uploadExcelDataApi, categoryListFetchApi } from "../../../Utils/api";
 import resolve from "resolve";
 import { useHistory } from "react-router-dom";
+import { uploadExcel } from "services/api/excel";
 
 function ExcelDataRegisterContainer() {
   const [excelData, setExcelData] = useState([]);
@@ -162,9 +163,10 @@ function ExcelDataRegisterContainer() {
     thumbnails.forEach((thumbnaiil) => files.append("thumbnails", thumbnaiil));
     files.append("meta", JSON.stringify(excelData));
     console.log(excelData);
-    uploadExcelDataApi(files)
+    uploadExcel(files)
       .then((res) => {
         console.log(res);
+        alert("엑셀 데이터 업로드에 성공했습니다");
         history.push("/curation");
       })
       .catch((err) => {
@@ -172,6 +174,16 @@ function ExcelDataRegisterContainer() {
         alert("엑셀 데이터 업로드에 실패했습니다");
         window.location.reload();
       });
+    // uploadExcelDataApi(files)
+    //   .then((res) => {
+    //     console.log(res);
+    //     history.push("/curation");
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //     alert("엑셀 데이터 업로드에 실패했습니다");
+    //     window.location.reload();
+    //   });
   };
 
   const nextStep = () => {
