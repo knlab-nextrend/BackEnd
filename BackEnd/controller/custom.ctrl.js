@@ -4,23 +4,11 @@ const libs = require("../lib/libs");
 const { listeners } = require("../models/nextrend");
 const crawlCtrl = require("./crawl.ctrl");
 
-const AXIS_X_TYPE = 0;
-const AXIS_Y_TYPE = 1;
-
 const createSetting = async (req, res) => {
     if (req.body.xaxis && req.body.yaxis && req.body.uid) {
         try {
             const wid = req.uid;
-
-            // xais를 DB에 추가
-            req.body.xaxis.forEach(async xaxis=>{
-                await customCtrl.create(req.body.uid, xaxis, AXIS_X_TYPE, wid);
-            })
-            
-            req.body.yaxis.forEach(async yaxis=>{
-                await customCtrl.create(req.body.uid, yaxis, AXIS_Y_TYPE, wid);
-            })
-
+            await customCtrl.create(req.body.uid, req.body.xaxis, req.body.yaxis, wid);
             res.send();
         } catch (e) {
             res.status(400).send({ message: e });
@@ -30,7 +18,6 @@ const createSetting = async (req, res) => {
     }
 }
 
-// deprecated 되어야함.
 const updateSetting = async (req, res) => {
     if (req.body.uid && req.body.xaxis && req.body.yaxis) {
         try {
@@ -45,7 +32,6 @@ const updateSetting = async (req, res) => {
     }
 }
 
-
 const deleteSetting = async (req, res) => {
     if (req.query.idx) {
         try {
@@ -59,13 +45,10 @@ const deleteSetting = async (req, res) => {
     }
 }
 
-//사용자의 axis들을 모두 읽어옴
 const readSetting = async (req, res) => {
     try {
-        const x_result = await customCtrl.read(req.query.uid, AXIS_X_TYPE);
-        const y_result = await customCtrl.read(req.query.uid, AXIS_Y_TYPE);
-        
-        res.send({"x_axis" : x_result, "y_axis" : y_result});
+        const result = await customCtrl.read(req.query.uid);
+        res.send(result);
     } catch (e) {
         res.status(400).send({ message: e });
     }
@@ -73,14 +56,13 @@ const readSetting = async (req, res) => {
 
 const testAxis = async (req, res) => {
     try {
-        const result = await customCtrl.test(req.query.uid);
+        const result = await customCtrl.test(req.query.cid);
         res.send(result);
     } catch (e) {
         res.status(400).send({ message: e });
     }
 }
 
-//readSettings로 대체되어 사용할듯
 const loadPage = async (req, res) => {
     try {
         const xAxisList = await customCtrl.call(req.query.uid, 'axis_x');
