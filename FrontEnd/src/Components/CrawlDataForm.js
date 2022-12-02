@@ -684,7 +684,7 @@ function CrawlDataForm({ docs, type, _id }, ref) {
             type="text"
             value={docRecomment}
             onChange={_docRecommentHandler}
-            maxlength="1"
+            maxLength="1"
             placeholder="큐레이션 추천 등급을 입력하세요. (알파벳 하나만 입력가능)"
           />
         </CustomFormItem>

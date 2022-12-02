@@ -52,7 +52,7 @@ function ArchiveDataListContainer() {
         doc_page: item.doc_page,
         doc_country_list: item.doc_country.map((x) => x.CT_NM).join(", "),
         doc_category_list: item.doc_category.map((x) => x.CT_NM).join(", "),
-        doc_url: item.doc_url.replace("%3A", ":"),
+        doc_url: item.doc_url ? item.doc_url.replace("%3A", ":") : "",
         is_crawled: item.is_crawled,
         doc_collect_date: item.doc_collect_date,
         doc_language: item.doc_language,
@@ -83,6 +83,7 @@ function ArchiveDataListContainer() {
           dataCleansing(res.data);
         })
         .catch((err) => {
+          console.log(err);
           sessionHandler(err, dispatch).then((res) => {
             CrawlDataListFetchApi(
               TAB_VALUES[selectedTab],

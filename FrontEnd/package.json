@@ -1,7 +1,6 @@
 {
   "name": "react-components",
   "version": "0.1.0",
-  "proxy": "http://localhost:5000",
   "private": true,
   "dependencies": {
     "@amcharts/amcharts5": "^5.1.13",
