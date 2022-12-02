@@ -93,6 +93,7 @@ const crawlKeep = async (req, res) => {
                     result = await esCtrl.Keep(_id, 5);
                     await workLogCtrl.addEditLog(req.uid,_id,statusCode,4)
                     break;
+
             }
             if (result) {
                 res.send(result);
@@ -484,11 +485,103 @@ const screenDelete = async (req, res) => {
     }
 }
 
+const crawlPatch = async ()=>{
+    try{
+        const _id = req.params._id;
+        if (_id === undefined) {
+            res.status(400).send();
+        } else {
+            let statusCode = parseInt(req.body.statusCode);
+            let result;
+            if (req.body.docs) {
+                let doc = req.body.docs;
+                doc["_id"] = _id;
+                switch (statusCode) {
+                    case 2:
+                    case 3:
+                        result = await esCtrl.Index(doc, statusCode , _id);
+                        if (result) {
+                            // addEditLog의 workType 3은 수정
+                            await workLogCtrl.addEditLog(req.uid,_id,statusCode,3,doc.doc_host)
+                            res.send();
+                        } else {
+                            res.status(400).send({ message: "some trouble in update" });
+                        }
+                        break;
+                    case 4:
+                    case 5:
+                        result = await esCtrl.Index(doc, 6, _id);
+                        if (result) {
+                            // addEditLog의 workType 3은 수정
+                            await workLogCtrl.addEditLog(req.uid,_id,statusCode,2,doc.doc_host)
+                            res.send();
+                        } else {
+                            res.status(400).send({ message: "some trouble in update" });
+                        }
+                        break;
+                    case 6:
+                       
+                        result = await esCtrl.Index(doc, statusCode, _id);
+                        if (result) {
+                            // addEditLog의 workType 3은 수정
+                            await workLogCtrl.addEditLog(req.uid,_id,statusCode,3,doc.doc_host)
+                            await poliCtrl.modSubmitStat(doc.item_id);
+                            res.send();
+                        } else {
+                            res.status(400).send({ message: "es error" });
+                        }
+                        res.send();
+                        break;
+                    
+                    case 7:
+                        // 테스트 모듈 수정 요망..
+                        //const checked = await poliCtrl.checkStat(_id);
+                        result = await esCtrl.Index(doc, statusCode, _id);
+                        if (result) {
+                            // addEditLog의 workType 2은 이관.
+                            await workLogCtrl.addEditLog(req.uid,_id,statusCode,2,doc.doc_host)
+                            await workLogCtrl.addCurationLog(req.uid,_id,null,null,doc.doc_content)
+                            res.send();
+                        } else {
+                            res.status(400).send({ message: "es error" });
+                        }
+                        res.send();
+                        break;
+                    case 8:
+                        const detailDoc  = await esCtrl.Detail(_id)
+                        const docsBef = detailDoc.body.hits.hits[0]._source;
+                        result = await esCtrl.Index(doc, 8, _id);
+                        if (result) {
+                            // addEditLog의 workType 3은 수정.
+                        await workLogCtrl.addEditLog(req.uid,_id,statusCode,3,doc.doc_host)
+                        if(docsBef.doc_content!==doc.doc_content){
+                                await workLogCtrl.addCurationLog(req.uid,_id,null,docsBef.doc_content,doc.doc_content)
+                        }
+                        await fileCtrl.deleteComparedContentImage(_id, doc.doc_content);
+                        res.send();
+                        } else {
+                            res.status(400).send({ message: "some trouble in staging" });
+                        }
+                        break;
+                }
+            } else {
+                res.status(400).send({ message: "no document exists" });
+            }
+    
+        }
+    }catch(e){
+        console.log(e);
+        res.status(400).send(e);
+    }
+
+}
+
 module.exports = {
     Search: crawlSearch,
     Detail: crawlDetail,
     Keep: crawlKeep,
     Delete: crawlDelete,
+    Patch : crawlPatch,
     Stage: crawlStage,
     screenGet: screenGet,
     screenStage: screenStage,
