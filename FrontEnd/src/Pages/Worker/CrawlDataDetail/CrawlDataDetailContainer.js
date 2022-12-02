@@ -5,6 +5,7 @@ import {
   CrawlDataStageApi,
   CrawlDataKeepApi,
   sessionHandler,
+  crawlDataUpdateApi,
 } from "../../../Utils/api";
 import CrawlDataDetail from "./CrawlDataDetail";
 import { useParams, useHistory } from "react-router-dom";
@@ -144,7 +145,7 @@ function CrawlDataDetailContainer() {
 
     const _crawlDataFormDocs = crawlDataFormRef.current.getCrawlFormData();
     //TODO: CrawlDataStageApi => CrawlDataUpdateApi 로 바꾸기
-    CrawlDataStageApi(statusCode, _id, _crawlDataFormDocs).then((res) => {
+    crawlDataUpdateApi(statusCode, _id, _crawlDataFormDocs).then((res) => {
       alert("해당 데이터가 성공적으로 저장되었습니다.");
       if (statusCode === "6") {
         history.push(`/archive`); // 목록으로 돌아가기
