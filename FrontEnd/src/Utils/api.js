@@ -152,6 +152,19 @@ const CrawlDataStageApi = (statusCode, _id, docs) => {
   return axios.post(`${baseURL}/crawl/detail/${_id}`, body, config);
 };
 
+const crawlDataUpdateApi = (statusCode, _id, docs) => {
+  const body = {
+    statusCode,
+    _id,
+    docs,
+  };
+  const config = {
+    headers: { authorization: `Bearer ${getToken()}` },
+  };
+
+  return axios.patch(`${baseURL}/crawl/detail/${_id}`, body, config);
+};
+
 /* 크롤데이터 상세조회에서 사용하는 통신 함수 */
 const CrawlDataDetailFetchApi = (statusCode, _id) => {
   let config = {
@@ -618,4 +631,5 @@ export {
   workAllLogFetchApi,
   hostSyncApi,
   getUserLogoApi,
+  crawlDataUpdateApi,
 };
