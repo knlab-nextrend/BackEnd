@@ -19,6 +19,7 @@ function CrawlDataDetail({
   dataKeep,
   dataReject,
   dataStage,
+  dataUpdate,
   cancel,
   statusCode,
   type,
@@ -42,6 +43,12 @@ function CrawlDataDetail({
             <BsCheckCircle />
             <p>작업 완료</p>
           </Button>
+          {type === "archive" && (
+            <Button color={myColors.orange} onClick={dataUpdate}>
+              <BsCheckCircle />
+              <p>수정하기</p>
+            </Button>
+          )}
           {type !== "archive" && type !== "curation" && (
             <Button color={myColors.orange} onClick={dataKeep}>
               <BsDashCircle />
