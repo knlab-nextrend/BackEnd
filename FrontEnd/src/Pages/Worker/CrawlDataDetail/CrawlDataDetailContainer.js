@@ -126,17 +126,34 @@ function CrawlDataDetailContainer() {
     if (!window.confirm("작업을 완료하시겠습니까?")) return;
 
     const _crawlDataFormDocs = crawlDataFormRef.current.getCrawlFormData();
-    if (_crawlDataFormDocs.doc_recomment)
-      CrawlDataStageApi(statusCode, _id, _crawlDataFormDocs).then((res) => {
-        alert("해당 데이터가 성공적으로 저장되었습니다.");
-        if (statusCode === "6") {
-          history.push(`/archive`); // 목록으로 돌아가기
-        } else if (statusCode === "8") {
-          history.push(`/curation`);
-        } else {
-          history.push(`/crawl/${statusCode}`); // 목록으로 돌아가기
-        }
-      });
+
+    CrawlDataStageApi(statusCode, _id, _crawlDataFormDocs).then((res) => {
+      alert("해당 데이터가 성공적으로 저장되었습니다.");
+      if (statusCode === "6") {
+        history.push(`/archive`); // 목록으로 돌아가기
+      } else if (statusCode === "8") {
+        history.push(`/curation`);
+      } else {
+        history.push(`/crawl/${statusCode}`); // 목록으로 돌아가기
+      }
+    });
+  };
+
+  const dataUpdate = () => {
+    if (!window.confirm("작업을 완료하시겠습니까?")) return;
+
+    const _crawlDataFormDocs = crawlDataFormRef.current.getCrawlFormData();
+    //TODO: CrawlDataStageApi => CrawlDataUpdateApi 로 바꾸기
+    CrawlDataStageApi(statusCode, _id, _crawlDataFormDocs).then((res) => {
+      alert("해당 데이터가 성공적으로 저장되었습니다.");
+      if (statusCode === "6") {
+        history.push(`/archive`); // 목록으로 돌아가기
+      } else if (statusCode === "8") {
+        history.push(`/curation`);
+      } else {
+        history.push(`/crawl/${statusCode}`); // 목록으로 돌아가기
+      }
+    });
   };
 
   const cancel = () => {
@@ -192,6 +209,7 @@ function CrawlDataDetailContainer() {
         dataKeep={dataKeep}
         dataReject={dataReject}
         dataStage={dataStage}
+        dataUpdate={dataUpdate}
         cancel={cancel}
         crawlDataFormRef={crawlDataFormRef}
         statusCode={statusCode}

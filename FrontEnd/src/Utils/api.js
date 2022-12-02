@@ -136,7 +136,7 @@ const CrawlDataKeepApi = (_id, statusCode) => {
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  return axios.put(`/crawl/detail/${_id}`, body, config);
+  return axios.put(`${baseURL}/crawl/detail/${_id}`, body, config);
 };
 /* 크롤데이터 넘기기*/
 const CrawlDataStageApi = (statusCode, _id, docs) => {
