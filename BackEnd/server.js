@@ -11,7 +11,11 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cors({
     exposedHeaders: ['authorization'],
+    origin: 'https://localhost:3000',
+    credentials: true
   }));
+
+
 
 const nextrend = require('./routes/nextrend');
 const crawl = require('./routes/crawl');
