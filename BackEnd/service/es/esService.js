@@ -56,6 +56,7 @@ const esIndex = (doc, stat, id = false, ret = false) => new Promise(async (resol
         query["id"] = id;
     }
     const result = await esDB.index(query);
+    console.log(result)
     if (result.statusCode == 200 || result.statusCode == 201) {
         resolve(result._id);
     } else if (ret) {
