@@ -19,7 +19,7 @@ const refreshHeaders = {
   refresh: getRefreshToken(),
 };
 
-const baseURL = "http://localhost:5000";
+const baseURL = "http://nextrend.kr:5000";
 
 /* 크롤데이터 스크리닝 데이터 받아오기 */
 const ScreeningDataFetchApi = (listSize, pageNo, isKeep, searchObj = null) => {
@@ -56,7 +56,7 @@ const ScreeningDataKeepApi = (keepDataList) => {
   let body = {
     list: keepDataList,
   };
-  return axios.post(`/crawl/screening`, body, config);
+  return axios.post(`${baseURL}/crawl/screening`, body, config);
 };
 /* 크롤데이터 스크리닝 단계에서 버리기 */
 const ScreeningDataDeleteApi = (deleteDataList) => {
