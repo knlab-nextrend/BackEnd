@@ -361,8 +361,9 @@ const DATA_TYPE = {
 };
 
 const EXCEL_SCHEMA = {
+  // pdf 있으면 필요함
   dc_domain: {
-    isRequired: true,
+    isRequired: false,
     type: DATA_TYPE.STRING,
   },
   doc_biblio: {
@@ -441,6 +442,7 @@ const EXCEL_SCHEMA = {
     isRequired: false,
     type: DATA_TYPE.STRING,
   },
+  //pdf 있으면 필요함
   doc_page: {
     isRequired: false,
     type: DATA_TYPE.NUMBER,
