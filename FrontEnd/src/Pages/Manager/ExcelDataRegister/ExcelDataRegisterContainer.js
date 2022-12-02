@@ -189,6 +189,8 @@ function ExcelDataRegisterContainer() {
     1: () => {
       if (errorList.length > 0) {
         alert("잘못된 셀을 수정 후 다시 업로드 해주세요");
+      } else if (excelData.length === 0) {
+        alert("엑셀 데이터를 등록해주세요");
       } else {
         setStep((prev) => prev + 1);
       }
