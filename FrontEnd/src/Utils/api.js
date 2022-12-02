@@ -19,6 +19,8 @@ const refreshHeaders = {
   refresh: getRefreshToken(),
 };
 
+const baseURL = "http://localhost:5000";
+
 /* 크롤데이터 스크리닝 데이터 받아오기 */
 const ScreeningDataFetchApi = (listSize, pageNo, isKeep, searchObj = null) => {
   let config = {
@@ -32,7 +34,7 @@ const ScreeningDataFetchApi = (listSize, pageNo, isKeep, searchObj = null) => {
   if (isKeep) {
     config.params.keep = 1;
   }
-  return axios.get(`/crawl/screening`, config);
+  return axios.get(`${baseURL}/crawl/screening`, config);
 };
 
 /* 크롤데이터 스크리닝에서 정제 단계로 넘기기 */
@@ -43,7 +45,7 @@ const ScreeningDataStageApi = (stageDataList) => {
   let body = {
     list: stageDataList,
   };
-  return axios.put(`/crawl/screening`, body, config);
+  return axios.put(`${baseURL}/crawl/screening`, body, config);
 };
 
 /* 크롤데이터 스크리닝 단계에서 보류하기 */
@@ -64,7 +66,7 @@ const ScreeningDataDeleteApi = (deleteDataList) => {
       list: deleteDataList,
     },
   };
-  return axios.delete(`/crawl/screening`, config);
+  return axios.delete(`${baseURL}/crawl/screening`, config);
 };
 
 /* 크롤데이터 리스트 받아오기 */
@@ -89,7 +91,7 @@ const CrawlDataListFetchApi = (
     headers: { authorization: `Bearer ${getToken()}` },
     params,
   };
-  return axios.get(`/crawl/list/${statusCode}`, config);
+  return axios.get(`${baseURL}/crawl/list/${statusCode}`, config);
 };
 
 const userCustomCurationDataFetchApi = (
@@ -111,7 +113,7 @@ const userCustomCurationDataFetchApi = (
       general,
     },
   };
-  return axios.get(`/nextrend/custom/search`, config);
+  return axios.get(`${baseURL}/nextrend/custom/search`, config);
 };
 
 /* 크롤데이터 버리기 */
@@ -122,7 +124,7 @@ const CrawlDataRejectApi = (_id, statusCode) => {
       statusCode,
     },
   };
-  return axios.delete(`/crawl/detail/${_id}`, config);
+  return axios.delete(`${baseURL}/crawl/detail/${_id}`, config);
 };
 
 /* 크롤데이터 보류 하기*/
@@ -147,7 +149,7 @@ const CrawlDataStageApi = (statusCode, _id, docs) => {
     headers: { authorization: `Bearer ${getToken()}` },
   };
 
-  return axios.post(`/crawl/detail/${_id}`, body, config);
+  return axios.post(`${baseURL}/crawl/detail/${_id}`, body, config);
 };
 
 /* 크롤데이터 상세조회에서 사용하는 통신 함수 */
@@ -158,12 +160,12 @@ const CrawlDataDetailFetchApi = (statusCode, _id) => {
       statusCode: statusCode,
     },
   };
-  return axios.get(`/crawl/detail/${_id}`, config);
+  return axios.get(`${baseURL}/crawl/detail/${_id}`, config);
 };
 
 /* 본문 이미지 첨부 후 url 받아오는 함수 */
 const documentPastedImageApi = (imageForm) => {
-  return axios.post(`/file/docImageAttach/`, imageForm, {
+  return axios.post(`${baseURL}/file/docImageAttach/`, imageForm, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -171,7 +173,7 @@ const documentPastedImageApi = (imageForm) => {
 };
 
 const uploadExcelDataApi = (formData) => {
-  return axios.post(`/file/uploadExcelData/`, formData, {
+  return axios.post(`${baseURL}/file/uploadExcelData/`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
       authorization: `Bearer ${getToken()}`,
@@ -184,7 +186,7 @@ const documentDetachImageApi = (_id) => {
     headers: { authorization: `Bearer ${getToken()}` },
     params: { _id },
   };
-  return axios.get(`/file/docImageDetach/`, config);
+  return axios.get(`${baseURL}/file/docImageDetach/`, config);
 };
 
 /* 대륙 리스트 전체 받아오는 함수 */
@@ -192,7 +194,7 @@ const ContinentsListDataFetchApi = () => {
   let config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  return axios.get(`/nextrend/continents`, config);
+  return axios.get(`${baseURL}/nextrend/continents`, config);
 };
 
 /* 대륙 별 국가 리스트를 받아오는 함수 */
@@ -201,7 +203,7 @@ const CountrysListDataFetchApi = (continent) => {
     headers: { authorization: `Bearer ${getToken()}` },
   };
 
-  return axios.get(`/nextrend/countrys/${continent}`, config);
+  return axios.get(`${baseURL}/nextrend/countrys/${continent}`, config);
 };
 
 /* 주제 분류 리스트를 받아오는 함수 */
@@ -210,7 +212,7 @@ const CategorysListDataFetchApi = (upperCode = null) => {
     headers: { authorization: `Bearer ${getToken()}` },
     params: { upperCode },
   };
-  return axios.get(`/nextrend/categorys`, config);
+  return axios.get(`${baseURL}/nextrend/categorys`, config);
 };
 
 /* 주제 분류 리스트를 모두 받아오는 함수 */
@@ -219,7 +221,7 @@ const CategoryOptionFetchApi = (type) => {
     headers: { authorization: `Bearer ${getToken()}` },
     params: { type },
   };
-  return axios.get("/nextrend/categorys/dict", config);
+  return axios.get(`${baseURL}/nextrend/categorys/dict`, config);
 };
 
 /* 로그인 할 때 사용하는 통신 함수 */
@@ -229,7 +231,7 @@ const LoginApi = async (userID, userPW) => {
     userPW,
   };
 
-  return axios.post(`/nextrend/login`, body);
+  return axios.post(`${baseURL}/nextrend/login`, body);
 };
 
 /* 일반 token 만료 후 refreshToken 검증 하는 함수 */
@@ -238,7 +240,7 @@ const RefreshTokenApi = () => {
   const config = {
     headers: refreshHeaders,
   };
-  return axios.get(`/nextrend/refresh`, config);
+  return axios.get(`${baseURL}/nextrend/refresh`, config);
 };
 
 /* user 토큰 인증 및 유저 정보 가져오기 */
@@ -246,14 +248,14 @@ const userAuthApi = () => {
   let config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  return axios.get(`/nextrend/user`, config);
+  return axios.get(`${baseURL}/nextrend/user`, config);
 };
 
 /* 데이터 요청 시 토큰 만료 및 리프레시 토큰 만료 세션 처리 함수 */
 const sessionHandler = (err, dispatch) => {
   /* dispatch 를 사용하기 위해서 인자로 받아옴 */
   return new Promise((resolve, reject) => {
-    console.log(err)
+    console.log(err);
     if (err.response.status === 401) {
       RefreshTokenApi()
         .then((res) => {
@@ -281,7 +283,7 @@ const FetchUsersApi = () => {
   let config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  return axios.get(`/nextrend/user/list`, config);
+  return axios.get(`${baseURL}/nextrend/user/list`, config);
 };
 
 const getUserInfoApi = (uid) => {
@@ -291,7 +293,7 @@ const getUserInfoApi = (uid) => {
       uid: uid,
     },
   };
-  return axios.get(`/nextrend/user/get`, config);
+  return axios.get(`${baseURL}/nextrend/user/get`, config);
 };
 
 const getUserLogoApi = (uid) => {
@@ -301,11 +303,11 @@ const getUserLogoApi = (uid) => {
       uid,
     },
   };
-  return axios.get(`/nextrend/user/logo`, config);
+  return axios.get(`${baseURL}/nextrend/user/logo`, config);
 };
 
 const modifyUserInfoApi = (formData) => {
-  return axios.post(`/nextrend/user/modify`, formData, {
+  return axios.post(`${baseURL}/nextrend/user/modify`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
       authorization: `Bearer ${getToken()}`,
@@ -320,7 +322,7 @@ const deleteUserByIdApi = (uid) => {
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  return axios.post(`/nextrend/user/delete`, body, config);
+  return axios.post(`${baseURL}/nextrend/user/delete`, body, config);
 };
 const verifyUserIdApi = (userId, id) => {
   const body = {
@@ -330,11 +332,11 @@ const verifyUserIdApi = (userId, id) => {
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  return axios.post(`/nextrend/user/verify`, body, config);
+  return axios.post(`${baseURL}/nextrend/user/verify`, body, config);
 };
 
 const addUserApi = (formData) => {
-  return axios.post(`/nextrend/user/add`, formData, {
+  return axios.post(`${baseURL}/nextrend/user/add`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
       authorization: `Bearer ${getToken()}`,
@@ -350,7 +352,7 @@ const restrictUserApi = (uid, restrict) => {
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  return axios.post(`/nextrend/user/restrict`, body, config);
+  return axios.post(`${baseURL}/nextrend/user/restrict`, body, config);
 };
 
 /* 카테고리 관리 */
@@ -365,7 +367,7 @@ const categoryListFetchApi = (type, length, code = null) => {
       code,
     },
   };
-  return axios.get(`/nextrend/cat`, config);
+  return axios.get(`${baseURL}/nextrend/cat`, config);
 };
 /* 카테고리 추가하기 */
 const categoryItemAddApi = (type, length, ct_nm, code = null) => {
@@ -378,7 +380,7 @@ const categoryItemAddApi = (type, length, ct_nm, code = null) => {
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  return axios.post(`/nextrend/cat`, body, config);
+  return axios.post(`${baseURL}/nextrend/cat`, body, config);
 };
 /* 카테고리 수정하기 */
 const categoryItemEditApi = (type, code, ct_nm) => {
@@ -390,7 +392,7 @@ const categoryItemEditApi = (type, code, ct_nm) => {
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  return axios.put(`/nextrend/cat`, body, config);
+  return axios.put(`${baseURL}/nextrend/cat`, body, config);
 };
 /* 카테고리 삭제하기 */
 const categoryItemDeleteApi = (type, code) => {
@@ -401,7 +403,7 @@ const categoryItemDeleteApi = (type, code) => {
       code,
     },
   };
-  return axios.delete(`/nextrend/cat`, config);
+  return axios.delete(`${baseURL}/nextrend/cat`, config);
 };
 
 /* 사용자 맞춤형 메뉴 관련 api */
@@ -412,7 +414,7 @@ const axisMenuPreviewFetchApi = (cid) => {
     headers: headers,
     params: { cid },
   };
-  return axios.get(`/nextrend/custom/test`, config);
+  return axios.get(`${baseURL}/nextrend/custom/test`, config);
 };
 /* uid에 해당하는 유저의 설정된 x축, y축 의 하위 메뉴 정보를 받아옴. (사용자화면 출력용?? ) */
 const userAxisMenuFetchApi = (uid) => {
@@ -420,7 +422,7 @@ const userAxisMenuFetchApi = (uid) => {
     headers: { authorization: `Bearer ${getToken()}` },
     params: { uid },
   };
-  return axios.get(`/nextrend/custom/load`, config);
+  return axios.get(`${baseURL}/nextrend/custom/load`, config);
 };
 /* uid에 해당하는 유저의 메뉴 세팅 정보를 받아옴.*/
 const userAxisMenuSettingFetchApi = (uid) => {
@@ -428,17 +430,17 @@ const userAxisMenuSettingFetchApi = (uid) => {
     headers: { authorization: `Bearer ${getToken()}` },
     params: { uid },
   };
-  return axios.get(`/nextrend/custom`, config);
+  return axios.get(`${baseURL}/nextrend/custom`, config);
 };
 const userAxisMenuSaveApi = (axisSetObj, saveType) => {
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
   if (saveType === "create") {
-    return axios.post(`/nextrend/custom`, axisSetObj, config);
+    return axios.post(`${baseURL}/nextrend/custom`, axisSetObj, config);
   }
   if (saveType === "update") {
-    return axios.put(`/nextrend/custom`, axisSetObj, config);
+    return axios.put(`${baseURL}/nextrend/custom`, axisSetObj, config);
   }
 };
 
@@ -451,18 +453,22 @@ const MultilingualDictionaryApi = (data = null, method) => {
     const config = {
       headers: { authorization: `Bearer ${getToken()}` },
     };
-    return axios.get(`/nextrend/multilingual`, config);
+    return axios.get(`${baseURL}/nextrend/multilingual`, config);
   }
   if (method === "POST") {
     if ("multi_text" in data) {
-      return axios.post(`/nextrend/multilingual`, data, config);
+      return axios.post(`${baseURL}/nextrend/multilingual`, data, config);
     }
     if ("list" in data) {
-      return axios.post(`/nextrend/multilingual/upload`, data, config);
+      return axios.post(
+        `${baseURL}/nextrend/multilingual/upload`,
+        data,
+        config
+      );
     }
   }
   if (method === "PUT") {
-    return axios.put(`/nextrend/multilingual`, data, config);
+    return axios.put(`${baseURL}/nextrend/multilingual`, data, config);
   }
   if (method === "DELETE") {
     const config2 = {
@@ -471,7 +477,7 @@ const MultilingualDictionaryApi = (data = null, method) => {
         ...data,
       },
     };
-    return axios.delete(`/nextrend/multilingual`, config2);
+    return axios.delete(`${baseURL}/nextrend/multilingual`, config2);
   }
 };
 
@@ -484,10 +490,10 @@ const HostManagementApi = (data = null, method) => {
       // 검색 쿼리가 있다면?
       config["params"] = { ...data };
     }
-    return axios.get(`/nextrend/host`, config);
+    return axios.get(`${baseURL}/nextrend/host`, config);
   }
   if (method === "POST") {
-    return axios.post(`/nextrend/host`, data, config);
+    return axios.post(`${baseURL}/nextrend/host`, data, config);
   }
 };
 const HostTestApi = (data = null, method) => {
@@ -495,10 +501,10 @@ const HostTestApi = (data = null, method) => {
     headers: { authorization: `Bearer ${getToken()}` },
   };
   if (method === "GET") {
-    return axios.get(`/nextrend/host/test`, config);
+    return axios.get(`${baseURL}/nextrend/host/test`, config);
   }
   if (method === "POST") {
-    return axios.post(`/nextrend/host/test`, data, config);
+    return axios.post(`${baseURL}/nextrend/host/test`, data, config);
   }
 };
 
@@ -512,34 +518,36 @@ const curationRequestApi = (_id) => {
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  return axios.post(`/crawl/detail/${_id}`, body, config);
+  return axios.post(`${baseURL}/crawl/detail/${_id}`, body, config);
 };
 
 const crawlHostDataFetchApi = (host_id = null) => {
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  const router = host_id ? `/crawl/host/${host_id}` : `/crawl/host`;
+  const router = host_id
+    ? `${baseURL}/crawl/host/${host_id}`
+    : `${baseURL}/crawl/host`;
 
   return axios.get(router, config);
 };
 
 const crawlSumDataFetchApi = () => {
-  return axios.get(`/crawl/sum`, { headers: { headers } });
+  return axios.get(`${baseURL}/crawl/sum`, { headers: { headers } });
 };
 const userWorkLogFetchApi = (dataObj) => {
   const config = {
     headers: { headers },
     params: { ...dataObj },
   };
-  return axios.get(`/nextrend/board/work`, config);
+  return axios.get(`${baseURL}/nextrend/board/work`, config);
 };
 const curationWorkListFetchApi = (dataObj) => {
   const config = {
     headers: { headers },
     params: { ...dataObj },
   };
-  return axios.get(`/nextrend/board/curation`, config);
+  return axios.get(`${baseURL}/nextrend/board/curation`, config);
 };
 
 const countryWorkListFetchApi = (process) => {
@@ -547,18 +555,18 @@ const countryWorkListFetchApi = (process) => {
     headers: { headers },
     params: { status: process },
   };
-  return axios.get(`/nextrend/board`, config);
+  return axios.get(`${baseURL}/nextrend/board`, config);
 };
 
 const workAllLogFetchApi = (process) => {
-  return axios.get(`/nextrend/board/all`, { headers: { headers } });
+  return axios.get(`${baseURL}/nextrend/board/all`, { headers: { headers } });
 };
 
 const hostSyncApi = () => {
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
   };
-  return axios.put(`/nextrend/host/sync/ `, config);
+  return axios.put(`${baseURL}/nextrend/host/sync/ `, config);
 };
 
 export {
