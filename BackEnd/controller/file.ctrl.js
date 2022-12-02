@@ -207,7 +207,7 @@ const uploadExcelData = async (req, res) => {
         metaData.forEach(async (meta)=>{
 
             meta.is_crawled = false;
-            const _id = await esCtrl.Index(meta, 8, false, true);
+            const _id = await esCtrl.Index(meta, 6, false, true);
             
         })
 
