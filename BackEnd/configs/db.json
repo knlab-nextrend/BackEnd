@@ -28,7 +28,7 @@
     },
     "es":{
         "development":{
-            "host":"http://localhost:9200/"
+            "host":"http://index.knlab.kr:9200/"
         }
     },
     "nas":{
