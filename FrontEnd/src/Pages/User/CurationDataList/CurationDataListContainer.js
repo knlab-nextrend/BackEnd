@@ -3,11 +3,7 @@ import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
 
-import {
-  CrawlDataListFetchApi,
-  userCustomCurationDataFetchApi,
-  sessionHandler,
-} from "Utils/api";
+import { userCustomCurationDataFetchApi, sessionHandler } from "Utils/api";
 
 import CurationDataList from "./CurationDataList";
 
@@ -89,41 +85,14 @@ function UserCurationDataListContainer() {
     setSearchObj(searchObj);
   };
 
-  /* 데이터 불러오기 */
-  const dataFetch = (searchObj = null, general = false, query) => {
-    trackPromise(
-      CrawlDataListFetchApi(
-        statusCode,
-        listSize,
-        pageNo,
-        searchObj,
-        general,
-        query
-      )
-        .then((res) => {
-          console.log(res.data);
-          dataCleansing(res.data);
-        })
-        .catch((err) => {
-          console.error(err);
-          sessionHandler(err, dispatch).then((res) => {
-            CrawlDataListFetchApi(statusCode, listSize, pageNo, searchObj).then(
-              (res) => {
-                dataCleansing(res.data);
-              }
-            );
-          });
-        })
-    );
-  };
-
   const customDataFetch = () => {
     if (axisObj.X === null || axisObj.Y === null) return;
 
     const axis = {
-      [axisObj.X.type]: axisObj.X.code,
-      [axisObj.Y.type]: axisObj.Y.code,
+      [axisObj.X.x_type]: axisObj.X.x_code,
+      [axisObj.Y.x_type]: axisObj.Y.x_code,
     };
+
     trackPromise(
       userCustomCurationDataFetchApi(axis, listSize, pageNo, searchInput)
         .then((res) => {

@@ -11,14 +11,14 @@ import { toYYYYMMDD_DOT } from "Utils/time";
 function CurationDataDetail({ docs, permission, goDataManage }) {
   return (
     <Wrap>
-      <WorkerContentHeader title="큐레이션 상세 조회" Icon={BsJournal}>
-        {PERMISSON_DATA[permission] === "관리자" && (
+      {PERMISSON_DATA[permission] === "관리자" && (
+        <WorkerContentHeader title="큐레이션 상세 조회" Icon={BsJournal}>
           <EditButton onClick={goDataManage}>
             <BsGear />
             <span>편집</span>
           </EditButton>
-        )}
-      </WorkerContentHeader>
+        </WorkerContentHeader>
+      )}
       <ArticleContainer>
         <ArticleHeader>
           <h3>{docs.doc_kor_title}</h3>
@@ -86,7 +86,7 @@ function CurationDataDetail({ docs, permission, goDataManage }) {
               <Info>
                 <div className="title">
                   <span>•</span>
-                  <span>기관 명 :</span>
+                  <span>발행기관 명 :</span>
                 </div>
                 <div className="content">
                   {valueOrDefaultValue(docs.doc_publisher)}

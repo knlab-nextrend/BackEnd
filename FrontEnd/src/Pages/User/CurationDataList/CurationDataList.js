@@ -42,7 +42,7 @@ function UserCurationDataList({
       <ResultWrap>
         <HiOutlineDocumentSearch />
         <span> 검색 결과</span> <span>({dcCount}건)</span>
-        <ViewType>
+        {/* <ViewType>
           <input
             onChange={viewTypeHandler}
             type="radio"
@@ -79,7 +79,7 @@ function UserCurationDataList({
             <RiFileList2Line />
             목록형
           </label>
-        </ViewType>
+        </ViewType> */}
       </ResultWrap>
       <CurationSearch
         onChangeSearchInput={onChangeSearch}

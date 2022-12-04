@@ -97,7 +97,7 @@ function UserCustomMenu({
             <PreviewMenuWrapper>
               <div className="menu-area">
                 <div className="menu-container">
-                  <div>{axisCategoryInfo.X.name}</div>
+                  <div>{axisCategoryInfo.X.name ?? "주제1"}</div>
                   <div className="menu-item-container">
                     {previewAxisMenu.X.map((item, index) => (
                       <div key={index}>{item.ct_name}</div>
@@ -105,7 +105,7 @@ function UserCustomMenu({
                   </div>
                 </div>
                 <div className="menu-container">
-                  <div>{axisCategoryInfo.Y.name}</div>
+                  <div>{axisCategoryInfo.Y.name ?? "주제2"}</div>
                   <div className="menu-item-container">
                     {previewAxisMenu.Y.map((item, index) => (
                       <div key={index}>{item.ct_name}</div>

@@ -21,7 +21,7 @@ export const CurationTable = ({ curationData, handleRowClick }) => {
             <th>대상 국가</th>
             <th>정책 분류</th>
             <th>문서 분류</th>
-            <th>발급 기관 명</th>
+            <th>발행기관 명</th>
             <th>페이지 수</th>
             <th>서비스 등록일</th>
           </tr>

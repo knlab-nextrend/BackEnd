@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
-import UserOnlyDataLookUpPage from "./UserOnlyDataLookUpPage";
+import { useHistory } from "react-router-dom";
+import { trackPromise } from "react-promise-tracker";
+import { useSelector, useDispatch } from "react-redux";
+
+import { setLogout } from "Modules/login";
+import { setAxis } from "Modules/custom";
 import {
-  userAxisMenuFetchApi,
-  CrawlDataListFetchApi,
   curationRequestApi,
   userCustomCurationDataFetchApi,
   sessionHandler,
-} from "../../../Utils/api";
-import { useSelector, useDispatch } from "react-redux";
-import { setLogout } from "../../../Modules/login";
-import { setAxis } from "../../../Modules/custom";
-import { trackPromise } from "react-promise-tracker";
-import { useHistory } from "react-router-dom";
+} from "Utils/api";
+import { getUserCustomMenuByUserId } from "services/api/custom";
+
+import UserOnlyDataLookUpPage from "./UserOnlyDataLookUpPage";
 
 function UserOnlyDataLookUpPageContainer() {
   const dispatch = useDispatch();
-  const history = useHistory();
   const userInfo = useSelector((state) => state.user.user);
   const axisObj = useSelector((state) => state.custom.axisObj);
   const [axisMenu, setAxisMenu] = useState({ X: [], Y: [] });
@@ -42,24 +42,23 @@ function UserOnlyDataLookUpPageContainer() {
       });
     }
   };
-  const initAxisObj = (setting) => {
-    const _axisObj = {
-      X: { type: setting.x_type, code: setting.x_code },
-      Y: { type: setting.y_type, code: setting.y_code },
-    };
-    dispatch(setAxis(_axisObj));
-  };
-  const menuDataFetch = (uid) => {
-    userAxisMenuFetchApi(uid).then((res) => {
-      console.log(res.data);
 
-      if (res.data.axis_x.length === 0 || res.data.axis_y.lengtth === 0) {
+  const menuDataFetch = (uid) => {
+    getUserCustomMenuByUserId(uid).then((res) => {
+      const { x_axis, y_axis } = res.data;
+      console.log("유저카테고리  : ", res.data);
+
+      if (x_axis.length === 0 || y_axis.lengtth === 0) {
         alert("x축, y축 메뉴가 모두 설정되지 않은 사용자입니다.");
         dispatch(setLogout("NORMAL_LOGOUT"));
       } else {
-        const _axisMenu = { X: res.data.axis_x, Y: res.data.axis_y };
-        setAxisMenu(_axisMenu);
-        initAxisObj(res.data.setting[0]);
+        setAxisMenu({ X: x_axis, Y: y_axis });
+
+        const _axisObj = {
+          X: { type: x_axis[0].x_type, code: x_axis[0].x_code },
+          Y: { type: y_axis[0].y_type, code: y_axis[0].y_code },
+        };
+        dispatch(setAxis(_axisObj));
       }
     });
   };
@@ -72,7 +71,7 @@ function UserOnlyDataLookUpPageContainer() {
 
   const archiveDataFetch = () => {
     if (axisObj.X !== null && axisObj.Y !== null) {
-      let axis = {};
+      const axis = {};
       axis[axisObj.X.type] = axisObj.X.code;
       axis[axisObj.Y.type] = axisObj.Y.code;
       trackPromise(
@@ -92,6 +91,15 @@ function UserOnlyDataLookUpPageContainer() {
       );
     }
   };
+
+  const modeSwitchHandler = () => {
+    if (dataMode === "curation") {
+      setDataMode("archive");
+    } else {
+      setDataMode("curation");
+    }
+  };
+
   const dataCleansing = (rawData) => {
     let _archiveDataList = [];
     let _rawArchiveDataList = rawData.docs;
@@ -111,17 +119,10 @@ function UserOnlyDataLookUpPageContainer() {
     setArchiveData(_archiveDataList);
   };
 
-  const modeSwitchHandler = () => {
-    if (dataMode === "curation") {
-      setDataMode("archive");
-    } else {
-      setDataMode("curation");
-    }
-  };
   const menuClickHandler = (axis, item) => {
-    let _axisObj = { ...axisObj };
-    _axisObj[axis] = { type: item.type, code: item.code };
-    setSelectedMenu((prev) => ({ ...prev, [axis]: { code: item.code } }));
+    const _axisObj = { ...axisObj };
+    _axisObj[axis] = { type: item.x_type, code: item.x_code };
+    setSelectedMenu((prev) => ({ ...prev, [axis]: { code: item.x_code } }));
     setSelectedAll(false);
     dispatch(setAxis(_axisObj));
   };
