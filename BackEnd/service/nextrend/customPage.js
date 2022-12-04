@@ -27,7 +27,7 @@ const updateCustomedPageSetting = (uid, xaxis, yaxis, wid) => new Promise((resol
 });
 
 const deleteCustomedPageSetting = (idx) => new Promise((resolve,reject) => {
-    const query = 'DELETE FROM `nt_customed_axis_list` WHERE `IDX` = ?;';
+    const query = 'DELETE FROM nt_customed_axis_list  WHERE idx = ?;';
     const params = [idx];
 
     db.query(query,params,(err,data)=>{
