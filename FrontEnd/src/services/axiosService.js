@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { getToken } from "Utils/tokens";
 
 const instance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "http://nextrend.kr:5000",
   timeout: 10000,
 });
 
