@@ -47,9 +47,12 @@ const updateSetting = async (req, res) => {
 
 
 const deleteSetting = async (req, res) => {
-    if (req.query.idx) {
+    if (req.body.idx) {
         try {
-            await customCtrl.delete(req.query.idx);
+            req.body.idx.forEach(async (idx)=>{
+                await customCtrl.delete(req.query.idx);
+            })
+            
             res.send();
         } catch (e) {
             res.status(400).send({ message: e });
