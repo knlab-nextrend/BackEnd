@@ -89,13 +89,15 @@ function UserCurationDataListContainer() {
     if (axisObj.X === null || axisObj.Y === null) return;
 
     const axis = {
-      [axisObj.X.x_type]: axisObj.X.x_code,
-      [axisObj.Y.x_type]: axisObj.Y.x_code,
+      [axisObj.X.type]: axisObj.X.code,
+      [axisObj.Y.type]: axisObj.Y.code,
     };
 
+    console.log("제발", axis);
     trackPromise(
       userCustomCurationDataFetchApi(axis, listSize, pageNo, searchInput)
         .then((res) => {
+          console.log("과연", res.data);
           dataCleansing(res.data);
         })
         .catch((err) => {

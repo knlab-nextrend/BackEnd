@@ -55,8 +55,8 @@ function UserOnlyDataLookUpPageContainer() {
         setAxisMenu({ X: x_axis, Y: y_axis });
 
         const _axisObj = {
-          X: { type: x_axis[0].x_type, code: x_axis[0].x_code },
-          Y: { type: y_axis[0].y_type, code: y_axis[0].y_code },
+          X: { type: x_axis[0].x_type, code: x_axis.map((v) => v.x_code) },
+          Y: { type: y_axis[0].x_type, code: y_axis.map((v) => v.x_code) },
         };
         dispatch(setAxis(_axisObj));
       }
@@ -65,7 +65,7 @@ function UserOnlyDataLookUpPageContainer() {
 
   const onClickAllMenuButton = () => {
     menuDataFetch(userInfo.id);
-    setSelectedMenu({ X: {}, Y: {} });
+    setSelectedMenu({ X: axisMenu.X, Y: axisMenu.Y });
     setSelectedAll(true);
   };
 
@@ -74,6 +74,7 @@ function UserOnlyDataLookUpPageContainer() {
       const axis = {};
       axis[axisObj.X.type] = axisObj.X.code;
       axis[axisObj.Y.type] = axisObj.Y.code;
+      console.log("제발", axis);
       trackPromise(
         userCustomCurationDataFetchApi(axis, listSize, pageNo, true)
           .then((res) => {
@@ -116,6 +117,8 @@ function UserOnlyDataLookUpPageContainer() {
         doc_url: item.doc_url.replace("%3A", ":"),
         doc_publish_date: item.doc_publish_date,
         status: item.status,
+        doc_country_list: item.doc_country.map((x) => x.CT_NM).join(", "),
+        doc_publisher: item.doc_publisher,
       };
       _archiveDataList.push(obj);
     });
@@ -125,7 +128,7 @@ function UserOnlyDataLookUpPageContainer() {
 
   const menuClickHandler = (axis, item) => {
     const _axisObj = { ...axisObj };
-    _axisObj[axis] = { type: item.x_type, code: item.x_code };
+    _axisObj[axis] = { type: item.x_type, code: [item.x_code] };
     setSelectedMenu((prev) => ({ ...prev, [axis]: { code: item.x_code } }));
     setSelectedAll(false);
     dispatch(setAxis(_axisObj));

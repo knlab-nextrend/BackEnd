@@ -4,6 +4,7 @@ import { HiOutlineDocumentSearch } from "react-icons/hi";
 import Pagination from "../../../Components/Pagination";
 import NoData from "../../../Components/NoData";
 import { myColors, tailwindColors } from "styles/colors";
+import { toYYMMDD_DOT } from "Utils/time";
 function UserArchiveDataList({
   dcCount,
   listSize,
@@ -65,7 +66,7 @@ function UserArchiveDataList({
                       </a>
                     </td>
                     <td>{item.doc_publisher}</td>
-                    <td>{item.doc_publish_date}</td>
+                    <td>{toYYMMDD_DOT(item.doc_publish_date)}</td>
                     <td>{item.doc_page}</td>
                     <td>
                       {item.status === 6 ? (
