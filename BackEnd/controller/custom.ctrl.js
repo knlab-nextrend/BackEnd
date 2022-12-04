@@ -118,18 +118,22 @@ const customSearch = async (req, res) => {
             let should = [];
             let must = [];
             const reqAxis = JSON.parse(req.query.axis);
-            for (const [type, value] of Object.entries(reqAxis)) {
+            for (const [type, values] of Object.entries(reqAxis)) {
                 const keys = Object.keys(fieldList).filter(key => fieldList[key] === parseInt(type));
                 if(keys.length>1){
                     keys.forEach((field) => {
                         let tempDict = {};
-                        tempDict[field] = value + '.*';
-                        should.push({regexp:tempDict});
-                    })
+                        values.forEach(value=>{
+                            tempDict[field] = value + '.*';
+                            should.push({regexp:tempDict});
+                        })
+                })
                 }else{
                     let tempDict = {};
-                    tempDict[keys[0]] = value + '.*';
-                    must.push({regexp:tempDict});
+                    values.forEach(value=>{
+                        tempDict[keys[0]] = value + '.*';
+                        must.push({regexp:tempDict});
+                    })
                 }
                 
             }
