@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { BsCheckLg } from "react-icons/bs";
+import { BsCheckLg, BsX } from "react-icons/bs";
 import { getCategryListAPI } from "services/api/category/category";
 import { sessionHandler } from "../../Utils/api";
 import { myColors, tailwindColors } from "styles/colors";
@@ -18,35 +18,53 @@ const CATEGORY_INFO = [
 function CategoryModal({ executeModal, closeModal }) {
   const dispatch = useDispatch();
   const [categoryList, setCategoryList] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [focusedCategory, setFocusedCategory] = useState({
     large: null,
     medium: null,
   });
   const [currentCategoryType, setCurrentCategoryType] = useState(null);
-  const [disableCategoryType, setDisabledCategoryType] = useState(null);
   const editingAxis = useSelector((state) => state.editingAxis);
 
   const onClickCategoryType = (code) => {
-    setSelectedCategory(null);
     setFocusedCategory({
       large: null,
       medium: null,
     });
     setCurrentCategoryType(code);
+    setSelectedCategories([]);
   };
 
-  const onClickLargeCategory = (item) => {
-    setFocusedCategory({ large: item, medium: null });
-    setSelectedCategory(item);
+  const onClickLargeCategory = (e, item) => {
+    if (e.detail === 1) {
+      setFocusedCategory({ large: item, medium: null });
+      return;
+    }
+
+    if (selectedCategories.includes(item)) {
+      alert("이미 선택된 카테고리입니다");
+    } else {
+      setSelectedCategories((prev) => [...prev, item]);
+    }
     console.log(editingAxis);
   };
 
-  const onClickMediumCategory = (item) => {
-    if (item.subCategory.length === 0) return;
+  const onClickMediumCategory = (e, item) => {
+    if (e.detail === 1) {
+      setFocusedCategory((prev) => ({ ...prev, medium: item }));
+    } else {
+      setSelectedCategories((prev) => [...prev, item]);
+    }
+  };
 
-    setFocusedCategory((prev) => ({ ...prev, medium: item }));
-    setSelectedCategory(item);
+  const onClickSmallCategory = (e, item) => {
+    if (e.detail === 2) setSelectedCategories((prev) => [...prev, item]);
+  };
+
+  const removeSelectedItem = (item) => {
+    setSelectedCategories((prev) =>
+      prev.filter((category) => category.IDX !== item.IDX)
+    );
   };
 
   /* 데이터 불러오기 */
@@ -86,11 +104,11 @@ function CategoryModal({ executeModal, closeModal }) {
   };
 
   const saveCategory = () => {
-    if (selectedCategory === null) {
-      alert("값을 선택해주세요.");
+    if (selectedCategories.length === 0) {
+      alert("카테고리를 선택해주세요.");
     } else {
       // 1. 모달에서 값 선택 후 redux에 저장
-      executeModal(selectedCategory, "axis_category");
+      executeModal(selectedCategories, "axis_category");
       closeModal();
     }
   };
@@ -139,17 +157,16 @@ function CategoryModal({ executeModal, closeModal }) {
                   {categoryList.map((category, i) => (
                     <ListItem
                       key={i}
-                      disabled={category.subCategory.length === 0}
                       focused={focusedCategory.large?.code === category.code}
-                      selected={selectedCategory?.code === category.code}
+                      selected={selectedCategories?.includes(category)}
                     >
                       <div
                         className="title"
                         value={category.code}
-                        onClick={() => onClickLargeCategory(category)}
+                        onClick={(e) => onClickLargeCategory(e, category)}
                       >
                         <span>{category.name}</span>
-                        {selectedCategory?.code === category.code && (
+                        {selectedCategories?.includes(category) && (
                           <BsCheckLg />
                         )}
                       </div>
@@ -163,17 +180,16 @@ function CategoryModal({ executeModal, closeModal }) {
                     focusedCategory.large.subCategory.map((category, i) => (
                       <ListItem
                         key={i}
-                        disabled={category.subCategory.length === 0}
                         focused={focusedCategory.medium?.code === category.code}
-                        selected={selectedCategory?.code === category.code}
+                        selected={selectedCategories.includes(category)}
                       >
                         <div
                           className="title"
                           value={category.code}
-                          onClick={() => onClickMediumCategory(category)}
+                          onClick={(e) => onClickMediumCategory(e, category)}
                         >
                           <span>{category.name}</span>
-                          {selectedCategory?.code === category.code && (
+                          {selectedCategories.includes(category) && (
                             <BsCheckLg />
                           )}
                         </div>
@@ -186,13 +202,19 @@ function CategoryModal({ executeModal, closeModal }) {
                     <ListItem>상위분류를 먼저 선택하세요</ListItem>
                   ) : (
                     focusedCategory.medium.subCategory.map((category, i) => (
-                      <ListItem disabled key={i}>
+                      <ListItem
+                        key={i}
+                        selected={selectedCategories.includes(category)}
+                      >
                         <div
                           className="title"
                           value={category.code}
-                          onClick={() => onClickLargeCategory(category)}
+                          onClick={(e) => onClickSmallCategory(e, category)}
                         >
-                          {category.name}
+                          <span>{category.name}</span>
+                          {selectedCategories.includes(category) && (
+                            <BsCheckLg />
+                          )}
                         </div>
                       </ListItem>
                     ))
@@ -201,6 +223,17 @@ function CategoryModal({ executeModal, closeModal }) {
               </ListBody>
             </ListContainer>
           )}
+          <SelectedItemContainer>
+            {selectedCategories.map((category) => (
+              <div
+                key={category.IDX}
+                onClick={() => removeSelectedItem(category)}
+              >
+                <span>{category.name}</span>
+                <BsX />
+              </div>
+            ))}
+          </SelectedItemContainer>
         </ModalBody>
         <ModalActions>
           <Button color={myColors.blue500} onClick={saveCategory}>
@@ -248,7 +281,7 @@ const ModalBody = styled.div`
 const ModalActions = styled.div`
   display: flex;
   justify-content: center;
-  flex-direction: row;
+  gap: 1rem;
 `;
 const CategoryBtnWrapper = styled.div`
   margin-bottom: 1rem;
@@ -285,12 +318,10 @@ const CategoryTypeButton = styled.button`
 const Button = styled.button`
   background-color: ${(props) => props.color || "grey"};
   cursor: pointer;
-  min-width: 5rem;
-  border: none;
-  border-radius: 4px;
+  width: 5rem;
+  padding: 0.5rem;
   color: white;
   font-weight: bold;
-  margin: 0 0.5rem 0 0.5rem;
 `;
 
 /* 리스트 관리 스타일 */
@@ -335,13 +366,37 @@ const ListItem = styled.li`
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
   color: ${(props) => props.disabled && "#888888"};
   font-weight: ${(props) => (props.focused || props.selected) && "bold"};
-  background-color: ${(props) =>
-    props.selected ? "#b7e4ff" : props.focused ? "#dfdfdf" : "#ffffff"};
+  background-color: ${(props) => (props.focused ? "#dfdfdf" : "#ffffff")};
 
   & > div {
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+`;
+
+const SelectedItemContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    height: 2rem;
+    padding: 0 0.5rem 0 1rem;
+    border-radius: 1rem;
+    background-color: ${myColors.blue100};
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    :hover {
+      background-color: ${myColors.blue200};
+    }
   }
 `;
 

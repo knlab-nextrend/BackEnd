@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { BsRulers } from "react-icons/bs";
 
 import { WorkerContentHeader } from "Components/WorkerContentHeader";
+import { myColors, tailwindColors } from "styles/colors";
 
 function UserCustomMenu({
   userList,
@@ -66,7 +67,7 @@ function UserCustomMenu({
                     openCategoryModal("X");
                   }}
                 >
-                  X축 설정
+                  주제 1
                 </button>
                 <div className="axis-contents">
                   <div className="category-info">
@@ -85,7 +86,7 @@ function UserCustomMenu({
                     openCategoryModal("Y");
                   }}
                 >
-                  Y축 설정
+                  주제 2
                 </button>
                 <div className="axis-contents">
                   <div className="category-info">
@@ -96,27 +97,34 @@ function UserCustomMenu({
                     {axisCategoryInfo.Y.select_category_name || "선택없음"}
                   </div>
                 </div>
+                <div className="action">
+                  <SaveButton onClick={saveUserAxisData}>저장</SaveButton>
+                </div>
               </AxisCard>
             </AxisCardWrapper>
             <PreviewMenuWrapper>
-              <div className="axis-title">미리보기</div>
-              <div className="axis-x-menu">
-                {previewAxisMenu.X.map((item, index) => {
-                  return <div key={index}>{item.ct_nm}</div>;
-                })}
-              </div>
-              <div className="axis-y-menu">
-                {previewAxisMenu.Y.map((item, index) => {
-                  return <div key={index}>{item.ct_nm}</div>;
-                })}
+              <div className="menu-area">
+                <div className="menu-container">
+                  <div>기관 맞춤형 분류</div>
+                  <div className="menu-item-container">
+                    {previewAxisMenu.X.map((item, index) => (
+                      <div key={index}>{item.ct_nm}</div>
+                    ))}
+                  </div>
+                </div>
+                <div className="menu-container">
+                  <div>기관 맞춤형 분류</div>
+                  <div className="menu-item-container">
+                    {previewAxisMenu.Y.map((item, index) => (
+                      <div key={index}>{item.ct_nm}</div>
+                    ))}
+                  </div>
+                </div>
               </div>
               <div className="contents-body">
                 해당 위치에 조건에 맞는 자료가 표출됩니다.
               </div>
             </PreviewMenuWrapper>
-            <div className="action">
-              <SaveButton onClick={saveUserAxisData}>저장</SaveButton>
-            </div>
           </div>
         </MenuCustomCard>
       </Content>
@@ -130,6 +138,7 @@ const Wrap = styled.div`
   align-items: center;
   min-width: 1024px;
   width: 100%;
+  height: 100%;
   padding: 1.5rem 3rem;
 `;
 
@@ -137,64 +146,67 @@ const Content = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  height: 100%;
   font-size: 14px;
 `;
 
 const PreviewMenuWrapper = styled.div`
-  padding: 0.5rem;
-  display: grid;
-  grid-template-columns: 1fr 8fr;
-  grid-template-rows: 50px minmax(200px, auto);
-  .axis-title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: white;
-    grid-column: 1 / 2;
-    grid-row: 1 / 2;
-    color: #009999;
-    font-weight: bold;
-  }
-  .axis-x-menu {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    color: white;
-    background-color: #435269;
-    grid-column: 2 / 3;
-    grid-row: 1 / 2;
-    div {
-      display: flex;
-      align-items: center;
-      height: 100%;
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-      text-align: center;
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+
+  .menu-area {
+    border: 1px solid ${tailwindColors["grey-200"]};
+    & > * + * {
+      .menu-item-container {
+        border-top: 1px solid ${tailwindColors["grey-200"]};
       }
     }
   }
-  .axis-y-menu {
+
+  .menu-container {
     display: flex;
-    flex-direction: column;
-    background-color: #eee;
-    grid-column: 1 / 2;
-    grid-row: 2 / 3;
-    div {
-      padding: 0.5rem;
-      text-align: center;
-      &:hover {
-        background-color: #d6d6d6;
+    align-items: center;
+    width: 100%;
+    height: 3rem;
+
+    & > div:first-of-type {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 140px;
+      height: 100%;
+      background-color: ${myColors.blue500};
+      font-weight: bold;
+      color: ${tailwindColors.white};
+    }
+
+    .menu-item-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      overflow-x: auto;
+      height: 100%;
+
+      & > div {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 1.5rem;
+        :hover {
+          background-color: ${tailwindColors["grey-100"]};
+        }
       }
     }
   }
   .contents-body {
-    grid-column: 2 / 3;
-    grid-row: 2 / 3;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100%;
+    margin-top: 5rem;
   }
 `;
 const CardWrapper = styled.div`
@@ -226,6 +238,9 @@ const CardWrapper = styled.div`
 const MenuCustomCard = styled(CardWrapper)`
   width: 80%;
   .content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     min-height: 35rem;
   }
 `;
@@ -282,7 +297,6 @@ const AxisCardWrapper = styled.div`
   display: flex;
 `;
 const AxisCard = styled.div`
-  padding: 0.5rem;
   display: flex;
   .axis-setting {
     cursor: pointer;

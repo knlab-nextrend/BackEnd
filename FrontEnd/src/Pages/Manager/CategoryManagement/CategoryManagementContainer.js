@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import CategoryManagement from "./CategoryManagement";
+import { useDispatch } from "react-redux";
+import { trackPromise } from "react-promise-tracker";
+
+import { LoadingWrapper } from "Components/LoadingWrapper";
 import {
   categoryListFetchApi,
   categoryItemAddApi,
   categoryItemDeleteApi,
   categoryItemEditApi,
   sessionHandler,
-} from "../../../Utils/api";
-import { useDispatch } from "react-redux";
-import { trackPromise } from "react-promise-tracker";
-import { LoadingWrapper } from "../../../Components/LoadingWrapper";
+} from "Utils/api";
+
+import CategoryManagement from "./CategoryManagement";
 
 export const CATEGOROY_CODE_LIST = {
   정책분류: 1,
@@ -125,6 +127,7 @@ function CategoryManagementContainer() {
     trackPromise(
       categoryListFetchApi(type, length, upperCode[length - 2])
         .then((res) => {
+          console.log(res.data);
           dataCleansing(res.data);
         })
         .catch((err) => {
