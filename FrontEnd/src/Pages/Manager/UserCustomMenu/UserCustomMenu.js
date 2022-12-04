@@ -8,7 +8,7 @@ import { myColors, tailwindColors } from "styles/colors";
 function UserCustomMenu({
   userList,
   currentUserId,
-  setCurrentUserId,
+  onClickUser,
   openCategoryModal,
   previewAxisMenu,
   axisCategoryInfo,
@@ -33,7 +33,7 @@ function UserCustomMenu({
                   key={index}
                   active={user.id === currentUserId}
                   onClick={() => {
-                    setCurrentUserId(user.id);
+                    onClickUser(user.id);
                   }}
                 >
                   <div className="name-and-id">
@@ -71,11 +71,7 @@ function UserCustomMenu({
                 </button>
                 <div className="axis-contents">
                   <div className="category-info">
-                    {axisCategoryInfo.X.category_type || "선택없음"}
-                  </div>
-                  <div>{`>`}</div>
-                  <div className="category-code">
-                    {axisCategoryInfo.X.select_category_name || "선택없음"}
+                    {axisCategoryInfo.X.name || "선택없음"}
                   </div>
                 </div>
               </AxisCard>
@@ -90,33 +86,29 @@ function UserCustomMenu({
                 </button>
                 <div className="axis-contents">
                   <div className="category-info">
-                    {axisCategoryInfo.Y.category_type || "선택없음"}
+                    {axisCategoryInfo.Y.name || "선택없음"}
                   </div>
-                  <div>{`>`}</div>
-                  <div className="category-code">
-                    {axisCategoryInfo.Y.select_category_name || "선택없음"}
-                  </div>
-                </div>
-                <div className="action">
-                  <SaveButton onClick={saveUserAxisData}>저장</SaveButton>
                 </div>
               </AxisCard>
+              <div className="action">
+                <SaveButton onClick={saveUserAxisData}>저장</SaveButton>
+              </div>
             </AxisCardWrapper>
             <PreviewMenuWrapper>
               <div className="menu-area">
                 <div className="menu-container">
-                  <div>기관 맞춤형 분류</div>
+                  <div>{axisCategoryInfo.X.name}</div>
                   <div className="menu-item-container">
                     {previewAxisMenu.X.map((item, index) => (
-                      <div key={index}>{item.ct_nm}</div>
+                      <div key={index}>{item.ct_name}</div>
                     ))}
                   </div>
                 </div>
                 <div className="menu-container">
-                  <div>기관 맞춤형 분류</div>
+                  <div>{axisCategoryInfo.Y.name}</div>
                   <div className="menu-item-container">
                     {previewAxisMenu.Y.map((item, index) => (
-                      <div key={index}>{item.ct_nm}</div>
+                      <div key={index}>{item.ct_name}</div>
                     ))}
                   </div>
                 </div>
@@ -186,7 +178,6 @@ const PreviewMenuWrapper = styled.div`
       flex: 1;
       display: flex;
       align-items: center;
-      gap: 1rem;
       overflow-x: auto;
       height: 100%;
 
@@ -194,7 +185,7 @@ const PreviewMenuWrapper = styled.div`
         display: flex;
         align-items: center;
         height: 100%;
-        padding: 1.5rem;
+        padding: 0 1.5rem;
         :hover {
           background-color: ${tailwindColors["grey-100"]};
         }
@@ -240,19 +231,20 @@ const MenuCustomCard = styled(CardWrapper)`
   .content {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
     min-height: 35rem;
   }
 `;
 const SaveButton = styled.button`
-  margin: 0.5rem;
-  height: 2rem;
-  border: none;
-  padding: 0 1rem 0 1rem;
-  border-radius: 5px;
-  background-color: #435269;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 1rem 2rem;
+  background-color: ${myColors.green300};
   color: white;
   font-weight: bold;
+
   cursor: pointer;
 `;
 const UserListCard = styled(CardWrapper)`
@@ -264,29 +256,38 @@ const UserListCard = styled(CardWrapper)`
   }
 `;
 const UserCard = styled.div`
-  background-color: ${(props) =>
-    props.active ? "rgba(67,82,105,0.05)" : "white"};
-
-  border-radius: 4px;
-  box-shadow: 0 0 0.875rem 0 rgba(33, 37, 41, 0.05);
   padding: 0.5rem;
   margin-bottom: 0.5rem;
-  border-left: ${(props) => (props.active ? "solid 5px #435269" : null)};
+  border-radius: 4px;
+  border-left: ${(props) =>
+    props.active ? `solid 5px ${myColors.blue400}  ` : null};
+  background-color: ${tailwindColors.white};
+  box-shadow: 0 0 0.875rem 0 rgba(33, 37, 41, 0.05);
+
   &:hover {
     transform: scale(1.02);
     cursor: pointer;
   }
   .name-and-id {
+    width: 100%;
     display: flex;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .name {
-    color: #009999;
+    color: ${(props) =>
+      props.active ? myColors.blue400 : tailwindColors["grey-600"]};
     font-weight: bold;
     font-size: 16px;
     margin-right: 1rem;
   }
   .id {
+    flex: 1;
     color: #939ba2;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .company {
     font-size: 12px;
@@ -295,6 +296,11 @@ const UserCard = styled.div`
 `;
 const AxisCardWrapper = styled.div`
   display: flex;
+  gap: 2rem;
+
+  .action {
+    margin-left: auto;
+  }
 `;
 const AxisCard = styled.div`
   display: flex;
@@ -302,22 +308,19 @@ const AxisCard = styled.div`
     cursor: pointer;
     border: none;
     display: flex;
-    background-color: #435269;
+    background-color: ${myColors.blue500};
     color: white;
     font-weight: bold;
-    border-radius: 4px;
-    padding: 0.5rem 1rem 0.5rem 1rem;
+    padding: 0.5rem 1rem;
     align-items: center;
-    margin-right: 0.5rem;
   }
   .axis-contents {
     display: flex;
     border: 1px solid #e6e9ed;
-    border-radius: 4px;
     padding: 0.5rem 1rem 0.5rem 1rem;
     align-items: center;
     .category-info {
-      color: #435269;
+      color: ${myColors.blue500};
       font-size: 16px;
       font-weight: bold;
       padding: 4px;

@@ -5,6 +5,8 @@ import { BsCheckLg, BsX } from "react-icons/bs";
 import { getCategryListAPI } from "services/api/category/category";
 import { sessionHandler } from "../../Utils/api";
 import { myColors, tailwindColors } from "styles/colors";
+import { type } from "@amcharts/amcharts5";
+import { setAxisMenuData } from "Modules/custom";
 
 const CATEGORY_INFO = [
   { name: "정책 분류", code: 1 },
@@ -25,13 +27,16 @@ function CategoryModal({ executeModal, closeModal }) {
   });
   const [currentCategoryType, setCurrentCategoryType] = useState(null);
   const editingAxis = useSelector((state) => state.editingAxis);
+  const existingAxisMenuData = useSelector((state) => state.axisMenuData);
 
   const onClickCategoryType = (code) => {
+    console.log(editingAxis);
     setFocusedCategory({
       large: null,
       medium: null,
     });
     setCurrentCategoryType(code);
+
     setSelectedCategories([]);
   };
 
@@ -46,7 +51,7 @@ function CategoryModal({ executeModal, closeModal }) {
     } else {
       setSelectedCategories((prev) => [...prev, item]);
     }
-    console.log(editingAxis);
+    console.log("editingAxis : ", editingAxis);
   };
 
   const onClickMediumCategory = (e, item) => {
@@ -63,7 +68,7 @@ function CategoryModal({ executeModal, closeModal }) {
 
   const removeSelectedItem = (item) => {
     setSelectedCategories((prev) =>
-      prev.filter((category) => category.IDX !== item.IDX)
+      prev.filter((category) => category.CID !== item.CID)
     );
   };
 
@@ -74,6 +79,7 @@ function CategoryModal({ executeModal, closeModal }) {
         setCategoryList(stratifyCategoryList(res.data));
       })
       .catch((err) => {
+        console.log("에러", err);
         sessionHandler(err, dispatch).then((res) => {
           getCategryListAPI(currentCategoryType).then((res) => {
             setCategoryList(res.data);
@@ -82,18 +88,32 @@ function CategoryModal({ executeModal, closeModal }) {
       });
   };
 
+  const categorySchemaMapping = (categoryList) => {
+    return categoryList.map((category) => ({
+      CID: category.IDX,
+      x_type: category.type,
+      x_code: category.code,
+      ct_name: category.name,
+      level: category.level,
+    }));
+  };
+
   const stratifyCategoryList = (caregoryList) => {
-    const newList = caregoryList
+    const mappedList = categorySchemaMapping(caregoryList);
+
+    const newList = mappedList
       .filter((v) => v.level === "대분류")
       .map((large) => {
-        const mediumCategories = caregoryList
+        const mediumCategories = mappedList
           .filter(
-            (v) => v.level === "중분류" && v.code.substring(0, 2) === large.code
+            (v) =>
+              v.level === "중분류" && v.x_code.substring(0, 2) === large.x_code
           )
           .map((medium) => {
-            const smallCategories = caregoryList.filter(
+            const smallCategories = mappedList.filter(
               (v) =>
-                v.level === "소분류" && v.code.substring(0, 4) === medium.code
+                v.level === "소분류" &&
+                v.x_code.substring(0, 4) === medium.x_code
             );
             return { ...medium, subCategory: smallCategories };
           });
@@ -109,7 +129,9 @@ function CategoryModal({ executeModal, closeModal }) {
     } else {
       // 1. 모달에서 값 선택 후 redux에 저장
       executeModal(selectedCategories, "axis_category");
+      console.log(selectedCategories);
       closeModal();
+      dispatch(setAxisMenuData(editingAxis.selected, selectedCategories));
     }
   };
 
@@ -118,6 +140,14 @@ function CategoryModal({ executeModal, closeModal }) {
       dataFetch();
     }
   }, [currentCategoryType]);
+
+  useEffect(() => {
+    console.log("existring : ", existingAxisMenuData);
+    console.log("editingAxis : ", editingAxis);
+    console.log("생긴거좀보자 : ", existingAxisMenuData[editingAxis.selected]);
+    setCurrentCategoryType(editingAxis[editingAxis.selected]);
+    setSelectedCategories(existingAxisMenuData[editingAxis.selected]);
+  }, []);
 
   return (
     <>
@@ -134,18 +164,18 @@ function CategoryModal({ executeModal, closeModal }) {
               <CategoryTypeButton
                 key={v.code}
                 onClick={() => onClickCategoryType(v.code)}
-                selected={currentCategoryType === v.code}
+                selected={currentCategoryType == v.code}
                 disabled={
                   editingAxis.selected === "X"
-                    ? editingAxis.Y === v.code
-                    : editingAxis.X === v.code
+                    ? editingAxis.Y == v.code
+                    : editingAxis.X == v.code
                 }
               >
                 {v.name}
               </CategoryTypeButton>
             ))}
           </CategoryBtnWrapper>
-          {currentCategoryType && (
+          {currentCategoryType !== 0 && (
             <ListContainer>
               <ListHeader>
                 <div>대분류</div>
@@ -157,15 +187,17 @@ function CategoryModal({ executeModal, closeModal }) {
                   {categoryList.map((category, i) => (
                     <ListItem
                       key={i}
-                      focused={focusedCategory.large?.code === category.code}
+                      focused={
+                        focusedCategory.large?.x_code === category.x_code
+                      }
                       selected={selectedCategories?.includes(category)}
                     >
                       <div
                         className="title"
-                        value={category.code}
+                        value={category.x_code}
                         onClick={(e) => onClickLargeCategory(e, category)}
                       >
-                        <span>{category.name}</span>
+                        <span>{category.ct_name}</span>
                         {selectedCategories?.includes(category) && (
                           <BsCheckLg />
                         )}
@@ -180,15 +212,17 @@ function CategoryModal({ executeModal, closeModal }) {
                     focusedCategory.large.subCategory.map((category, i) => (
                       <ListItem
                         key={i}
-                        focused={focusedCategory.medium?.code === category.code}
+                        focused={
+                          focusedCategory.medium?.x_code === category.x_code
+                        }
                         selected={selectedCategories.includes(category)}
                       >
                         <div
                           className="title"
-                          value={category.code}
+                          value={category.x_code}
                           onClick={(e) => onClickMediumCategory(e, category)}
                         >
-                          <span>{category.name}</span>
+                          <span>{category.ct_name}</span>
                           {selectedCategories.includes(category) && (
                             <BsCheckLg />
                           )}
@@ -208,10 +242,10 @@ function CategoryModal({ executeModal, closeModal }) {
                       >
                         <div
                           className="title"
-                          value={category.code}
+                          value={category.x_code}
                           onClick={(e) => onClickSmallCategory(e, category)}
                         >
-                          <span>{category.name}</span>
+                          <span>{category.ct_name}</span>
                           {selectedCategories.includes(category) && (
                             <BsCheckLg />
                           )}
@@ -229,7 +263,7 @@ function CategoryModal({ executeModal, closeModal }) {
                 key={category.IDX}
                 onClick={() => removeSelectedItem(category)}
               >
-                <span>{category.name}</span>
+                <span>{category.ct_name}</span>
                 <BsX />
               </div>
             ))}

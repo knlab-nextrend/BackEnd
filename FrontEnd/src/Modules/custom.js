@@ -53,3 +53,28 @@ export const editingAxis = (state = initialEdittingAxis, action) => {
       return state;
   }
 };
+
+const SET_AXIS_MENU_DATA = "custom/SET_AXIS_MENU_DATA";
+
+export const setAxisMenuData = (axis, axisMenuData) => ({
+  type: SET_AXIS_MENU_DATA,
+  axis,
+  axisMenuData,
+});
+
+const initialAxisMenuData = {
+  X: [],
+  Y: [],
+};
+
+export const axisMenuData = (state = initialAxisMenuData, action) => {
+  switch (action.type) {
+    case SET_AXIS_MENU_DATA:
+      return {
+        ...state,
+        [action.axis]: action.axisMenuData,
+      };
+    default:
+      return state;
+  }
+};

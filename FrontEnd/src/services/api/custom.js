@@ -1,7 +1,7 @@
 import { _axios } from "services/axiosService";
 import { HTTP_METHOD } from ".";
 
-const customUrl = "/custom";
+const customUrl = "nextrend/custom";
 
 /**
  *
@@ -27,7 +27,7 @@ export const removeUserCustomMenu = async (data) => {
 //관리자 , 사용자 공동사용
 export const getUserCustomMenuByUserId = async (uid) => {
   return _axios({
-    url: `${customUrl}/test`,
+    url: `${customUrl}`,
     method: HTTP_METHOD.GET,
     params: { uid },
   });
