@@ -95,8 +95,12 @@ function UserOnlyDataLookUpPageContainer() {
   const modeSwitchHandler = () => {
     if (dataMode === "curation") {
       setDataMode("archive");
+      setSelectedMenu({ X: {}, Y: {} });
+      setSelectedAll(true);
     } else {
       setDataMode("curation");
+      setSelectedMenu({ X: {}, Y: {} });
+      setSelectedAll(true);
     }
   };
 
