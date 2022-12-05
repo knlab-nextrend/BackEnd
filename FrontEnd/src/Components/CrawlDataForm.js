@@ -212,6 +212,7 @@ function CrawlDataForm({ docs, type, _id }, ref) {
       return _docs;
     },
   }));
+
   useEffect(() => {
     /* docs가 빈 객체가 아니라면 */
     if (Object.keys(docs).length !== 0) {
@@ -515,15 +516,19 @@ function CrawlDataForm({ docs, type, _id }, ref) {
         <CustomFormItem>
           <div className="title">
             <p>HOST 도메인</p>
-            <button
-              onClick={() => {
-                _openHostSelectModal();
-              }}
-            >
+            <button onClick={_openHostSelectModal}>
               <MdSettings /> 설정
             </button>
           </div>
-          <div className="form notInput">{docHost && docHost.HOST}</div>
+          <div className="host">
+            <span>{docHost && docHost.HOST}</span>
+            <button
+              className="host-reset-btn"
+              onClick={() => dispatch(setModalData("", "doc_host"))}
+            >
+              X비우기
+            </button>
+          </div>
         </CustomFormItem>
         <CustomFormItem>
           <p className="title">발급기관 명</p>
@@ -840,11 +845,42 @@ const CustomFormItem = styled.div`
     padding-top: 2rem;
   }
   .notInput {
+    width: 100%;
     flex-wrap: wrap;
     justify-content: left;
     column-gap: 0.5rem;
     row-gap: 0.2rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     background-color: ${tailwindColors.white};
+  }
+  .host {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem 1rem;
+    background-color: ${tailwindColors.white};
+    overflow: hidden;
+    white-space: nowrap;
+
+    span {
+      width: calc(100% - 72px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    button {
+      width: 72px;
+      padding: 0.2rem 0.5rem;
+      margin-left: auto;
+      border-radius: 7.5rem;
+      background-color: ${tailwindColors["red-300"]};
+      color: ${tailwindColors["red-300-contrast"]};
+      font-weight: bold;
+    }
   }
 `;
 

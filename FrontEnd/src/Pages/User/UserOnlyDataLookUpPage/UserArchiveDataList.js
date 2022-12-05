@@ -4,6 +4,7 @@ import { HiOutlineDocumentSearch } from "react-icons/hi";
 import Pagination from "../../../Components/Pagination";
 import NoData from "../../../Components/NoData";
 import { myColors, tailwindColors } from "styles/colors";
+import { toYYMMDD_DOT } from "Utils/time";
 function UserArchiveDataList({
   dcCount,
   listSize,
@@ -35,7 +36,8 @@ function UserArchiveDataList({
           <ArchiveDataTable>
             <colgroup>
               <col style={{ width: "10%" }} />
-              <col style={{ width: "40%" }} />
+              <col style={{ width: "10%" }} />
+              <col style={{ width: "30%" }} />
               <col style={{ width: "15%" }} />
               <col style={{ width: "15%" }} />
               <col style={{ width: "10%" }} />
@@ -44,8 +46,9 @@ function UserArchiveDataList({
             <thead>
               <tr>
                 <th>순번</th>
+                <th>대상 국가</th>
                 <th>원문 제목</th>
-                <th>발행 기관명</th>
+                <th>발행기관 명</th>
                 <th>원문 발행일</th>
                 <th>페이지 수</th>
                 <th>큐레이션 선정</th>
@@ -56,13 +59,14 @@ function UserArchiveDataList({
                 return (
                   <tr key={index}>
                     <td>{index + 1}</td>
+                    <td>{item.doc_country_list}</td>
                     <td>
                       <a href={item.doc_url} target="_blank">
                         {item.doc_origin_title}
                       </a>
                     </td>
-                    <td></td>
-                    <td>{item.doc_publish_date}</td>
+                    <td>{item.doc_publisher}</td>
+                    <td>{toYYMMDD_DOT(item.doc_publish_date)}</td>
                     <td>{item.doc_page}</td>
                     <td>
                       {item.status === 6 ? (

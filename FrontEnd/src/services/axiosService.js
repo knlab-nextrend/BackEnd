@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { getToken } from "Utils/tokens";
 
 const instance = axios.create({
-  baseURL: "http://nextrend.kr:5000",
+  baseURL: `${process.env.REACT_APP_API_ENDPOINT}`,
   timeout: 10000,
 });
 

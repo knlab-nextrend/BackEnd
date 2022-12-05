@@ -19,7 +19,7 @@ const refreshHeaders = {
   refresh: getRefreshToken(),
 };
 
-const baseURL = "http://nextrend.kr:5000";
+const baseURL = `${process.env.REACT_APP_API_ENDPOINT}`;
 
 /* 크롤데이터 스크리닝 데이터 받아오기 */
 const ScreeningDataFetchApi = (listSize, pageNo, isKeep, searchObj = null) => {

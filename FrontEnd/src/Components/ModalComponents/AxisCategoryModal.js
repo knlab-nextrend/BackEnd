@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { BsCheckLg } from "react-icons/bs";
+import { BsCheckLg, BsX } from "react-icons/bs";
 import { getCategryListAPI } from "services/api/category/category";
 import { sessionHandler } from "../../Utils/api";
 import { myColors, tailwindColors } from "styles/colors";
+import { type } from "@amcharts/amcharts5";
+import { setAxisMenuData } from "Modules/custom";
 
 const CATEGORY_INFO = [
   { name: "정책 분류", code: 1 },
@@ -18,35 +20,56 @@ const CATEGORY_INFO = [
 function CategoryModal({ executeModal, closeModal }) {
   const dispatch = useDispatch();
   const [categoryList, setCategoryList] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [focusedCategory, setFocusedCategory] = useState({
     large: null,
     medium: null,
   });
   const [currentCategoryType, setCurrentCategoryType] = useState(null);
-  const [disableCategoryType, setDisabledCategoryType] = useState(null);
   const editingAxis = useSelector((state) => state.editingAxis);
+  const existingAxisMenuData = useSelector((state) => state.axisMenuData);
 
   const onClickCategoryType = (code) => {
-    setSelectedCategory(null);
+    console.log(editingAxis);
     setFocusedCategory({
       large: null,
       medium: null,
     });
     setCurrentCategoryType(code);
+
+    setSelectedCategories([]);
   };
 
-  const onClickLargeCategory = (item) => {
-    setFocusedCategory({ large: item, medium: null });
-    setSelectedCategory(item);
-    console.log(editingAxis);
+  const onClickLargeCategory = (e, item) => {
+    if (e.detail === 1) {
+      setFocusedCategory({ large: item, medium: null });
+      return;
+    }
+
+    if (selectedCategories.includes(item)) {
+      alert("이미 선택된 카테고리입니다");
+    } else {
+      setSelectedCategories((prev) => [...prev, item]);
+    }
+    console.log("editingAxis : ", editingAxis);
   };
 
-  const onClickMediumCategory = (item) => {
-    if (item.subCategory.length === 0) return;
+  const onClickMediumCategory = (e, item) => {
+    if (e.detail === 1) {
+      setFocusedCategory((prev) => ({ ...prev, medium: item }));
+    } else {
+      setSelectedCategories((prev) => [...prev, item]);
+    }
+  };
 
-    setFocusedCategory((prev) => ({ ...prev, medium: item }));
-    setSelectedCategory(item);
+  const onClickSmallCategory = (e, item) => {
+    if (e.detail === 2) setSelectedCategories((prev) => [...prev, item]);
+  };
+
+  const removeSelectedItem = (item) => {
+    setSelectedCategories((prev) =>
+      prev.filter((category) => category.CID !== item.CID)
+    );
   };
 
   /* 데이터 불러오기 */
@@ -56,6 +79,7 @@ function CategoryModal({ executeModal, closeModal }) {
         setCategoryList(stratifyCategoryList(res.data));
       })
       .catch((err) => {
+        console.log("에러", err);
         sessionHandler(err, dispatch).then((res) => {
           getCategryListAPI(currentCategoryType).then((res) => {
             setCategoryList(res.data);
@@ -64,18 +88,32 @@ function CategoryModal({ executeModal, closeModal }) {
       });
   };
 
+  const categorySchemaMapping = (categoryList) => {
+    return categoryList.map((category) => ({
+      CID: category.IDX,
+      x_type: category.type,
+      x_code: category.code,
+      ct_name: category.name,
+      level: category.level,
+    }));
+  };
+
   const stratifyCategoryList = (caregoryList) => {
-    const newList = caregoryList
+    const mappedList = categorySchemaMapping(caregoryList);
+
+    const newList = mappedList
       .filter((v) => v.level === "대분류")
       .map((large) => {
-        const mediumCategories = caregoryList
+        const mediumCategories = mappedList
           .filter(
-            (v) => v.level === "중분류" && v.code.substring(0, 2) === large.code
+            (v) =>
+              v.level === "중분류" && v.x_code.substring(0, 2) === large.x_code
           )
           .map((medium) => {
-            const smallCategories = caregoryList.filter(
+            const smallCategories = mappedList.filter(
               (v) =>
-                v.level === "소분류" && v.code.substring(0, 4) === medium.code
+                v.level === "소분류" &&
+                v.x_code.substring(0, 4) === medium.x_code
             );
             return { ...medium, subCategory: smallCategories };
           });
@@ -86,12 +124,14 @@ function CategoryModal({ executeModal, closeModal }) {
   };
 
   const saveCategory = () => {
-    if (selectedCategory === null) {
-      alert("값을 선택해주세요.");
+    if (selectedCategories.length === 0) {
+      alert("카테고리를 선택해주세요.");
     } else {
       // 1. 모달에서 값 선택 후 redux에 저장
-      executeModal(selectedCategory, "axis_category");
+      executeModal(selectedCategories, "axis_category");
+      console.log(selectedCategories);
       closeModal();
+      dispatch(setAxisMenuData(editingAxis.selected, selectedCategories));
     }
   };
 
@@ -100,6 +140,14 @@ function CategoryModal({ executeModal, closeModal }) {
       dataFetch();
     }
   }, [currentCategoryType]);
+
+  useEffect(() => {
+    console.log("existring : ", existingAxisMenuData);
+    console.log("editingAxis : ", editingAxis);
+    console.log("생긴거좀보자 : ", existingAxisMenuData[editingAxis.selected]);
+    setCurrentCategoryType(editingAxis[editingAxis.selected]);
+    setSelectedCategories(existingAxisMenuData[editingAxis.selected]);
+  }, []);
 
   return (
     <>
@@ -116,18 +164,18 @@ function CategoryModal({ executeModal, closeModal }) {
               <CategoryTypeButton
                 key={v.code}
                 onClick={() => onClickCategoryType(v.code)}
-                selected={currentCategoryType === v.code}
+                selected={currentCategoryType == v.code}
                 disabled={
                   editingAxis.selected === "X"
-                    ? editingAxis.Y === v.code
-                    : editingAxis.X === v.code
+                    ? editingAxis.Y == v.code
+                    : editingAxis.X == v.code
                 }
               >
                 {v.name}
               </CategoryTypeButton>
             ))}
           </CategoryBtnWrapper>
-          {currentCategoryType && (
+          {currentCategoryType !== 0 && (
             <ListContainer>
               <ListHeader>
                 <div>대분류</div>
@@ -139,17 +187,18 @@ function CategoryModal({ executeModal, closeModal }) {
                   {categoryList.map((category, i) => (
                     <ListItem
                       key={i}
-                      disabled={category.subCategory.length === 0}
-                      focused={focusedCategory.large?.code === category.code}
-                      selected={selectedCategory?.code === category.code}
+                      focused={
+                        focusedCategory.large?.x_code === category.x_code
+                      }
+                      selected={selectedCategories?.includes(category)}
                     >
                       <div
                         className="title"
-                        value={category.code}
-                        onClick={() => onClickLargeCategory(category)}
+                        value={category.x_code}
+                        onClick={(e) => onClickLargeCategory(e, category)}
                       >
-                        <span>{category.name}</span>
-                        {selectedCategory?.code === category.code && (
+                        <span>{category.ct_name}</span>
+                        {selectedCategories?.includes(category) && (
                           <BsCheckLg />
                         )}
                       </div>
@@ -163,17 +212,18 @@ function CategoryModal({ executeModal, closeModal }) {
                     focusedCategory.large.subCategory.map((category, i) => (
                       <ListItem
                         key={i}
-                        disabled={category.subCategory.length === 0}
-                        focused={focusedCategory.medium?.code === category.code}
-                        selected={selectedCategory?.code === category.code}
+                        focused={
+                          focusedCategory.medium?.x_code === category.x_code
+                        }
+                        selected={selectedCategories.includes(category)}
                       >
                         <div
                           className="title"
-                          value={category.code}
-                          onClick={() => onClickMediumCategory(category)}
+                          value={category.x_code}
+                          onClick={(e) => onClickMediumCategory(e, category)}
                         >
-                          <span>{category.name}</span>
-                          {selectedCategory?.code === category.code && (
+                          <span>{category.ct_name}</span>
+                          {selectedCategories.includes(category) && (
                             <BsCheckLg />
                           )}
                         </div>
@@ -186,13 +236,19 @@ function CategoryModal({ executeModal, closeModal }) {
                     <ListItem>상위분류를 먼저 선택하세요</ListItem>
                   ) : (
                     focusedCategory.medium.subCategory.map((category, i) => (
-                      <ListItem disabled key={i}>
+                      <ListItem
+                        key={i}
+                        selected={selectedCategories.includes(category)}
+                      >
                         <div
                           className="title"
-                          value={category.code}
-                          onClick={() => onClickLargeCategory(category)}
+                          value={category.x_code}
+                          onClick={(e) => onClickSmallCategory(e, category)}
                         >
-                          {category.name}
+                          <span>{category.ct_name}</span>
+                          {selectedCategories.includes(category) && (
+                            <BsCheckLg />
+                          )}
                         </div>
                       </ListItem>
                     ))
@@ -201,6 +257,17 @@ function CategoryModal({ executeModal, closeModal }) {
               </ListBody>
             </ListContainer>
           )}
+          <SelectedItemContainer>
+            {selectedCategories.map((category) => (
+              <div
+                key={category.IDX}
+                onClick={() => removeSelectedItem(category)}
+              >
+                <span>{category.ct_name}</span>
+                <BsX />
+              </div>
+            ))}
+          </SelectedItemContainer>
         </ModalBody>
         <ModalActions>
           <Button color={myColors.blue500} onClick={saveCategory}>
@@ -248,7 +315,7 @@ const ModalBody = styled.div`
 const ModalActions = styled.div`
   display: flex;
   justify-content: center;
-  flex-direction: row;
+  gap: 1rem;
 `;
 const CategoryBtnWrapper = styled.div`
   margin-bottom: 1rem;
@@ -285,12 +352,10 @@ const CategoryTypeButton = styled.button`
 const Button = styled.button`
   background-color: ${(props) => props.color || "grey"};
   cursor: pointer;
-  min-width: 5rem;
-  border: none;
-  border-radius: 4px;
+  width: 5rem;
+  padding: 0.5rem;
   color: white;
   font-weight: bold;
-  margin: 0 0.5rem 0 0.5rem;
 `;
 
 /* 리스트 관리 스타일 */
@@ -335,13 +400,37 @@ const ListItem = styled.li`
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
   color: ${(props) => props.disabled && "#888888"};
   font-weight: ${(props) => (props.focused || props.selected) && "bold"};
-  background-color: ${(props) =>
-    props.selected ? "#b7e4ff" : props.focused ? "#dfdfdf" : "#ffffff"};
+  background-color: ${(props) => (props.focused ? "#dfdfdf" : "#ffffff")};
 
   & > div {
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+`;
+
+const SelectedItemContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    height: 2rem;
+    padding: 0 0.5rem 0 1rem;
+    border-radius: 1rem;
+    background-color: ${myColors.blue100};
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    :hover {
+      background-color: ${myColors.blue200};
+    }
   }
 `;
 

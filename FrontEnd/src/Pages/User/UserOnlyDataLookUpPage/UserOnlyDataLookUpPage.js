@@ -32,13 +32,13 @@ function UserOnlyDataLookUpPage({
         {axisMenu.X.map((category, index) => {
           return (
             <XAxismenuBarItem
-              selected={selectedMenu.X.code === category.code}
+              selected={selectedMenu.X.code === category.x_code}
               key={index}
               onClick={() => {
                 menuClickHandler("X", category);
               }}
             >
-              {category.ct_nm}
+              {category.ct_name}
             </XAxismenuBarItem>
           );
         })}
@@ -47,13 +47,13 @@ function UserOnlyDataLookUpPage({
         {axisMenu.Y.map((category, index) => {
           return (
             <YAxisMenuBarItem
-              selected={selectedMenu.Y.code === category.code}
+              selected={selectedMenu.Y.code === category.x_code}
               key={index}
               onClick={() => {
                 menuClickHandler("Y", category);
               }}
             >
-              {category.ct_nm}
+              {category.ct_name}
             </YAxisMenuBarItem>
           );
         })}

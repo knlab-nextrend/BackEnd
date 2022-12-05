@@ -4,6 +4,8 @@ import PrivateRoute from "routes/PrivateRoute";
 
 import UserOnlyDataLookUpPageContainer from "./UserOnlyDataLookUpPage/UserOnlyDataLookUpPageContainer";
 import UserCurationDataDetailContainer from "./CurationDataDetail/CurationDataDetailContainer";
+import CurationDataDetailContainer from "../Worker/CurationDataDetail/CurationDataDetailContainer";
+
 function UserSection() {
   return (
     <Switch>
@@ -14,7 +16,7 @@ function UserSection() {
       />
       <PrivateRoute
         path="/library/:_id"
-        component={UserCurationDataDetailContainer}
+        component={CurationDataDetailContainer}
         exact
       />
       <Redirect from="/" to="/library" />
