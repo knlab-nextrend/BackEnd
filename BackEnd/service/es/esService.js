@@ -91,8 +91,50 @@ const esKeep = (_id, stat) => new Promise(async (resolve, reject) => {
     }
 });
 
+
+// axis는 {"3" : 10, "6" :1010} 이렇게 넘어와야함.
+//stat은 문서의 stat
+const esCustomSearch = async (reqQuery, axis)=>{
+    const fieldList = {
+        doc_country: 3,
+        doc_publish_country: 3,
+        doc_category: 1,
+        doc_language: 4,
+        doc_content_type: 2,
+        doc_custom: 6,
+        doc_content_category: 2,
+        doc_topic: 5,
+    };
+
+    let should = [];
+    let must = [];
+    for (const [type, value] of Object.entries(axis)) {
+        // 코드에 해당하는 필드들을 조회
+        const keys = Object.keys(fieldList).filter(key => fieldList[key] === parseInt(type));
+        if(keys.length>1){
+            keys.forEach((field) => {
+                let tempDict = {};
+                tempDict[field] = value + '.*';
+                should.push({regexp:tempDict});
+            })
+        }else{
+            let tempDict = {};
+            tempDict[keys[0]] = value + '.*';
+            must.push({regexp:tempDict});
+        }
+
+        const reqCode= parseInt(reqQuery.statusCode);
+        let stat = (reqCode===6||reqCode===7)? [6,7]:8
+        const searchQuery = libs.reqToEsFilters(reqQuery, stat, must, should);
+
+        let result = esSearch(searchQuery);
+        return result;
+    }
+}
+
 module.exports = {
     Search: esSearch,
+    CustomSearch : esCustomSearch,
     Index: esIndex,
     Detail: esDetail,
     Keep: esKeep
