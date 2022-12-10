@@ -85,6 +85,7 @@ function CurationDataListContainer() {
           : "", // 태그 삭제 정규표현식
         doc_url: item.doc_url,
         doc_publisher: item.doc_publisher,
+        doc_publish_date: item.doc_publish_date,
       };
       _curationDataList.push(obj);
     });

@@ -72,6 +72,7 @@ function UserCurationDataListContainer() {
           : "", // 태그 삭제 정규표현식
         doc_url: item.doc_url,
         doc_publisher: item.doc_publisher,
+        doc_publish_date: item.doc_publish_date,
       };
       _curationDataList.push(obj);
     });
@@ -93,11 +94,9 @@ function UserCurationDataListContainer() {
       [axisObj.Y.type]: axisObj.Y.code,
     };
 
-    console.log("제발", axis);
     trackPromise(
       userCustomCurationDataFetchApi(axis, listSize, pageNo, searchInput)
         .then((res) => {
-          console.log("과연", res.data);
           dataCleansing(res.data);
         })
         .catch((err) => {

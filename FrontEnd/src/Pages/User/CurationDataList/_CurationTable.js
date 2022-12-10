@@ -23,7 +23,7 @@ export const CurationTable = ({ curationData, handleRowClick }) => {
             <th>문서 분류</th>
             <th>발행기관 명</th>
             <th>페이지 수</th>
-            <th>서비스 등록일</th>
+            <th>원문 발행일</th>
           </tr>
         </thead>
         <tbody>
@@ -59,9 +59,11 @@ export const CurationTable = ({ curationData, handleRowClick }) => {
                 <td className="center">{item.doc_content_type_list}</td>
                 <td className="center">{item.doc_publisher}</td>
 
-                <td className="center">{item.doc_page}쪽</td>
                 <td className="center">
-                  {toYYMMDD_DOT(item.doc_register_date)}
+                  {item.doc_page && `${item.doc_page}p`}
+                </td>
+                <td className="center">
+                  {toYYMMDD_DOT(item.doc_publish_date)}
                 </td>
               </tr>
             );
@@ -85,9 +87,12 @@ const CurationListTable = styled.table`
     white-space: nowrap;
   }
 
-  th,
-  td {
+  th {
     padding: 0.5rem;
+  }
+
+  td {
+    padding: 0.2rem;
     word-break: break-all;
   }
 
