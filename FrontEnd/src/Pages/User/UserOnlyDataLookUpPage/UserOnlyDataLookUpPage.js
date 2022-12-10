@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 import UserCurationDataListContainer from "../CurationDataList/CurationDataListContainer";
 import UserArchiveDataList from "./UserArchiveDataList";
 import { HiOutlineArchive, HiOutlineDocumentDuplicate } from "react-icons/hi";
-import { LoadingWrapper } from "../../../Components/LoadingWrapper";
+import { LoadingWrapper } from "Components/LoadingWrapper";
 import { myColors, tailwindColors } from "styles/colors";
 
 function UserOnlyDataLookUpPage({
@@ -25,39 +25,6 @@ function UserOnlyDataLookUpPage({
 }) {
   return (
     <Wrapper>
-      <AxisTitle selected={selectedAll} onClick={onClickAllMenu}>
-        <div>전체</div>
-      </AxisTitle>
-      <AxisMenuBar axis="X">
-        {axisMenu.X.map((category, index) => {
-          return (
-            <XAxismenuBarItem
-              selected={selectedMenu.X.code === category.x_code}
-              key={index}
-              onClick={() => {
-                menuClickHandler("X", category);
-              }}
-            >
-              {category.ct_name}
-            </XAxismenuBarItem>
-          );
-        })}
-      </AxisMenuBar>
-      <AxisMenuBar axis="Y">
-        {axisMenu.Y.map((category, index) => {
-          return (
-            <YAxisMenuBarItem
-              selected={selectedMenu.Y.code === category.x_code}
-              key={index}
-              onClick={() => {
-                menuClickHandler("Y", category);
-              }}
-            >
-              {category.ct_name}
-            </YAxisMenuBarItem>
-          );
-        })}
-      </AxisMenuBar>
       <LoadingWrapper>
         <ContentBody>
           {dataMode === "archive" ? (
@@ -69,9 +36,19 @@ function UserOnlyDataLookUpPage({
               listSizeHandler={listSizeHandler}
               archiveData={archiveData}
               curationRequest={curationRequest}
+              axisObj={axisObj}
+              axisMenu={axisMenu}
+              selectedMenu={selectedMenu}
+              menuClickHandler={menuClickHandler}
             />
           ) : (
-            <UserCurationDataListContainer className="list" axisObj={axisObj} />
+            <UserCurationDataListContainer
+              className="list"
+              axisObj={axisObj}
+              axisMenu={axisMenu}
+              selectedMenu={selectedMenu}
+              menuClickHandler={menuClickHandler}
+            />
           )}
         </ContentBody>
       </LoadingWrapper>
@@ -93,9 +70,12 @@ function UserOnlyDataLookUpPage({
 }
 
 const Wrapper = styled.div`
-  display: grid;
-  grid-template-columns: 200px auto;
-  grid-template-rows: 50px minmax(1280px, auto);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 1280px;
+  padding: 1.5rem 3rem;
+  margin: 0 auto;
 `;
 
 const ModeSwitchButton = styled.button`

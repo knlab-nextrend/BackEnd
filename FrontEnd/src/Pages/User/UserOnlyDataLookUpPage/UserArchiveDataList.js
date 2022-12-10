@@ -5,6 +5,7 @@ import NoData from "Components/NoData";
 import { SearchResultCount } from "Components/SearchResultCount";
 import { myColors, tailwindColors } from "styles/colors";
 import { toYYMMDD_DOT } from "Utils/time";
+import { CategorySelect } from "../CategorySelect";
 
 function UserArchiveDataList({
   dcCount,
@@ -14,6 +15,10 @@ function UserArchiveDataList({
   listSizeHandler,
   archiveData,
   curationRequest,
+  axisObj,
+  axisMenu,
+  selectedMenu,
+  menuClickHandler,
 }) {
   return (
     <Wrap>
@@ -22,6 +27,14 @@ function UserArchiveDataList({
         <NoData />
       ) : (
         <>
+          <CagetorySelectWrap>
+            <CategorySelect
+              axisObj={axisObj}
+              axisMenu={axisMenu}
+              selectedMenu={selectedMenu}
+              menuClickHandler={menuClickHandler}
+            />
+          </CagetorySelectWrap>
           <ActionGroup>
             <select className="list-size" onChange={listSizeHandler}>
               <option disabled>리스트 사이즈</option>
@@ -107,7 +120,10 @@ const Wrap = styled.div`
   align-items: center;
   min-width: 1024px;
   width: 100%;
-  padding: 1.5rem 3rem;
+`;
+
+const CagetorySelectWrap = styled.div`
+  margin-bottom: 2rem;
 `;
 
 const ActionGroup = styled.div`
@@ -125,7 +141,6 @@ const ArchiveDataTable = styled.table`
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
-  text-align: center;
   font-size: 14px;
 
   col {
@@ -133,13 +148,13 @@ const ArchiveDataTable = styled.table`
       width: 4.5rem;
     }
     :nth-of-type(2) {
-      width: 15%;
+      width: 10%;
     }
     :nth-of-type(3) {
-      width: 40%;
+      width: 50%;
     }
     :nth-of-type(4) {
-      width: 20%;
+      width: 15%;
     }
     :nth-of-type(5) {
       width: 6rem;
@@ -171,9 +186,13 @@ const ArchiveDataTable = styled.table`
       height: 2.5rem;
       border-bottom: 1px solid ${tailwindColors["grey-400"]};
       background-color: ${tailwindColors.white};
+      text-align: center;
 
       td {
         padding: 0.3rem;
+
+        :first-of-type {
+        }
 
         &.country-list {
         }
@@ -181,7 +200,7 @@ const ArchiveDataTable = styled.table`
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-
+          text-align: left;
           a:hover {
             color: ${myColors.blue500};
             text-decoration: underline;
@@ -191,6 +210,7 @@ const ArchiveDataTable = styled.table`
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          text-align: left;
         }
         &.publish-date {
         }

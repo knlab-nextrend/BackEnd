@@ -6,11 +6,17 @@ import { trackPromise } from "react-promise-tracker";
 import { userCustomCurationDataFetchApi, sessionHandler } from "Utils/api";
 
 import CurationDataList from "./CurationDataList";
+import { CategorySelect } from "../CategorySelect";
 
-function UserCurationDataListContainer() {
+function UserCurationDataListContainer({
+  axisObj,
+  axisMenu,
+  selectedMenu,
+  menuClickHandler,
+}) {
   const [curationDataList, setCurationDataList] = useState([]);
   const userInfo = useSelector((state) => state.user.user);
-  const axisObj = useSelector((state) => state.custom.axisObj);
+  // const axisObj = useSelector((state) => state.custom.axisObj);
   const [searchObj, setSearchObj] = useState(null); // 검색 옵션
   const [searchInput, setSearchInput] = useState("");
 
@@ -138,6 +144,10 @@ function UserCurationDataListContainer() {
         dataFilterFetch={dataFilterFetch}
         setSearchInput={setSearchInput}
         onSearch={onSearch}
+        axisObj={axisObj}
+        axisMenu={axisMenu}
+        selectedMenu={selectedMenu}
+        menuClickHandler={menuClickHandler}
       />
     </>
   );

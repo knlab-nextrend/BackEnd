@@ -1,9 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { MdCalendarViewDay } from "react-icons/md";
 import { HiOutlineDocumentSearch } from "react-icons/hi";
-import { RiFileList2Line } from "react-icons/ri";
 
 import Pagination from "Components/Pagination";
 import CurationDataCard from "Components/CurationDataCard";
@@ -13,6 +11,7 @@ import { myColors } from "styles/colors";
 
 import { CurationTable } from "./_CurationTable";
 import { CurationSearch } from "./_Search";
+import { CategorySelect } from "../CategorySelect";
 
 function UserCurationDataList({
   curationDataList,
@@ -27,6 +26,10 @@ function UserCurationDataList({
   onChangeListSize,
   setSearchInput,
   onSearch,
+  axisMenu,
+  axisObj,
+  selectedMenu,
+  menuClickHandler,
 }) {
   const onSubmitSearch = (e) => {
     e.preventDefault();
@@ -81,6 +84,15 @@ function UserCurationDataList({
           </label>
         </ViewType> */}
       </ResultWrap>
+
+      <CagetorySelectWrap>
+        <CategorySelect
+          axisObj={axisObj}
+          axisMenu={axisMenu}
+          selectedMenu={selectedMenu}
+          menuClickHandler={menuClickHandler}
+        />
+      </CagetorySelectWrap>
       <CurationSearch
         onChangeSearchInput={onChangeSearch}
         onSubmitSearch={onSubmitSearch}
@@ -164,7 +176,6 @@ const Wrap = styled.div`
   align-items: center;
   min-width: 1024px;
   width: 100%;
-  padding: 1.5rem 3rem;
 `;
 
 const ResultWrap = styled.div`
@@ -201,6 +212,10 @@ const ViewType = styled.div`
     padding: 0.25rem 1rem;
     cursor: pointer;
   }
+`;
+
+const CagetorySelectWrap = styled.div`
+  margin-bottom: 1rem;
 `;
 
 const RowWrap = styled.div`
