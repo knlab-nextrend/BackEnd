@@ -141,6 +141,7 @@ function UserOnlyDataLookUpPageContainer() {
     console.log(selectedMenu);
     setSelectedAll(false);
     dispatch(setAxis(_axisObj));
+    setPageNo(1);
   };
   const listSizeHandler = (e) => {
     setListSize(e.target.value);

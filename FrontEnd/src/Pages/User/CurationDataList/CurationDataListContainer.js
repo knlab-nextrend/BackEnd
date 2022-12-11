@@ -6,7 +6,6 @@ import { trackPromise } from "react-promise-tracker";
 import { userCustomCurationDataFetchApi, sessionHandler } from "Utils/api";
 
 import CurationDataList from "./CurationDataList";
-import { CategorySelect } from "../CategorySelect";
 
 function UserCurationDataListContainer({
   axisObj,
@@ -124,6 +123,10 @@ function UserCurationDataListContainer({
   useEffect(() => {
     if (storedViewType !== null) setViewType(storedViewType);
   });
+
+  useEffect(() => {
+    setPageNo(1);
+  }, [listSize, axisObj, searchObj]);
 
   useEffect(() => {
     customDataFetch();
