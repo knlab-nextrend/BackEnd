@@ -1,7 +1,7 @@
 const esDB = require("../../models/es/index").esDB;
 const config = require("../../models/es/index").config;
 const libs = require("../../lib/libs");
-
+const _ = require('lodash');
 
 const esDetail = (_id) => new Promise(async (resolve, reject) => {
     const query = {
@@ -122,18 +122,26 @@ const esCustomSearch = async (reqQuery, axis)=>{
             must.push({regexp:tempDict});
         }
 
-        const reqCode= parseInt(reqQuery.statusCode);
-        let stat = (reqCode===6||reqCode===7)? [6,7]:8
-        const searchQuery = libs.reqToEsFilters(reqQuery, stat, must, should);
-
-        let result = esSearch(searchQuery);
-        return result;
     }
+
+    const reqCode= parseInt(reqQuery.statusCode);
+    let stat = (reqCode===6||reqCode===7)? [6,7]:8
+    const searchQuery = libs.reqToEsFilters(reqQuery, stat, must, should);
+
+
+    let result = esSearch(searchQuery);
+    return result;
 }
 
 const parseResult = async (searchResult, query)=>{
 
+    // docs 중복 제거
+    searchResult.docs = _.uniqBy(searchResult.docs, "_id");
+
     const result = {dcCount : 0, docs : []};
+
+    searchResult.dcCount = searchResult.docs.length;
+    result.dcCount = searchResult.dcCount;
 
     const size = query.listSize||10;
     const from = query.pageNo ? ((query.pageNo - 1) * size) : 0;
@@ -141,18 +149,19 @@ const parseResult = async (searchResult, query)=>{
     let orderType = (query.sort||'desc') == "desc" ? -1 : 1;
 
 
-    // 먼저 정렬기준에 맞게 정렬한다.
+    // 정렬기준에 맞게 정렬한다.
     searchResult.docs.sort((a, b)=>{
         if(a[sortType] > b[sortType]) return 1 * orderType;
         if(a === b) return 0;
         if(a < b) return -1 * orderType;
     })
 
-    //그 후 listSize 만큼의 document를 넣는다.
-    for(let i = from; i <searchResult.dcCount; i++){
-        if(result.dcCount >= size) break;
 
-        result.dcCount++;
+    let cnt = 0;
+
+    //그 후 listSize 만큼의 document를 넣는다.
+    for(let i = from; i <searchResult.dcCount; i++, cnt++){
+        if(cnt >= size) break;
         result.docs.push(searchResult.docs[i]);
     }
 
