@@ -117,7 +117,8 @@ const customSearch = async (req, res) => {
                 const searchAxis = {};
                 searchAxis[axisKey1] = code1;
                 searchAxis[axisKey2] = code2;
-                
+            
+
                 let searchResult = await esService.CustomSearch(req.query, searchAxis);
                 
                 result.dcCount += searchResult.dcCount;
