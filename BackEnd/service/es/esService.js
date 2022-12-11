@@ -128,8 +128,13 @@ const esCustomSearch = async (reqQuery, axis)=>{
     let stat = (reqCode===6||reqCode===7)? [6,7]:8
     const searchQuery = libs.reqToEsFilters(reqQuery, stat, must, should);
 
+    
+    
+    delete searchQuery.from
+    delete searchQuery.size
 
-    let result = esSearch(searchQuery);
+    let result = await esSearch(searchQuery);
+
     return result;
 }
 
