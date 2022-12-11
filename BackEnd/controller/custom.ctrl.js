@@ -3,6 +3,7 @@ const customCtrl = require("../service/nextrend/customPage");
 const libs = require("../lib/libs");
 const { listeners } = require("../models/nextrend");
 const crawlCtrl = require("./crawl.ctrl");
+const esService = require("../service/es/esService");
 
 const AXIS_X_TYPE = 0;
 const AXIS_Y_TYPE = 1;
@@ -103,6 +104,37 @@ const loadPage = async (req, res) => {
 
 const customSearch = async (req, res) => {
 
+    const result = {dcCount : 0, docs : []};
+
+    const axis = JSON.parse(req.query.axis);
+    
+    try{
+        [axisKey1, axisKey2] = Object.keys(axis);
+        
+        for(const code1 of axis[axisKey1]){
+            for(const code2 of axis[axisKey2]){
+                const searchAxis = {};
+                searchAxis[axisKey1] = code1;
+                searchAxis[axisKey2] = code2;
+                
+                let searchResult = await esService.CustomSearch(req.query, searchAxis);
+           
+                result.dcCount += searchResult.dcCount;
+                
+                searchResult.docs.forEach(doc=>{
+                    result.docs.push(doc);
+                })
+            }
+        }
+
+        res.status(200).send(result);
+    }catch(e){
+        console.log(e)
+        res.sendStatus(400)
+    }
+    
+
+    /*
     const fieldList = {
         doc_country: 3,
         doc_publish_country: 3,
@@ -155,6 +187,7 @@ const customSearch = async (req, res) => {
     }else{
         res.status(400).send();
     }
+    */
 }
 
 module.exports = {
