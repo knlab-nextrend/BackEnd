@@ -102,7 +102,6 @@ const esCustomSearch = async (reqQuery, axis)=>{
         doc_language: 4,
         doc_content_type: 2,
         doc_custom: 6,
-        doc_content_category: 2,
         doc_topic: 5,
     };
 
