@@ -121,16 +121,17 @@ const customSearch = async (req, res) => {
            
                 result.dcCount += searchResult.dcCount;
                 
-                searchResult.docs.forEach(doc=>{
+                for(let doc of searchResult.docs){
+                    doc = await crawlCtrl.docCatViewer(doc);
                     result.docs.push(doc);
-                })
+                }
             }
         }
 
         res.status(200).send(result);
     }catch(e){
-        console.log(e)
-        res.sendStatus(400)
+        console.log(e);
+        res.sendStatus(400);
     }
     
 
