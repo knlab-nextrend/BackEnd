@@ -128,8 +128,16 @@ function UserOnlyDataLookUpPageContainer() {
 
   const menuClickHandler = (axis, item) => {
     const _axisObj = { ...axisObj };
-    _axisObj[axis] = { type: item.x_type, code: item.x_code };
-    setSelectedMenu((prev) => ({ ...prev, [axis]: { code: item.x_code } }));
+    if (selectedMenu[axis].code === item.x_code) {
+      _axisObj[axis] = {
+        type: item.x_type,
+        code: axisMenu[axis].map((v) => v.x_code),
+      };
+      setSelectedMenu((prev) => ({ ...prev, [axis]: { code: null } }));
+    } else {
+      _axisObj[axis] = { type: item.x_type, code: [item.x_code] };
+      setSelectedMenu((prev) => ({ ...prev, [axis]: { code: item.x_code } }));
+    }
     console.log(selectedMenu);
     setSelectedAll(false);
     dispatch(setAxis(_axisObj));

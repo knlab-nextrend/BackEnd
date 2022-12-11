@@ -94,15 +94,17 @@ function UserCurationDataListContainer({
 
   const customDataFetch = () => {
     if (axisObj.X === null || axisObj.Y === null) return;
-
+    console.log("axisObj", axisObj);
     const axis = {
       [axisObj.X.type]: axisObj.X.code,
       [axisObj.Y.type]: axisObj.Y.code,
     };
+    console.log("axis : ", axis);
 
     trackPromise(
       userCustomCurationDataFetchApi(axis, listSize, pageNo, searchInput)
         .then((res) => {
+          console.log(res.data);
           dataCleansing(res.data);
         })
         .catch((err) => {

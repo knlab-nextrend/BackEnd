@@ -3,7 +3,6 @@ import styled, { css } from "styled-components";
 import UserCurationDataListContainer from "../CurationDataList/CurationDataListContainer";
 import UserArchiveDataList from "./UserArchiveDataList";
 import { HiOutlineArchive, HiOutlineDocumentDuplicate } from "react-icons/hi";
-import { LoadingWrapper } from "Components/LoadingWrapper";
 import { myColors, tailwindColors } from "styles/colors";
 
 function UserOnlyDataLookUpPage({
@@ -20,38 +19,34 @@ function UserOnlyDataLookUpPage({
   archiveData,
   curationRequest,
   selectedMenu,
-  onClickAllMenu,
-  selectedAll,
 }) {
   return (
     <Wrapper>
-      <LoadingWrapper>
-        <ContentBody>
-          {dataMode === "archive" ? (
-            <UserArchiveDataList
-              dcCount={dcCount}
-              listSize={listSize}
-              pageNo={pageNo}
-              setPageNo={setPageNo}
-              listSizeHandler={listSizeHandler}
-              archiveData={archiveData}
-              curationRequest={curationRequest}
-              axisObj={axisObj}
-              axisMenu={axisMenu}
-              selectedMenu={selectedMenu}
-              menuClickHandler={menuClickHandler}
-            />
-          ) : (
-            <UserCurationDataListContainer
-              className="list"
-              axisObj={axisObj}
-              axisMenu={axisMenu}
-              selectedMenu={selectedMenu}
-              menuClickHandler={menuClickHandler}
-            />
-          )}
-        </ContentBody>
-      </LoadingWrapper>
+      <ContentBody>
+        {dataMode === "archive" ? (
+          <UserArchiveDataList
+            dcCount={dcCount}
+            listSize={listSize}
+            pageNo={pageNo}
+            setPageNo={setPageNo}
+            listSizeHandler={listSizeHandler}
+            archiveData={archiveData}
+            curationRequest={curationRequest}
+            axisObj={axisObj}
+            axisMenu={axisMenu}
+            selectedMenu={selectedMenu}
+            menuClickHandler={menuClickHandler}
+          />
+        ) : (
+          <UserCurationDataListContainer
+            className="list"
+            axisObj={axisObj}
+            axisMenu={axisMenu}
+            selectedMenu={selectedMenu}
+            menuClickHandler={menuClickHandler}
+          />
+        )}
+      </ContentBody>
       <ModeSwitchButton onClick={modeSwitchHandler}>
         {dataMode === "archive" ? (
           <>

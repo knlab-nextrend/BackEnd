@@ -23,18 +23,18 @@ function UserArchiveDataList({
   return (
     <Wrap>
       <SearchResultCount count={dcCount} />
+      <CagetorySelectWrap>
+        <CategorySelect
+          axisObj={axisObj}
+          axisMenu={axisMenu}
+          selectedMenu={selectedMenu}
+          menuClickHandler={menuClickHandler}
+        />
+      </CagetorySelectWrap>
       {archiveData.length === 0 ? (
         <NoData />
       ) : (
         <>
-          <CagetorySelectWrap>
-            <CategorySelect
-              axisObj={axisObj}
-              axisMenu={axisMenu}
-              selectedMenu={selectedMenu}
-              menuClickHandler={menuClickHandler}
-            />
-          </CagetorySelectWrap>
           <ActionGroup>
             <select className="list-size" onChange={listSizeHandler}>
               <option disabled>리스트 사이즈</option>
