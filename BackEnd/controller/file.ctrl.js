@@ -286,26 +286,7 @@ const migration = async (req, res) =>{
             doc_topic:5
         };
         
-        for (const [key,catType] of Object.entries(fieldList)){
-            if(results[i][key] == undefined) {
-                let [categorys, fields]= await promiseDB.execute(`select * from login.nt_categorys where CT_NM=? and TYPE=?`,["기타", fieldList[key]]);
-                results[i][key] = [categorys[0].CODE];
-                continue;
-            }
-            
-            let arr = []
-            for(const st of results[i][key].split(new RegExp(',\|/'))){
-                let [categorys, fields]= await promiseDB.execute(`select * from login.nt_categorys where CT_NM=? and TYPE=?`,[st.trim(), fieldList[key]]);
-                arr.push(categorys[0] ? categorys[0].CODE : null);
-            }
-            results[i][key] = arr;
-            //값이 안들어가면 기타에 넣음
-            if(!results[i][key][0]){
-                let [categorys, fields]= await promiseDB.execute(`select * from login.nt_categorys where CT_NM=? and TYPE=?`,["기타", fieldList[key]]);
-                results[i][key] = [categorys[0].CODE];
-            }
 
-        }
         let keywords = null
         if(results[i].doc_keyowrd)
             keywords = results[i].doc_keyowrd.split(",").map(str=>str.trim())

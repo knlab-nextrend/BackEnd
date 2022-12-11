@@ -105,6 +105,7 @@ const loadPage = async (req, res) => {
 const customSearch = async (req, res) => {
 
     const result = {dcCount : 0, docs : []};
+    
 
     const axis = JSON.parse(req.query.axis);
     
@@ -118,7 +119,7 @@ const customSearch = async (req, res) => {
                 searchAxis[axisKey2] = code2;
                 
                 let searchResult = await esService.CustomSearch(req.query, searchAxis);
-           
+                
                 result.dcCount += searchResult.dcCount;
                 
                 for(let doc of searchResult.docs){
@@ -127,8 +128,10 @@ const customSearch = async (req, res) => {
                 }
             }
         }
+        
+        const response = await esService.parseResult(result, req.query);
 
-        res.status(200).send(result);
+        res.send(response);
     }catch(e){
         console.log(e);
         res.sendStatus(400);
