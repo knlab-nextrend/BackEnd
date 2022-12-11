@@ -19,7 +19,7 @@ const SearchResultNotthingContainer = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin-top: 10rem;
+  margin: 10rem 0;
   .comment {
     font-size: 30px;
     color: #d6d6d6;
