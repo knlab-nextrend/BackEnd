@@ -102,7 +102,6 @@ const esCustomSearch = async (reqQuery, axis)=>{
         doc_language: 4,
         doc_content_type: 2,
         doc_custom: 6,
-        doc_content_category: 2,
         doc_topic: 5,
     };
 
@@ -132,10 +131,39 @@ const esCustomSearch = async (reqQuery, axis)=>{
     }
 }
 
+const parseResult = async (searchResult, query)=>{
+
+    const result = {dcCount : 0, docs : []};
+
+    const size = query.listSize||10;
+    const from = query.pageNo ? ((query.pageNo - 1) * size) : 0;
+    const sortType = query.sortType||'doc_collect_date';
+    let orderType = (query.sort||'desc') == "desc" ? -1 : 1;
+
+
+    // 먼저 정렬기준에 맞게 정렬한다.
+    searchResult.docs.sort((a, b)=>{
+        if(a[sortType] > b[sortType]) return 1 * orderType;
+        if(a === b) return 0;
+        if(a < b) return -1 * orderType;
+    })
+
+    //그 후 listSize 만큼의 document를 넣는다.
+    for(let i = from; i <searchResult.dcCount; i++){
+        if(result.dcCount >= size) break;
+
+        result.dcCount++;
+        result.docs.push(searchResult.docs[i]);
+    }
+
+    return result;
+}
+
 module.exports = {
     Search: esSearch,
     CustomSearch : esCustomSearch,
     Index: esIndex,
     Detail: esDetail,
-    Keep: esKeep
+    Keep: esKeep,
+    parseResult : parseResult
 }
