@@ -115,60 +115,62 @@ function UserCurationDataList({
       </RowWrap>
       <DocumentSection>
         <LoadingWrapper>
-          {curationDataList.length !== 0 ? (
-            <>
-              {viewType === "list" && (
-                <CurationTable
-                  curationData={curationDataList}
-                  handleRowClick={handleRowClick}
-                />
-              )}
-              {viewType === "card1" && (
-                <CurationCard1Wrapper>
-                  {curationDataList.map((item, index) => {
-                    return (
-                      <CustomLink
-                        to={`/${
-                          userInfo.permission !== 0 ? "curation" : "library"
-                        }/${item._id}`}
-                      >
-                        <CurationDataCard
-                          curationDataItem={item}
-                        ></CurationDataCard>
-                      </CustomLink>
-                    );
-                  })}
-                </CurationCard1Wrapper>
-              )}
-              {viewType === "card2" && (
-                <CurationCard2Wrapper>
-                  {curationDataList.map((item, index) => {
-                    return (
-                      <CustomLink
-                        to={`/${
-                          userInfo.permission !== 0 ? "curation" : "library"
-                        }/${item._id}`}
-                      >
-                        <CurationDataCard2
-                          curationDataItem={item}
-                        ></CurationDataCard2>
-                      </CustomLink>
-                    );
-                  })}
-                </CurationCard2Wrapper>
-              )}
-              <PaginationWrap>
-                <Pagination
-                  dcCount={dcCount}
-                  listSize={listSize}
-                  pageNo={pageNo}
-                  setPageNo={setPageNo}
-                />
-              </PaginationWrap>
-            </>
-          ) : (
-            <NoData />
-          )}
+          <DocumentWrap>
+            {curationDataList.length !== 0 ? (
+              <>
+                {viewType === "list" && (
+                  <CurationTable
+                    curationData={curationDataList}
+                    handleRowClick={handleRowClick}
+                  />
+                )}
+                {viewType === "card1" && (
+                  <CurationCard1Wrapper>
+                    {curationDataList.map((item, index) => {
+                      return (
+                        <CustomLink
+                          to={`/${
+                            userInfo.permission !== 0 ? "curation" : "library"
+                          }/${item._id}`}
+                        >
+                          <CurationDataCard
+                            curationDataItem={item}
+                          ></CurationDataCard>
+                        </CustomLink>
+                      );
+                    })}
+                  </CurationCard1Wrapper>
+                )}
+                {viewType === "card2" && (
+                  <CurationCard2Wrapper>
+                    {curationDataList.map((item, index) => {
+                      return (
+                        <CustomLink
+                          to={`/${
+                            userInfo.permission !== 0 ? "curation" : "library"
+                          }/${item._id}`}
+                        >
+                          <CurationDataCard2
+                            curationDataItem={item}
+                          ></CurationDataCard2>
+                        </CustomLink>
+                      );
+                    })}
+                  </CurationCard2Wrapper>
+                )}
+                <PaginationWrap>
+                  <Pagination
+                    dcCount={dcCount}
+                    listSize={listSize}
+                    pageNo={pageNo}
+                    setPageNo={setPageNo}
+                  />
+                </PaginationWrap>
+              </>
+            ) : (
+              <NoData />
+            )}
+          </DocumentWrap>
         </LoadingWrapper>
       </DocumentSection>
     </Wrap>
@@ -189,6 +191,13 @@ const DocumentSection = styled.div`
   flex-direction: column;
   width: 100%;
   align-items: center;
+`;
+
+const DocumentWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 `;
 
 const ResultWrap = styled.div`
