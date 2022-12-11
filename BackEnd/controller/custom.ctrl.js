@@ -121,8 +121,6 @@ const customSearch = async (req, res) => {
 
                 let searchResult = await esService.CustomSearch(req.query, searchAxis);
                 
-                result.dcCount += searchResult.dcCount;
-                
                 for(let doc of searchResult.docs){
                     doc = await crawlCtrl.docCatViewer(doc);
                     result.docs.push(doc);
