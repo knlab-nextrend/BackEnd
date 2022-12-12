@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import { trackPromise } from "react-promise-tracker";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -44,6 +43,7 @@ function UserOnlyDataLookUpPageContainer() {
   };
 
   const menuDataFetch = (uid) => {
+    console.log("uid", uid);
     getUserCustomMenuByUserId(uid).then((res) => {
       const { x_axis, y_axis } = res.data;
       console.log("유저카테고리  : ", res.data);
@@ -58,6 +58,7 @@ function UserOnlyDataLookUpPageContainer() {
           X: { type: x_axis[0].x_type, code: x_axis.map((v) => v.x_code) },
           Y: { type: y_axis[0].x_type, code: y_axis.map((v) => v.x_code) },
         };
+        console.log("axisObj", _axisObj);
         dispatch(setAxis(_axisObj));
       }
     });
@@ -74,7 +75,6 @@ function UserOnlyDataLookUpPageContainer() {
       const axis = {};
       axis[axisObj.X.type] = axisObj.X.code;
       axis[axisObj.Y.type] = axisObj.Y.code;
-      console.log("제발", axis);
       trackPromise(
         userCustomCurationDataFetchApi(axis, listSize, pageNo, true)
           .then((res) => {
@@ -128,10 +128,20 @@ function UserOnlyDataLookUpPageContainer() {
 
   const menuClickHandler = (axis, item) => {
     const _axisObj = { ...axisObj };
-    _axisObj[axis] = { type: item.x_type, code: [item.x_code] };
-    setSelectedMenu((prev) => ({ ...prev, [axis]: { code: item.x_code } }));
+    if (selectedMenu[axis].code === item.x_code) {
+      _axisObj[axis] = {
+        type: item.x_type,
+        code: axisMenu[axis].map((v) => v.x_code),
+      };
+      setSelectedMenu((prev) => ({ ...prev, [axis]: { code: null } }));
+    } else {
+      _axisObj[axis] = { type: item.x_type, code: [item.x_code] };
+      setSelectedMenu((prev) => ({ ...prev, [axis]: { code: item.x_code } }));
+    }
+    console.log(selectedMenu);
     setSelectedAll(false);
     dispatch(setAxis(_axisObj));
+    setPageNo(1);
   };
   const listSizeHandler = (e) => {
     setListSize(e.target.value);

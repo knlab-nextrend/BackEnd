@@ -17,17 +17,9 @@ import {
 } from "services/api/custom";
 
 import UserCustomMenu from "./UserCustomMenu";
+import { CATEGORY_TYPE_LIST } from "Data/category";
 
 function UserCustomMenuContainer() {
-  const CATEGORY_TYPE_LIST = {
-    1: "정책 분류",
-    2: "유형 분류",
-    3: "국가 분류",
-    4: "언어 분류",
-    5: "토픽 분류",
-    6: "기관 맞춤형 분류",
-  };
-
   const dispatch = useDispatch();
   const [userList, setUserList] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null); // 현재 선택된 유저의 id

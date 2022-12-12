@@ -7,10 +7,15 @@ import { userCustomCurationDataFetchApi, sessionHandler } from "Utils/api";
 
 import CurationDataList from "./CurationDataList";
 
-function UserCurationDataListContainer() {
+function UserCurationDataListContainer({
+  axisObj,
+  axisMenu,
+  selectedMenu,
+  menuClickHandler,
+}) {
   const [curationDataList, setCurationDataList] = useState([]);
   const userInfo = useSelector((state) => state.user.user);
-  const axisObj = useSelector((state) => state.custom.axisObj);
+  // const axisObj = useSelector((state) => state.custom.axisObj);
   const [searchObj, setSearchObj] = useState(null); // 검색 옵션
   const [searchInput, setSearchInput] = useState("");
 
@@ -72,6 +77,7 @@ function UserCurationDataListContainer() {
           : "", // 태그 삭제 정규표현식
         doc_url: item.doc_url,
         doc_publisher: item.doc_publisher,
+        doc_publish_date: item.doc_publish_date,
       };
       _curationDataList.push(obj);
     });
@@ -87,17 +93,17 @@ function UserCurationDataListContainer() {
 
   const customDataFetch = () => {
     if (axisObj.X === null || axisObj.Y === null) return;
-
+    console.log("axisObj", axisObj);
     const axis = {
       [axisObj.X.type]: axisObj.X.code,
       [axisObj.Y.type]: axisObj.Y.code,
     };
+    console.log("axis : ", axis);
 
-    console.log("제발", axis);
     trackPromise(
       userCustomCurationDataFetchApi(axis, listSize, pageNo, searchInput)
         .then((res) => {
-          console.log("과연", res.data);
+          console.log(res.data);
           dataCleansing(res.data);
         })
         .catch((err) => {
@@ -117,6 +123,10 @@ function UserCurationDataListContainer() {
   useEffect(() => {
     if (storedViewType !== null) setViewType(storedViewType);
   });
+
+  useEffect(() => {
+    setPageNo(1);
+  }, [listSize, axisObj, searchObj]);
 
   useEffect(() => {
     customDataFetch();
@@ -139,6 +149,10 @@ function UserCurationDataListContainer() {
         dataFilterFetch={dataFilterFetch}
         setSearchInput={setSearchInput}
         onSearch={onSearch}
+        axisObj={axisObj}
+        axisMenu={axisMenu}
+        selectedMenu={selectedMenu}
+        menuClickHandler={menuClickHandler}
       />
     </>
   );

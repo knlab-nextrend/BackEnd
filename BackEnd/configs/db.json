@@ -1,54 +1,54 @@
 {
-    "nextrend":{
-        "development" : {
-            "username": "root",
-            "password": "tony267",
-            "database": "login",
-            "host": "localhost",
-            "port": 3306,
-            "dialect": "mysql"
-        }
-    },
-    "legacyDB" : {
-        "development" : {
-            "username": "root",
-            "password": "tony267",
-            "database": "nexteli",
-            "host": "localhost",
-            "port": 3306,
-            "dialect": "mysql"
-        }
-    },
-    "solr":{
-        "development" : {
-            "host": "1.214.203.131",
-            "port": 8983,
-            "core": "preproc"
-        }
-    },
-    "es":{
-        "development":{
-            "host":"http://localhost:9200/"
-        }
-    },
-    "nas":{
-        "development":{
-            "host":"1.214.203.131",
-            "port":22121,
-            "user":"crawl_pdf_gps",
-            "pass":"crawlpdf!23",
-            "password":"crawlpdf!23",
-            "webport":"3330"
-        }
-    },
-    "politica":{
-        "development":{
-            "username": "root",
-            "password": "Company!23",
-            "database": "politica",
-            "host": "data.knlab.kr",
-            "port": 3306,
-            "dialect": "mysql"
-        }
+  "nextrend": {
+    "development": {
+      "username": "root",
+      "password": "tony267",
+      "database": "login",
+      "host": "localhost",
+      "port": 3306,
+      "dialect": "mysql"
     }
+  },
+  "legacyDB": {
+    "development": {
+      "username": "root",
+      "password": "tony267",
+      "database": "nexteli",
+      "host": "localhost",
+      "port": 3306,
+      "dialect": "mysql"
+    }
+  },
+  "solr": {
+    "development": {
+      "host": "1.214.203.131",
+      "port": 8983,
+      "core": "preproc"
+    }
+  },
+  "es": {
+    "development": {
+      "host": "http://index.knlab.kr:9200/"
+    }
+  },
+  "nas": {
+    "development": {
+      "host": "1.214.203.131",
+      "port": 22121,
+      "user": "crawl_pdf_gps",
+      "pass": "crawlpdf!23",
+      "password": "crawlpdf!23",
+      "webport": "3330"
+    }
+  },
+  "politica": {
+    "development": {
+      "username": "root",
+      "password": "Company!23",
+      "database": "politica",
+      "host": "data.knlab.kr",
+      "port": 3306,
+      "dialect": "mysql"
+    }
+  }
 }

@@ -1,9 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { MdCalendarViewDay } from "react-icons/md";
 import { HiOutlineDocumentSearch } from "react-icons/hi";
-import { RiFileList2Line } from "react-icons/ri";
 
 import Pagination from "Components/Pagination";
 import CurationDataCard from "Components/CurationDataCard";
@@ -13,6 +11,8 @@ import { myColors } from "styles/colors";
 
 import { CurationTable } from "./_CurationTable";
 import { CurationSearch } from "./_Search";
+import { CategorySelect } from "../CategorySelect";
+import { LoadingWrapper } from "Components/LoadingWrapper";
 
 function UserCurationDataList({
   curationDataList,
@@ -27,6 +27,10 @@ function UserCurationDataList({
   onChangeListSize,
   setSearchInput,
   onSearch,
+  axisMenu,
+  axisObj,
+  selectedMenu,
+  menuClickHandler,
 }) {
   const onSubmitSearch = (e) => {
     e.preventDefault();
@@ -81,6 +85,15 @@ function UserCurationDataList({
           </label>
         </ViewType> */}
       </ResultWrap>
+
+      <CagetorySelectWrap>
+        <CategorySelect
+          axisObj={axisObj}
+          axisMenu={axisMenu}
+          selectedMenu={selectedMenu}
+          menuClickHandler={menuClickHandler}
+        />
+      </CagetorySelectWrap>
       <CurationSearch
         onChangeSearchInput={onChangeSearch}
         onSubmitSearch={onSubmitSearch}
@@ -100,60 +113,66 @@ function UserCurationDataList({
           <option value={100}>100건</option>
         </select>
       </RowWrap>
-      {curationDataList.length !== 0 ? (
-        <>
-          {viewType === "list" && (
-            <CurationTable
-              curationData={curationDataList}
-              handleRowClick={handleRowClick}
-            />
-          )}
-          {viewType === "card1" && (
-            <CurationCard1Wrapper>
-              {curationDataList.map((item, index) => {
-                return (
-                  <CustomLink
-                    to={`/${
-                      userInfo.permission !== 0 ? "curation" : "library"
-                    }/${item._id}`}
-                  >
-                    <CurationDataCard
-                      curationDataItem={item}
-                    ></CurationDataCard>
-                  </CustomLink>
-                );
-              })}
-            </CurationCard1Wrapper>
-          )}
-          {viewType === "card2" && (
-            <CurationCard2Wrapper>
-              {curationDataList.map((item, index) => {
-                return (
-                  <CustomLink
-                    to={`/${
-                      userInfo.permission !== 0 ? "curation" : "library"
-                    }/${item._id}`}
-                  >
-                    <CurationDataCard2
-                      curationDataItem={item}
-                    ></CurationDataCard2>
-                  </CustomLink>
-                );
-              })}
-            </CurationCard2Wrapper>
-          )}
-          <PaginationWrap>
-            <Pagination
-              dcCount={dcCount}
-              listSize={listSize}
-              pageNo={pageNo}
-              setPageNo={setPageNo}
-            />
-          </PaginationWrap>
-        </>
-      ) : (
-        <NoData />
-      )}
+      <DocumentSection>
+        <LoadingWrapper>
+          <DocumentWrap>
+            {curationDataList.length !== 0 ? (
+              <>
+                {viewType === "list" && (
+                  <CurationTable
+                    curationData={curationDataList}
+                    handleRowClick={handleRowClick}
+                  />
+                )}
+                {viewType === "card1" && (
+                  <CurationCard1Wrapper>
+                    {curationDataList.map((item, index) => {
+                      return (
+                        <CustomLink
+                          to={`/${
+                            userInfo.permission !== 0 ? "curation" : "library"
+                          }/${item._id}`}
+                        >
+                          <CurationDataCard
+                            curationDataItem={item}
+                          ></CurationDataCard>
+                        </CustomLink>
+                      );
+                    })}
+                  </CurationCard1Wrapper>
+                )}
+                {viewType === "card2" && (
+                  <CurationCard2Wrapper>
+                    {curationDataList.map((item, index) => {
+                      return (
+                        <CustomLink
+                          to={`/${
+                            userInfo.permission !== 0 ? "curation" : "library"
+                          }/${item._id}`}
+                        >
+                          <CurationDataCard2
+                            curationDataItem={item}
+                          ></CurationDataCard2>
+                        </CustomLink>
+                      );
+                    })}
+                  </CurationCard2Wrapper>
+                )}
+                <PaginationWrap>
+                  <Pagination
+                    dcCount={dcCount}
+                    listSize={listSize}
+                    pageNo={pageNo}
+                    setPageNo={setPageNo}
+                  />
+                </PaginationWrap>
+              </>
+            ) : (
+              <NoData />
+            )}
+          </DocumentWrap>
+        </LoadingWrapper>
+      </DocumentSection>
     </Wrap>
   );
 }
@@ -164,7 +183,21 @@ const Wrap = styled.div`
   align-items: center;
   min-width: 1024px;
   width: 100%;
-  padding: 1.5rem 3rem;
+`;
+
+const DocumentSection = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+`;
+
+const DocumentWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 `;
 
 const ResultWrap = styled.div`
@@ -201,6 +234,10 @@ const ViewType = styled.div`
     padding: 0.25rem 1rem;
     cursor: pointer;
   }
+`;
+
+const CagetorySelectWrap = styled.div`
+  margin-bottom: 1rem;
 `;
 
 const RowWrap = styled.div`
