@@ -55,6 +55,7 @@ export const CategorySelect = ({
 };
 
 const CategorySelectSection = styled.div`
+  width: 100%;
   border: 1px solid ${tailwindColors["grey-200"]};
 
   & > div:first-of-type {
