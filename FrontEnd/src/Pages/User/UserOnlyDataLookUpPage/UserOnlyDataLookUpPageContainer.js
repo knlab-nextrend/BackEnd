@@ -152,6 +152,7 @@ function UserOnlyDataLookUpPageContainer() {
   };
   const listSizeHandler = (e) => {
     setListSize(e.target.value);
+    setPageNo(1);
   };
 
   useEffect(() => {
