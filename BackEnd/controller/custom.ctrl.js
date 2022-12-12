@@ -31,7 +31,7 @@ const createSetting = async (req, res) => {
     }
 }
 
-// deprecated 되어야함.
+// deprecated 
 const updateSetting = async (req, res) => {
     if (req.body.uid && req.body.xaxis && req.body.yaxis) {
         try {
@@ -85,7 +85,7 @@ const testAxis = async (req, res) => {
     }
 }
 
-//readSettings로 대체되어 사용할듯
+//deprecated
 const loadPage = async (req, res) => {
     try {
         const xAxisList = await customCtrl.call(req.query.uid, 'axis_x');

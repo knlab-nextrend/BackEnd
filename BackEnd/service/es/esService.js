@@ -130,8 +130,8 @@ const esCustomSearch = async (reqQuery, axis)=>{
 
     
     
-    delete searchQuery.from
-    delete searchQuery.size
+    searchQuery.from = 0;
+    searchQuery.size = 5000;
 
     let result = await esSearch(searchQuery);
 
