@@ -237,6 +237,7 @@ const ViewType = styled.div`
 `;
 
 const CagetorySelectWrap = styled.div`
+  width: 100%;
   margin-bottom: 1rem;
 `;
 

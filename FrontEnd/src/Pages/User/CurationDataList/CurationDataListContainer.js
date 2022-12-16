@@ -12,6 +12,7 @@ function UserCurationDataListContainer({
   axisMenu,
   selectedMenu,
   menuClickHandler,
+  dataMode,
 }) {
   const [curationDataList, setCurationDataList] = useState([]);
   const userInfo = useSelector((state) => state.user.user);
@@ -129,8 +130,8 @@ function UserCurationDataListContainer({
   }, [listSize, axisObj, searchObj]);
 
   useEffect(() => {
-    customDataFetch();
-  }, [pageNo, listSize, axisObj, searchObj]);
+    if (dataMode === "curation") customDataFetch();
+  }, [pageNo, listSize, axisObj, searchObj, dataMode]);
 
   return (
     <>
