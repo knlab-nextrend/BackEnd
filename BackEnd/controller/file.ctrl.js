@@ -143,6 +143,7 @@ const uploadExcelData = async (req, res) => {
 
             let thumbnail = thumbnails.filter(img=>img.originalname === meta.thumbnail_file_name);
             thumbnail = thumbnail ? thumbnail[0] : null;
+            
 
             meta.pdf = pdf;
             meta.thumbnail = thumbnail;
@@ -188,7 +189,8 @@ const uploadExcelData = async (req, res) => {
                 await poliCtrl.insertUploadData(itemId, meta.dc_page);
 
                 meta.doc_file = folderPath + meta.pdf.filename + '.pdf';
-                meta.doc_thumbnail = folderPath + meta.thumbnail.filename + ".png";
+                
+                meta.doc_thumbnail = [folderPath + meta.thumbnail.originalname];
                 meta.item_id= itemId;
 
                 delete meta.pdf;

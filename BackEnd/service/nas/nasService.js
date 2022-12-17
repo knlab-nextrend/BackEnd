@@ -164,7 +164,13 @@ const uploadFile = (file, filePath, type=false) => new Promise(async (resolve, r
     const client = new ftp.Client()
     try {
         await client.access(config);
-        const result = await client.uploadFrom(stream,subPath.slice(0,-1)+filePath+file.filename+tailPath);
+        let result;
+        if(type=="image"){
+            result = await client.uploadFrom(stream,subPath.slice(0,-1)+filePath+file.originalname);
+        }
+        else{
+            result = await client.uploadFrom(stream,subPath.slice(0,-1)+filePath+file.filename+tailPath);
+        }
         if(result.code===226){
             resolve(false);
         }else{
