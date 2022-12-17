@@ -22,7 +22,7 @@ router.patch('/detail/:_id',authJWT, crawlCtrl.Patch); //해당 공정에 남아
 
 //아카이브 썸네일 추가 및 삭제
 router.post("/thumbnail/:_id", imageUpload.array('files', 20), authJWT, crawlCtrl.AddThumbnails);
-router.delete("/thumbnail/:_id", authJWT);
+router.delete("/thumbnail/:_id", authJWT, crawlCtrl.DeleteThumbnail);
 
 
 router.get('/screening/',crawlCtrl.screenGet); //스크리닝 데이터 조회

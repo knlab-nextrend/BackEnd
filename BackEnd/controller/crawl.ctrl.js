@@ -482,7 +482,7 @@ const AddThumbnails = async (req, res)=>{
     } 
 
     document.doc_thumbnail.push(folderPath + file.originalname)
-    console.log(document.doc_thumbnail)
+    
   }
   
 
@@ -502,6 +502,48 @@ const AddThumbnails = async (req, res)=>{
     res.status(400).send({ message: "es error" });
   }
   
+}
+
+
+//DELETE /thumbnail/:_id , es 데이터의 썸네일 삭제
+const DeleteThumbnail = async(req, res)=>{
+  //document 불러오기
+  const _id = req.params._id;
+
+  let statusCode = parseInt(req.query.statusCode);
+  let delIdxes = req.body.deleteIndexes.sort((a, b)=>b-a);
+
+  if (_id === undefined || statusCode === NaN) {
+    res.status(400).send();
+  }
+
+  
+  value = await esCtrl.Detail(_id);
+  const document = value.body.hits.hits[0]._source;
+
+
+  //삭제 작업 수행
+  for(const idx of delIdxes){
+    //nasCtrl.deleteFile(document.doc_thumbnail[idx] , "image");
+    document.doc_thumbnail.splice(idx, 1);
+  }
+
+  
+
+  // es에 업데이트
+  result = await esCtrl.Index(document, statusCode, _id);
+  if (result) {
+    await workLogCtrl.addEditLog(
+      req.uid,
+      _id,
+      statusCode,
+      4,
+      document.doc_host,
+    );
+    res.send(document);
+  } else {
+    res.status(400).send({ message: "es error" });
+  }
 }
 
 /* 이하 스크리닝 전용 라우터 함수
@@ -785,6 +827,7 @@ module.exports = {
   Patch: crawlPatch,
   Stage: crawlStage,
   AddThumbnails : AddThumbnails,
+  DeleteThumbnail : DeleteThumbnail,
   screenGet: screenGet,
   screenStage: screenStage,
   screenDelete: screenDelete,

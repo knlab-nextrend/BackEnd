@@ -145,7 +145,7 @@ const checkThenMakeFolder = (folderPath,type=false) => new Promise(async (resolv
 });
 
 const deleteFile = (path,type=false) => new  Promise(async (resolve, reject) => {
-    console.log(path);
+    
     const pathList = pathTypeCatcher(type);
     const subPath = pathList.subPath;
     const tailPath = pathList.tailPath;
@@ -154,6 +154,8 @@ const deleteFile = (path,type=false) => new  Promise(async (resolve, reject) => 
     try {
         await client.access(config);
         await client.remove(subPath+path+tailPath);
+        
+        
         resolve(false);
     }
     catch(err) {
