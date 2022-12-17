@@ -147,6 +147,7 @@ const uploadExcelData = async (req, res) => {
 
             meta.pdf = pdf;
             meta.thumbnail = thumbnail;
+            meta.doc_domain = meta.dc_domain;
         })
         try {
             const tableError = await uploadCtrl.checkUploadTable();

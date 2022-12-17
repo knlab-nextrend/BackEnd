@@ -41,11 +41,17 @@ const getImageFileList = (path) => new Promise(async (resolve, reject) => {
         
             const thumbnailExtentions = ["png", "jpg", "jpeg", "gif"]
             let splited = path[0].split('.');
-            const underThumb = path[0].split('thumbnail/');
+            let underThumb = path[0].split('thumbnail/');
 
-            // 썸네일일 떄 아래의 작업 수행
+            
             if (thumbnailExtentions.includes(splited[splited.length - 1])) {
-                resolve([webServer + underThumb[underThumb.length - 1]]);
+                const thumbnailList = []
+                for(const p of path){
+                    let underThumb = p.split('thumbnail/');
+                    thumbnailList.push(webServer + underThumb[underThumb.length - 1])
+                }
+                
+                resolve(thumbnailList);
             } else {
     
                 await client.ls(thumbRoute + underThumb[underThumb.length - 1], (err, res) => {

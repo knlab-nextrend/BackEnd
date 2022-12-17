@@ -151,6 +151,7 @@ const crawlDetail = async (req, res) => {
         try {
           value = await esCtrl.Detail(_id);
           const document = value.body.hits.hits[0];
+
           result = {
             docs: document._source,
             _id: document._id,
@@ -458,7 +459,7 @@ const AddThumbnails = async (req, res)=>{
   const document = value.body.hits.hits[0]._source;
 
   const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
-  let folderPath = folderDate + '/' + document.dc_domain + '/';
+  let folderPath = folderDate + '/' + document.doc_domain + '/';
 
   //썸네일 업로드할 폴더 생성 후 파일 업로드
   const existErrorThumb = await nasCtrl.checkThenMakeFolder(folderPath, type = 'image');
@@ -467,7 +468,7 @@ const AddThumbnails = async (req, res)=>{
   }
 
   // 파일을 업로드 함과 동시에 document.doc_thumbnail에 파일 이름 추가
-  req.files.forEach(async file=>{
+  for(const file of req.files){
     const uploadErrorThumb = await nasCtrl.uploadFile(file, folderPath, type = 'image');
     if (uploadErrorThumb) {
         // 업로드 실패시 throw
@@ -475,7 +476,8 @@ const AddThumbnails = async (req, res)=>{
     } 
 
     document.doc_thumbnail.push(folderPath + file.originalname)
-  })
+    console.log(document.doc_thumbnail)
+  }
   
 
 
