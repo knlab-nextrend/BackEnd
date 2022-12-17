@@ -192,9 +192,7 @@ const uploadExcelData = async (req, res) => {
                 
                 meta.doc_thumbnail = [folderPath + meta.thumbnail.originalname];
                 meta.item_id= itemId;
-
-                delete meta.pdf;
-                delete meta.thumbnail;
+                
 
                 meta.is_crawled = false;
                 const _id = await esCtrl.Index(meta, 6, false, true);

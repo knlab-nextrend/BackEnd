@@ -8,7 +8,7 @@ const fileCtrl = require("../service/file");
 const workLogCtrl = require("../service/nextrend/workingLog");
 const hostCtrl = require("../service/nextrend/host");
 const testCtrl = require("../service/test");
-
+const dayjs = require("dayjs");
 /*
 Document Status Code list
 */
@@ -440,6 +440,62 @@ const crawlStage = async (req, res) => {
   }
 };
 
+// POST /thumbnail/:_id , es 데이터의 썸네일 추가
+const AddThumbnails = async (req, res)=>{
+
+
+  //document 불러오기
+  const _id = req.params._id;
+  
+  let statusCode = parseInt(req.query.statusCode);
+
+  if (_id === undefined || statusCode === NaN) {
+    res.status(400).send();
+  }
+
+  
+  value = await esCtrl.Detail(_id);
+  const document = value.body.hits.hits[0]._source;
+
+  const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
+  let folderPath = folderDate + '/' + document.dc_domain + '/';
+
+  //썸네일 업로드할 폴더 생성 후 파일 업로드
+  const existErrorThumb = await nasCtrl.checkThenMakeFolder(folderPath, type = 'image');
+  if (existErrorThumb) {
+      throw 'error occured during access to nas';
+  }
+
+  // 파일을 업로드 함과 동시에 document.doc_thumbnail에 파일 이름 추가
+  req.files.forEach(async file=>{
+    const uploadErrorThumb = await nasCtrl.uploadFile(file, folderPath, type = 'image');
+    if (uploadErrorThumb) {
+        // 업로드 실패시 throw
+        throw 'error occured put file to nas storage';
+    } 
+
+    document.doc_thumbnail.push(folderPath + file.originalname)
+  })
+  
+
+
+  // es에 업데이트
+  result = await esCtrl.Index(document, statusCode, _id);
+  if (result) {
+    await workLogCtrl.addEditLog(
+      req.uid,
+      _id,
+      statusCode,
+      4,
+      document.doc_host,
+    );
+    res.send(document);
+  } else {
+    res.status(400).send({ message: "es error" });
+  }
+  
+}
+
 /* 이하 스크리닝 전용 라우터 함수
 Detail 에서는 es 에서만 작업되기에 solr인 스크리닝은 분리.
  */
@@ -710,6 +766,9 @@ const crawlPatch = async (req, res) => {
   }
 };
 
+
+
+
 module.exports = {
   Search: crawlSearch,
   Detail: crawlDetail,
@@ -717,10 +776,12 @@ module.exports = {
   Delete: crawlDelete,
   Patch: crawlPatch,
   Stage: crawlStage,
+  AddThumbnails : AddThumbnails,
   screenGet: screenGet,
   screenStage: screenStage,
   screenDelete: screenDelete,
   screenKeep: screenKeep,
   test: test,
   docCatViewer: docCatViewer,
+  
 };
