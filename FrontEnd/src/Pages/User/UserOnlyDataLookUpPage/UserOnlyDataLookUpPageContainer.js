@@ -103,6 +103,13 @@ function UserOnlyDataLookUpPageContainer() {
       setSelectedMenu({ X: {}, Y: {} });
       setSelectedAll(true);
     }
+    const { X, Y } = axisMenu;
+    const _axisObj = {
+      X: { type: X[0].x_type, code: X.map((v) => v.x_code) },
+      Y: { type: Y[0].x_type, code: Y.map((v) => v.x_code) },
+    };
+    console.log("test", _axisObj);
+    dispatch(setAxis(_axisObj));
   };
 
   const dataCleansing = (rawData) => {
@@ -145,6 +152,7 @@ function UserOnlyDataLookUpPageContainer() {
   };
   const listSizeHandler = (e) => {
     setListSize(e.target.value);
+    setPageNo(1);
   };
 
   useEffect(() => {

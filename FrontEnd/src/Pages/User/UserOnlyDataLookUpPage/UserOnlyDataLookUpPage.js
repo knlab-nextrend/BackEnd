@@ -44,6 +44,7 @@ function UserOnlyDataLookUpPage({
             axisMenu={axisMenu}
             selectedMenu={selectedMenu}
             menuClickHandler={menuClickHandler}
+            dataMode={dataMode}
           />
         )}
       </ContentBody>
@@ -208,6 +209,7 @@ const YAxisMenuBarItem = styled.div`
 const ContentBody = styled.div`
   display: flex;
   justify-content: center;
+  width: 100%;
 `;
 
 export default UserOnlyDataLookUpPage;
