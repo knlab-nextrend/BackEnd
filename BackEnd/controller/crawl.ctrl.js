@@ -113,7 +113,8 @@ const crawlDetail = async (req, res) => {
   } else {
     let statusCode = parseInt(req.query.statusCode);
     let result,
-      error = "error";
+      error = "no status code";
+
     switch (statusCode) {
       case 0:
       case 1:
@@ -154,6 +155,7 @@ const crawlDetail = async (req, res) => {
             docs: document._source,
             _id: document._id,
           };
+
           //이미지 폴더 url로부터 파일들을 가져와서 배열로 저장
           result.docs.doc_thumbnail = await nasCtrl.getImage(
             result.docs.doc_thumbnail,
@@ -175,6 +177,7 @@ const crawlDetail = async (req, res) => {
 };
 //router.get('/list/:statusCode',crawlSearch.Search);
 const crawlSearch = async (req, res) => {
+  
   const statusCode = parseInt(req.params.statusCode);
   const general = req.query.general === "true";
 

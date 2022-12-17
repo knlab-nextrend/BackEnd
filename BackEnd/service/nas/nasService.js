@@ -37,12 +37,15 @@ const pathTypeCatcher = (type) => {
 const getImageFileList = (path) => new Promise(async (resolve, reject) => {
     const client = new jsftp(config);
     let fileList = [];
-    if (Array.isArray(path)) {
-        if (path.length > 0) {
+    if (Array.isArray(path) && path.length > 0) {
+        
+            const thumbnailExtentions = ["png", "jpg", "jpeg", "gif"]
             let splited = path[0].split('.');
             const underThumb = path[0].split('thumbnail/');
-            if (splited[splited.length - 1] == 'png') {
-                resolve([webServer + thumbRoute + underThumb[underThumb.length - 1]]);
+
+            // 썸네일일 떄 아래의 작업 수행
+            if (thumbnailExtentions.includes(splited[splited.length - 1])) {
+                resolve([webServer + underThumb[underThumb.length - 1]]);
             } else {
     
                 await client.ls(thumbRoute + underThumb[underThumb.length - 1], (err, res) => {
@@ -50,7 +53,7 @@ const getImageFileList = (path) => new Promise(async (resolve, reject) => {
                         resolve([]);
                     } else {
                         //이미지 경로 생성
-                        res.forEach(file => fileList.push(webServer + '/' + underThumb[underThumb.length - 1] + '/' + file.name));
+                        res.forEach(file => fileList.push(webServer  + underThumb[underThumb.length - 1] + '/' + file.name));
                         if (fileList.length) {
                             resolve(fileList);
                         } else {
@@ -59,9 +62,6 @@ const getImageFileList = (path) => new Promise(async (resolve, reject) => {
                     }
                 });
             }
-        } else {
-            resolve([]);
-        }
     } else {
         resolve([]);
     }
@@ -164,7 +164,13 @@ const uploadFile = (file, filePath, type=false) => new Promise(async (resolve, r
     const client = new ftp.Client()
     try {
         await client.access(config);
-        const result = await client.uploadFrom(stream,subPath.slice(0,-1)+filePath+file.filename+tailPath);
+        let result;
+        if(type=="image"){
+            result = await client.uploadFrom(stream,subPath.slice(0,-1)+filePath+file.originalname);
+        }
+        else{
+            result = await client.uploadFrom(stream,subPath.slice(0,-1)+filePath+file.filename+tailPath);
+        }
         if(result.code===226){
             resolve(false);
         }else{
