@@ -9,6 +9,7 @@ const workLogCtrl = require("../service/nextrend/workingLog");
 const hostCtrl = require("../service/nextrend/host");
 const testCtrl = require("../service/test");
 const dayjs = require("dayjs");
+const { v4: uuidv4 } = require('uuid');
 /*
 Document Status Code list
 */
@@ -459,6 +460,11 @@ const AddThumbnails = async (req, res)=>{
   const document = value.body.hits.hits[0]._source;
 
   const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
+
+  //만약 doc_domain 필드값이 없다면 uuid로 대신해지정
+  if(!document.doc_domain){
+      document.doc_domain = uuidv4()
+  }
   let folderPath = folderDate + '/' + document.doc_domain + '/';
 
   //썸네일 업로드할 폴더 생성 후 파일 업로드
