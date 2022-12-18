@@ -10,6 +10,7 @@ import { setModal, setModalData, setCategoryModalType } from "../Modules/modal";
 import { MdSettings } from "react-icons/md";
 import Editor from "./Editor";
 import { myColors, tailwindColors } from "styles/colors";
+import { BsPlusCircle, BsXCircle } from "react-icons/bs";
 
 /* forwordRef는 부모 컴포넌트에서 자식 컴포넌트를 컨트롤하기 위해 */
 function CrawlDataForm({ docs, type, _id }, ref) {
@@ -79,6 +80,9 @@ function CrawlDataForm({ docs, type, _id }, ref) {
   const [docContentTypeIndexList, setDocContentTypeIndexList] = useState([]); // doc_content_type의 index리스트. 데이터 저장용 변수.
   const [docCustomIndexList, setDocCustomIndexList] = useState([]); // doc_custom의 index리스트. 데이터 저장용 변수
   const [docTopicIndexList, setDocTopicIndexList] = useState([]); // doc_topic 의 index리스트. 데이터 저장용 변수
+
+  const [uploadThumbnailList, setUploadThumbnailList] = useState([]);
+  const [uploadThumbnailSrcList, setUploadThumbnailSrcList] = useState([]);
 
   /* 데이터 값 핸들러 */
   const _docKorSummaryHandler = (e) => {
@@ -212,6 +216,27 @@ function CrawlDataForm({ docs, type, _id }, ref) {
       return _docs;
     },
   }));
+
+  const onChangeThumbnailAddInput = (e) => {
+    [...e.target.files].forEach((image) => {
+      setUploadThumbnailList((prev) => [...prev, image]);
+      encodeFileToBase64(image);
+    });
+    e.target.value = null;
+  };
+
+  const encodeFileToBase64 = (fileBlob) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(fileBlob);
+    reader.onload = () => {
+      setUploadThumbnailSrcList((prev) => [...prev, reader.result]);
+    };
+  };
+
+  const deleteUploadThumbnail = (index) => {
+    setUploadThumbnailList((prev) => prev.filter((v, i) => i !== index));
+    setUploadThumbnailSrcList((prev) => prev.filter((v, i) => i !== index));
+  };
 
   useEffect(() => {
     /* docs가 빈 객체가 아니라면 */
@@ -766,6 +791,7 @@ function CrawlDataForm({ docs, type, _id }, ref) {
                           id={index}
                           value={item}
                           name="cover"
+                          //TODO: 백엔드 코드따라서 핸들러 변경 필요
                           onChange={_docThumbnailSelectHandler}
                           checked={docThumbnailSelect === item}
                         />
@@ -780,6 +806,25 @@ function CrawlDataForm({ docs, type, _id }, ref) {
                     );
                   })
                 )}
+                {uploadThumbnailSrcList.map((src, index) => (
+                  <ThumbnailWrap>
+                    <img className="cover" src={src} alt="썸네일" />
+                    <div onClick={() => deleteUploadThumbnail(index)}>
+                      <BsXCircle size={32} />
+                    </div>
+                  </ThumbnailWrap>
+                ))}
+                <label>
+                  <ThumbnailAddInput
+                    type="file"
+                    accept=".jpeg, .jpg, .png, .gif"
+                    onChange={(e) => onChangeThumbnailAddInput(e)}
+                    multiple
+                  />
+                  <ThumbnailAddButton>
+                    <BsPlusCircle size={50} />
+                  </ThumbnailAddButton>
+                </label>
               </ImageContainer>
             </CustomFormItem>
           </CustomFormRow>
@@ -901,11 +946,12 @@ const CustomList = styled.div`
 `;
 
 const ImageContainer = styled.div`
+  gap: 0.5rem;
   flex: 1;
   display: flex;
-  flex-wrap: wrap;
   padding: 2rem;
   background-color: ${tailwindColors.white};
+  overflow-x: auto;
 
   input[type="radio"] {
     margin: 10px;
@@ -924,16 +970,57 @@ const ImageContainer = styled.div`
 `;
 
 const ThumbnailWrap = styled.div`
+  position: relative;
   height: 20rem;
   transition: transform 0.2s;
+  cursor: pointer;
+  overflow: hidden;
 
   &:hover {
-    transform: translateY(-0.5rem);
+    > img {
+      transform: scale(1.1);
+    }
   }
 
   & img {
     border: ${(props) => props.selected && `0.3rem solid ${myColors.red}`};
     height: 100%;
+    transition: transform 0.2s;
+  }
+
+  & > div {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    width: 100%;
+    background-color: ${myColors.red};
+    backdrop-filter: blur(3px);
+    color: ${tailwindColors.white};
+    :hover {
+      filter: brightness(0.9);
+    }
+  }
+`;
+
+const ThumbnailAddInput = styled.input`
+  display: none;
+`;
+
+const ThumbnailAddButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20rem;
+  width: 14rem;
+  background-color: ${tailwindColors["grey-200"]};
+  color: ${tailwindColors["grey-700"]};
+  cursor: pointer;
+  transition: background-color 0.2s;
+  :hover {
+    background-color: ${tailwindColors["grey-300"]};
   }
 `;
 
