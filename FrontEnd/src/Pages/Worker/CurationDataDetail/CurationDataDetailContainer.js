@@ -5,6 +5,7 @@ import { CrawlDataDetailFetchApi, sessionHandler } from "../../../Utils/api";
 import { useSelector, useDispatch } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
 import { LoadingWrapper } from "../../../Components/LoadingWrapper";
+import { getAddressRemovedPath } from "Utils/image";
 
 function CurationDataDetailContainer() {
   const statusCode = 8;
@@ -47,7 +48,7 @@ function CurationDataDetailContainer() {
       doc_publish_date: _rawStatusDetailData.doc_publish_date || "",
       doc_keyword: _rawStatusDetailData.doc_keyowrd,
       doc_publisher: _rawStatusDetailData.doc_publisher || "",
-      doc_thumbnail: _rawStatusDetailData.doc_thumbnail,
+      doc_thumbnail: getAddressRemovedPath(_rawStatusDetailData.doc_thumbnail),
       doc_publish_country: _rawStatusDetailData.doc_publish_country || "",
       doc_publish_country_list: _rawStatusDetailData.doc_publish_country
         .map((x) => x.CT_NM)

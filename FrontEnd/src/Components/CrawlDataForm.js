@@ -309,6 +309,8 @@ function CrawlDataForm({ docs, type, statusCode, _id }, ref) {
       setDocRecomment(docs.doc_recomment);
       setDocBiblio(docs.doc_biblio);
       setDocMemo(docs.doc_memo);
+
+      setDocThumbnailSelect(docs.doc_spare2);
       dispatch(setModalData(docs.doc_category, "doc_category"));
       dispatch(setModalData(docs.doc_country, "doc_country"));
       dispatch(setModalData(docs.doc_publish_country, "doc_publish_country"));
@@ -829,7 +831,7 @@ function CrawlDataForm({ docs, type, statusCode, _id }, ref) {
                         <label htmlFor={index}>
                           <img
                             className="cover"
-                            src={`http://${item}`}
+                            src={`http://1.214.203.131:3330${item}`}
                             alt="썸네일"
                           />
                         </label>
@@ -840,14 +842,6 @@ function CrawlDataForm({ docs, type, statusCode, _id }, ref) {
                     );
                   })
                 )}
-                {/* {uploadThumbnailSrcList.map((src, index) => (
-                  <ThumbnailWrap>
-                    <img className="cover" src={src} alt="썸네일" />
-                    <div onClick={() => deleteUploadThumbnail(index)}>
-                      <BsXCircle size={32} />
-                    </div>
-                  </ThumbnailWrap>
-                ))} */}
                 <label>
                   <ThumbnailAddInput
                     type="file"

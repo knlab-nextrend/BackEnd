@@ -41,7 +41,7 @@ export const CurationTable = ({ curationData, handleRowClick }) => {
                       <img
                         src={
                           item.doc_thumbnail !== null
-                            ? `http://${item.doc_thumbnail}`
+                            ? `http://1.214.203.131:3330${item.doc_thumbnail}`
                             : process.env.PUBLIC_URL +
                               `/img/curation_default_image.png`
                         }
