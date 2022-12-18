@@ -144,6 +144,7 @@ const CrawlDataStageApi = (statusCode, _id, docs) => {
     statusCode,
     _id,
     docs,
+    cover_thumbnail: docs.cover_thumbnail,
   };
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },
@@ -157,6 +158,7 @@ const crawlDataUpdateApi = (statusCode, _id, docs) => {
     statusCode,
     _id,
     docs,
+    cover_thumbnail: docs.cover_thumbnail,
   };
   const config = {
     headers: { authorization: `Bearer ${getToken()}` },

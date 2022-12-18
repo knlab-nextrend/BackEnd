@@ -35,6 +35,7 @@ function CrawlDataDetail({
         <CrawlDataForm
           docs={docs}
           type={type}
+          statusCode={statusCode}
           ref={crawlDataFormRef}
           _id={_id}
         />

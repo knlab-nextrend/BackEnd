@@ -89,6 +89,8 @@ function CrawlDataDetailContainer() {
         ? String.fromCharCode(_rawStatusDetailData.doc_recomment)
         : "", // 아스키코드..
       doc_publishing: _rawStatusDetailData.doc_publishing || "",
+      doc_spare1: _rawStatusDetailData.doc_spare1,
+      doc_spare2: _rawStatusDetailData.doc_spare2,
 
       item_id: _rawStatusDetailData.item_id,
     };
@@ -144,7 +146,6 @@ function CrawlDataDetailContainer() {
     if (!window.confirm("작업을 완료하시겠습니까?")) return;
 
     const _crawlDataFormDocs = crawlDataFormRef.current.getCrawlFormData();
-    //TODO: CrawlDataStageApi => CrawlDataUpdateApi 로 바꾸기
     crawlDataUpdateApi(statusCode, _id, _crawlDataFormDocs).then((res) => {
       alert("해당 데이터가 성공적으로 저장되었습니다.");
       if (statusCode === "6") {

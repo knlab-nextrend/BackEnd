@@ -11,9 +11,11 @@ import { MdSettings } from "react-icons/md";
 import Editor from "./Editor";
 import { myColors, tailwindColors } from "styles/colors";
 import { BsPlusCircle, BsXCircle } from "react-icons/bs";
+import { AddThumbnails, DeleteThumbnails } from "services/api/crawl";
+import FormData from "form-data";
 
 /* forwordRef는 부모 컴포넌트에서 자식 컴포넌트를 컨트롤하기 위해 */
-function CrawlDataForm({ docs, type, _id }, ref) {
+function CrawlDataForm({ docs, type, statusCode, _id }, ref) {
   const dispatch = useDispatch();
 
   const [itemId, setItemId] = useState("");
@@ -80,6 +82,8 @@ function CrawlDataForm({ docs, type, _id }, ref) {
   const [docContentTypeIndexList, setDocContentTypeIndexList] = useState([]); // doc_content_type의 index리스트. 데이터 저장용 변수.
   const [docCustomIndexList, setDocCustomIndexList] = useState([]); // doc_custom의 index리스트. 데이터 저장용 변수
   const [docTopicIndexList, setDocTopicIndexList] = useState([]); // doc_topic 의 index리스트. 데이터 저장용 변수
+
+  const [mainThumbnail, setMainThumbnail] = useState("");
 
   const [uploadThumbnailList, setUploadThumbnailList] = useState([]);
   const [uploadThumbnailSrcList, setUploadThumbnailSrcList] = useState([]);
@@ -154,7 +158,8 @@ function CrawlDataForm({ docs, type, _id }, ref) {
     setDocKeywordString(e.target.value);
   };
   const _docThumbnailSelectHandler = (e) => {
-    setDocThumbnailSelect(e.target.value);
+    console.log(+e.target.value);
+    setDocThumbnailSelect(+e.target.value);
   };
   const _docContentHandler = (data) => {
     setDocContent(data);
@@ -207,21 +212,32 @@ function CrawlDataForm({ docs, type, _id }, ref) {
       _docs["doc_custom"] = docCustomIndexList;
       _docs["doc_topic"] = docTopicIndexList;
 
-      _docs["doc_thumbnail"] =
-        type !== "screening" && type !== "refine" && type !== "register"
-          ? docThumbnailSelect
-          : docThumbnail;
+      _docs["doc_thumbnail"] = docThumbnail;
+      // type !== "screening" && type !== "refine" && type !== "register"
+      //   ? docThumbnailSelect
+      //   : docThumbnail;
 
       _docs["item_id"] = itemId;
+
+      _docs["cover_thumbnail"] = docThumbnailSelect;
       return _docs;
     },
   }));
 
   const onChangeThumbnailAddInput = (e) => {
-    [...e.target.files].forEach((image) => {
-      setUploadThumbnailList((prev) => [...prev, image]);
-      encodeFileToBase64(image);
-    });
+    const formData = new FormData();
+    [...e.target.files].forEach((file) => formData.append("files", file));
+    AddThumbnails(_id, statusCode, formData)
+      .then((res) => {
+        console.log("리턴썸네일 : ", res.data.doc_thumbnail);
+        console.log(res.data);
+        setDocThumbnail(res.data.doc_thumbnail);
+      })
+      .catch((err) => console.log("썸네일추가실패"));
+    // [...e.target.files].forEach((image) => {
+    //   setUploadThumbnailList((prev) => [...prev, image]);
+    //   encodeFileToBase64(image);
+    // });
     e.target.value = null;
   };
 
@@ -236,6 +252,21 @@ function CrawlDataForm({ docs, type, _id }, ref) {
   const deleteUploadThumbnail = (index) => {
     setUploadThumbnailList((prev) => prev.filter((v, i) => i !== index));
     setUploadThumbnailSrcList((prev) => prev.filter((v, i) => i !== index));
+  };
+
+  const deleteThumbnail = (index) => {
+    if (
+      confirm(
+        "해당 표지 파일을 삭제하시겠습니까? \n삭제된 표지 파일은 복구할 수 없습니다"
+      )
+    ) {
+      DeleteThumbnails(_id, statusCode, [index])
+        .then((res) => {
+          console.log("삭제결과 : ", res.data);
+          setDocThumbnail(res.data.doc_thumbnail);
+        })
+        .catch((err) => console.log("삭제실패"));
+    }
   };
 
   useEffect(() => {
@@ -278,7 +309,6 @@ function CrawlDataForm({ docs, type, _id }, ref) {
       setDocRecomment(docs.doc_recomment);
       setDocBiblio(docs.doc_biblio);
       setDocMemo(docs.doc_memo);
-
       dispatch(setModalData(docs.doc_category, "doc_category"));
       dispatch(setModalData(docs.doc_country, "doc_country"));
       dispatch(setModalData(docs.doc_publish_country, "doc_publish_country"));
@@ -289,6 +319,7 @@ function CrawlDataForm({ docs, type, _id }, ref) {
       dispatch(setModalData(docs.doc_content_type, "doc_content_type"));
       dispatch(setModalData(docs.doc_host[0], "doc_host"));
     }
+    console.log(docs);
   }, [docs]);
 
   useEffect(() => {
@@ -783,17 +814,17 @@ function CrawlDataForm({ docs, type, _id }, ref) {
                   docThumbnail.map((item, index) => {
                     return (
                       <ThumbnailWrap
-                        selected={docThumbnailSelect === item}
+                        selected={docThumbnailSelect === index}
                         key={index}
                       >
                         <input
                           type="radio"
                           id={index}
-                          value={item}
+                          value={index}
                           name="cover"
                           //TODO: 백엔드 코드따라서 핸들러 변경 필요
                           onChange={_docThumbnailSelectHandler}
-                          checked={docThumbnailSelect === item}
+                          checked={docThumbnailSelect === index}
                         />
                         <label htmlFor={index}>
                           <img
@@ -802,18 +833,21 @@ function CrawlDataForm({ docs, type, _id }, ref) {
                             alt="썸네일"
                           />
                         </label>
+                        <div onClick={() => deleteThumbnail(index)}>
+                          <BsXCircle size={32} />
+                        </div>
                       </ThumbnailWrap>
                     );
                   })
                 )}
-                {uploadThumbnailSrcList.map((src, index) => (
+                {/* {uploadThumbnailSrcList.map((src, index) => (
                   <ThumbnailWrap>
                     <img className="cover" src={src} alt="썸네일" />
                     <div onClick={() => deleteUploadThumbnail(index)}>
                       <BsXCircle size={32} />
                     </div>
                   </ThumbnailWrap>
-                ))}
+                ))} */}
                 <label>
                   <ThumbnailAddInput
                     type="file"
