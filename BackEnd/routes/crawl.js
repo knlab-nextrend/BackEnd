@@ -25,6 +25,7 @@ router.post("/thumbnail/:_id", imageUpload.array('files', 20), authJWT, crawlCtr
 router.delete("/thumbnail/:_id", authJWT, crawlCtrl.DeleteThumbnail);
 
 
+
 router.get('/screening/',crawlCtrl.screenGet); //스크리닝 데이터 조회
 router.put('/screening/',ping,authJWT,crawlCtrl.screenStage); //스크리닝 데이터 이관
 router.delete('/screening/',authJWT,crawlCtrl.screenDelete); //스크리닝 데이터 삭제

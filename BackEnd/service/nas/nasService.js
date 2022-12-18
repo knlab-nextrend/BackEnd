@@ -59,7 +59,7 @@ const getImageFileList = (path) => new Promise(async (resolve, reject) => {
                         resolve([]);
                     } else {
                         //이미지 경로 생성
-                        res.forEach(file => fileList.push(webServer  + underThumb[underThumb.length - 1] + '/' + file.name));
+                        res.forEach(file => fileList.push(webServer+ "/"  + underThumb[underThumb.length - 1] + '/' + file.name));
                         if (fileList.length) {
                             resolve(fileList);
                         } else {

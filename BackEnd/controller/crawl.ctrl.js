@@ -442,9 +442,127 @@ const crawlStage = async (req, res) => {
   }
 };
 
+
+const crawlPatch = async (req, res) => {
+  try {
+    const _id = req.params._id;
+    if (_id === undefined) {
+      res.status(400).send();
+    } else {
+      let statusCode = parseInt(req.body.statusCode);
+      let result;
+      if (req.body.docs) {
+        let doc = req.body.docs;
+        doc["_id"] = _id;
+        doc["cover_thumbnail"] = req.body.cover_thumbnail;
+        switch (statusCode) {
+          case 2:
+          case 3:
+            result = await esCtrl.Index(doc, statusCode, _id);
+            if (result) {
+              // addEditLog의 workType 3은 수정
+              await workLogCtrl.addEditLog(
+                req.uid,
+                _id,
+                statusCode,
+                3,
+                doc.doc_host,
+              );
+              res.send();
+            } else {
+              res.status(400).send({ message: "some trouble in update" });
+            }
+            break;
+          case 4:
+          case 5:
+          case 6:
+            result = await esCtrl.Index(doc, statusCode, _id);
+            
+            if (result) {
+              // addEditLog의 workType 3은 수정
+              await workLogCtrl.addEditLog(
+                req.uid,
+                _id,
+                statusCode,
+                3,
+                doc.doc_host,
+              );
+              await poliCtrl.modSubmitStat(doc.item_id);
+              res.send();
+            } else {
+              res.status(400).send({ message: "es error" });
+            }
+            res.send();
+            break;
+
+          case 7:
+            // 테스트 모듈 수정 요망..
+            //const checked = await poliCtrl.checkStat(_id);
+            result = await esCtrl.Index(doc, statusCode, _id);
+            if (result) {
+              // addEditLog의 workType 2은 이관.
+              await workLogCtrl.addEditLog(
+                req.uid,
+                _id,
+                statusCode,
+                2,
+                doc.doc_host,
+              );
+              await workLogCtrl.addCurationLog(
+                req.uid,
+                _id,
+                null,
+                null,
+                doc.doc_content,
+              );
+              res.send();
+            } else {
+              res.status(400).send({ message: "es error" });
+            }
+            res.send();
+            break;
+          case 8:
+            const detailDoc = await esCtrl.Detail(_id);
+            const docsBef = detailDoc.body.hits.hits[0]._source;
+            result = await esCtrl.Index(doc, 8, _id);
+            if (result) {
+              // addEditLog의 workType 3은 수정.
+              await workLogCtrl.addEditLog(
+                req.uid,
+                _id,
+                statusCode,
+                3,
+                doc.doc_host,
+              );
+              if (docsBef.doc_content !== doc.doc_content) {
+                await workLogCtrl.addCurationLog(
+                  req.uid,
+                  _id,
+                  null,
+                  docsBef.doc_content,
+                  doc.doc_content,
+                );
+              }
+              await fileCtrl.deleteComparedContentImage(_id, doc.doc_content);
+              res.send();
+            } else {
+              res.status(400).send({ message: "some trouble in staging" });
+            }
+            break;
+        }
+      } else {
+        res.status(400).send({ message: "no document exists" });
+      }
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
+  }
+};
+
+
 // POST /thumbnail/:_id , es 데이터의 썸네일 추가
 const AddThumbnails = async (req, res)=>{
-
 
   //document 불러오기
   const _id = req.params._id;
@@ -462,7 +580,7 @@ const AddThumbnails = async (req, res)=>{
   const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
 
   //만약 doc_domain 필드값이 없다면 uuid로 대신해지정
-  if(!document.doc_domain){
+  if(document.doc_domain == null){
       document.doc_domain = uuidv4()
   }
   let folderPath = folderDate + '/' + document.doc_domain + '/';
@@ -480,7 +598,9 @@ const AddThumbnails = async (req, res)=>{
         // 업로드 실패시 throw
         throw 'error occured put file to nas storage';
     } 
-
+    if(!Array.isArray(document.doc_thumbnail)){
+      document.doc_thumbnail = []
+    }
     document.doc_thumbnail.push(folderPath + file.originalname)
     
   }
@@ -494,7 +614,7 @@ const AddThumbnails = async (req, res)=>{
       req.uid,
       _id,
       statusCode,
-      4,
+      3,
       document.doc_host,
     );
     res.send(document);
@@ -537,7 +657,7 @@ const DeleteThumbnail = async(req, res)=>{
       req.uid,
       _id,
       statusCode,
-      4,
+      3,
       document.doc_host,
     );
     res.send(document);
@@ -545,6 +665,10 @@ const DeleteThumbnail = async(req, res)=>{
     res.status(400).send({ message: "es error" });
   }
 }
+
+
+
+
 
 /* 이하 스크리닝 전용 라우터 함수
 Detail 에서는 es 에서만 작업되기에 solr인 스크리닝은 분리.
@@ -686,135 +810,7 @@ const screenDelete = async (req, res) => {
   }
 };
 
-const crawlPatch = async (req, res) => {
-  try {
-    const _id = req.params._id;
-    if (_id === undefined) {
-      res.status(400).send();
-    } else {
-      let statusCode = parseInt(req.body.statusCode);
-      let result;
-      if (req.body.docs) {
-        let doc = req.body.docs;
-        doc["_id"] = _id;
-        switch (statusCode) {
-          case 2:
-          case 3:
-            result = await esCtrl.Index(doc, statusCode, _id);
-            if (result) {
-              // addEditLog의 workType 3은 수정
-              await workLogCtrl.addEditLog(
-                req.uid,
-                _id,
-                statusCode,
-                3,
-                doc.doc_host,
-              );
-              res.send();
-            } else {
-              res.status(400).send({ message: "some trouble in update" });
-            }
-            break;
-          case 4:
-          case 5:
-            result = await esCtrl.Index(doc, 6, _id);
-            if (result) {
-              // addEditLog의 workType 3은 수정
-              await workLogCtrl.addEditLog(
-                req.uid,
-                _id,
-                statusCode,
-                2,
-                doc.doc_host,
-              );
-              res.send();
-            } else {
-              res.status(400).send({ message: "some trouble in update" });
-            }
-            break;
-          case 6:
-            result = await esCtrl.Index(doc, statusCode, _id);
-            if (result) {
-              // addEditLog의 workType 3은 수정
-              await workLogCtrl.addEditLog(
-                req.uid,
-                _id,
-                statusCode,
-                3,
-                doc.doc_host,
-              );
-              await poliCtrl.modSubmitStat(doc.item_id);
-              res.send();
-            } else {
-              res.status(400).send({ message: "es error" });
-            }
-            res.send();
-            break;
 
-          case 7:
-            // 테스트 모듈 수정 요망..
-            //const checked = await poliCtrl.checkStat(_id);
-            result = await esCtrl.Index(doc, statusCode, _id);
-            if (result) {
-              // addEditLog의 workType 2은 이관.
-              await workLogCtrl.addEditLog(
-                req.uid,
-                _id,
-                statusCode,
-                2,
-                doc.doc_host,
-              );
-              await workLogCtrl.addCurationLog(
-                req.uid,
-                _id,
-                null,
-                null,
-                doc.doc_content,
-              );
-              res.send();
-            } else {
-              res.status(400).send({ message: "es error" });
-            }
-            res.send();
-            break;
-          case 8:
-            const detailDoc = await esCtrl.Detail(_id);
-            const docsBef = detailDoc.body.hits.hits[0]._source;
-            result = await esCtrl.Index(doc, 8, _id);
-            if (result) {
-              // addEditLog의 workType 3은 수정.
-              await workLogCtrl.addEditLog(
-                req.uid,
-                _id,
-                statusCode,
-                3,
-                doc.doc_host,
-              );
-              if (docsBef.doc_content !== doc.doc_content) {
-                await workLogCtrl.addCurationLog(
-                  req.uid,
-                  _id,
-                  null,
-                  docsBef.doc_content,
-                  doc.doc_content,
-                );
-              }
-              await fileCtrl.deleteComparedContentImage(_id, doc.doc_content);
-              res.send();
-            } else {
-              res.status(400).send({ message: "some trouble in staging" });
-            }
-            break;
-        }
-      } else {
-        res.status(400).send({ message: "no document exists" });
-      }
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(400).send(e);
-  }
-};
 
 
 
