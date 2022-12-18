@@ -4,8 +4,14 @@ const crawlCtrl = require("../controller/crawl.ctrl");
 const authJWT = require("../middlewares/auth");
 const boardCtrl = require("../controller/board.ctrl");
 const ping = require("../middlewares/ping");
+const multer = require('multer');
+
+const imageUpload = multer({
+    dest: 'temp/images',
+});
 
 router.get('/list/:statusCode',crawlCtrl.Search);
+
 
 //단일 데이터 컨트롤 단계 , 11/15 단계 재정의 이후 조정 필요.
 router.get('/detail/:_id',authJWT,crawlCtrl.Detail);
@@ -13,6 +19,11 @@ router.put('/detail/:_id',authJWT,crawlCtrl.Keep); //보류 시, 해당 DB의 st
 router.delete('/detail/:_id',authJWT,crawlCtrl.Delete); //스크리닝 단계에서는 완전 삭제, 2차 및 큐레이션 단계에서는 stat=8,9로 전환.
 router.post('/detail/:_id',authJWT,ping,crawlCtrl.Stage); //다음 공정으로 데이터 이관
 router.patch('/detail/:_id',authJWT, crawlCtrl.Patch); //해당 공정에 남아있으면서 데이터만 업데이트
+
+//아카이브 썸네일 추가 및 삭제
+router.post("/thumbnail/:_id", imageUpload.array('files', 20), authJWT, crawlCtrl.AddThumbnails);
+router.delete("/thumbnail/:_id", authJWT, crawlCtrl.DeleteThumbnail);
+
 
 
 router.get('/screening/',crawlCtrl.screenGet); //스크리닝 데이터 조회

@@ -143,9 +143,11 @@ const uploadExcelData = async (req, res) => {
 
             let thumbnail = thumbnails.filter(img=>img.originalname === meta.thumbnail_file_name);
             thumbnail = thumbnail ? thumbnail[0] : null;
+            
 
             meta.pdf = pdf;
             meta.thumbnail = thumbnail;
+            meta.doc_domain = meta.dc_domain;
         })
         try {
             const tableError = await uploadCtrl.checkUploadTable();
@@ -188,11 +190,10 @@ const uploadExcelData = async (req, res) => {
                 await poliCtrl.insertUploadData(itemId, meta.dc_page);
 
                 meta.doc_file = folderPath + meta.pdf.filename + '.pdf';
-                meta.doc_thumbnail = folderPath + meta.thumbnail.filename + ".png";
+                
+                meta.doc_thumbnail = [folderPath + meta.thumbnail.originalname];
                 meta.item_id= itemId;
-
-                delete meta.pdf;
-                delete meta.thumbnail;
+                
 
                 meta.is_crawled = false;
                 const _id = await esCtrl.Index(meta, 6, false, true);
