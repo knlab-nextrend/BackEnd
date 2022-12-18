@@ -454,7 +454,8 @@ const crawlPatch = async (req, res) => {
       if (req.body.docs) {
         let doc = req.body.docs;
         doc["_id"] = _id;
-        doc["cover_thumbnail"] = req.body.cover_thumbnail;
+        doc["doc_spare2"] = req.body.cover_thumbnail;
+        
         switch (statusCode) {
           case 2:
           case 3:
@@ -580,10 +581,10 @@ const AddThumbnails = async (req, res)=>{
   const folderDate = dayjs().locale('se-kr').format('/YYYY/MM');
 
   //만약 doc_domain 필드값이 없다면 uuid로 대신해지정
-  if(document.doc_domain == null){
-      document.doc_domain = uuidv4()
+  if(document.doc_spare1 == null){
+      document.doc_spare1 = uuidv4()
   }
-  let folderPath = folderDate + '/' + document.doc_domain + '/';
+  let folderPath = folderDate + '/' + document.doc_spare1 + '/';
 
   //썸네일 업로드할 폴더 생성 후 파일 업로드
   const existErrorThumb = await nasCtrl.checkThenMakeFolder(folderPath, type = 'image');

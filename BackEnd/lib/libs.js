@@ -61,7 +61,7 @@ const nullProcessing = (doc) => {
     newDoc["doc_relate_title"] = keys.includes("doc_relate_title")? doc.doc_relate_title||null : null;
     newDoc["doc_relate_url"] = keys.includes("doc_relate_url")? doc.doc_relate_url||null : null;
     newDoc["doc_spare1"] = keys.includes("doc_spare1")? doc.doc_spare1||null : null;
-    newDoc["doc_spare2"] = keys.includes("doc_spare2")? doc.doc_spare2||null : null;
+    newDoc["doc_spare2"] = keys.includes("doc_spare2")? doc.doc_spare2 : null;
     newDoc["doc_thumbnail"] = keys.includes("doc_thumbnail")? doc.doc_thumbnail|| []: [];
     newDoc["doc_topic"] = keys.includes("doc_topic")? doc.doc_topic||null : null;
     newDoc["doc_url"] = keys.includes("doc_url")? doc.doc_url||null : null;
@@ -70,8 +70,6 @@ const nullProcessing = (doc) => {
     newDoc["is_crawled"] = keys.includes("is_crawled")? doc.is_crawled : true;
     newDoc["item_id"] = keys.includes("item_id")? doc.item_id||null : null;
     newDoc["status"] = keys.includes("status")? doc.status||null : null;
-    newDoc["doc_domain"] = keys.includes("doc_domain") ? doc.doc_domain||null : null;
-    newDoc["cover_thumbnail"] = keys.includes("cover_thumbnail") ? doc.cover_thumbnail: null;
     return newDoc;
 }
 
