@@ -4,6 +4,7 @@ import { CrawlDataListFetchApi, sessionHandler } from "../../../Utils/api";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
+import { getAddressRemovedPath } from "Utils/image";
 
 const TAB_VALUES = {
   전체: null,
@@ -67,7 +68,7 @@ function CurationDataListContainer() {
         doc_origin_title: item.doc_origin_title,
         doc_kor_title: item.doc_kor_title,
         doc_page: item.doc_page,
-        doc_thumbnail: item.doc_thumbnail,
+        doc_thumbnail: getAddressRemovedPath(item.doc_thumbnail),
         doc_country_list: item.doc_country.map((x) => x.CT_NM).join(", "),
         doc_publish_country_list: item.doc_publish_country
           .map((x) => x.CT_NM)

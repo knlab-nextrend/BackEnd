@@ -29,7 +29,7 @@ function CurationDataDetail({ docs, permission, goDataManage }) {
         <ArticleTopArea>
           <ThumbnailWrap>
             {docs.doc_thumbnail ? (
-              <Image src={`http://${docs.doc_thumbnail}`} />
+              <Image src={`http://1.214.203.131:3330${docs.doc_thumbnail}`} />
             ) : (
               <div>
                 <BsImage size={64} />

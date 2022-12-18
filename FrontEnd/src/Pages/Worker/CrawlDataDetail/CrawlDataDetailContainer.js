@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { trackPromise } from "react-promise-tracker";
 import { LoadingWrapper } from "../../../Components/LoadingWrapper";
 import { STATUS_CODE_SET } from "Data/crawlStatus";
+import { getAddressRemovedPath } from "Utils/image";
 
 function CrawlDataDetailContainer() {
   /* 
@@ -61,7 +62,12 @@ function CrawlDataDetailContainer() {
       doc_publish_date: _rawStatusDetailData.doc_publish_date || "",
       doc_keyword: _rawStatusDetailData.doc_keyowrd || [], // 오타로 필드가 설정되어있어서 ...
       doc_publisher: _rawStatusDetailData.doc_publisher || "",
-      doc_thumbnail: _rawStatusDetailData.doc_thumbnail || [],
+      //TODO:   백엔드에서 주소빼고 주면 나중에 변경해야함
+      doc_thumbnail: _rawStatusDetailData.doc_thumbnail
+        ? _rawStatusDetailData.doc_thumbnail.map((v) =>
+            getAddressRemovedPath(v)
+          )
+        : [],
       doc_country: _rawStatusDetailData.doc_country || [],
       doc_publish_country: _rawStatusDetailData.doc_publish_country || [],
       doc_category: _rawStatusDetailData.doc_category || [],
@@ -89,6 +95,8 @@ function CrawlDataDetailContainer() {
         ? String.fromCharCode(_rawStatusDetailData.doc_recomment)
         : "", // 아스키코드..
       doc_publishing: _rawStatusDetailData.doc_publishing || "",
+      doc_spare1: _rawStatusDetailData.doc_spare1,
+      doc_spare2: _rawStatusDetailData.doc_spare2,
 
       item_id: _rawStatusDetailData.item_id,
     };
@@ -144,7 +152,6 @@ function CrawlDataDetailContainer() {
     if (!window.confirm("작업을 완료하시겠습니까?")) return;
 
     const _crawlDataFormDocs = crawlDataFormRef.current.getCrawlFormData();
-    //TODO: CrawlDataStageApi => CrawlDataUpdateApi 로 바꾸기
     crawlDataUpdateApi(statusCode, _id, _crawlDataFormDocs).then((res) => {
       alert("해당 데이터가 성공적으로 저장되었습니다.");
       if (statusCode === "6") {
