@@ -6,21 +6,24 @@ const jwt = require("jsonwebtoken");
 // header에 있는 토큰을 통해 유저 정보를 식별하고, 해당 유저의 정보를 반환.
 // 토큰이 만료되었을 경우, refresh 쪽의 호출 필요.
 const getUser = async (req, res) => {
-  if (req.headers.authorization) {
-    const authToken = req.headers.authorization.split("Bearer ")[1];
-    const userInfo = await verify(authToken);
-    const data = await getUserByUid(userInfo.userID);
-
-    const logo = await nasCtrl.getLogoFromFolder(`/${userInfo.userID}/`);
-    data.logo = logo;
-
-    if (data) {
-      res.send(data);
-    } else {
-      res.status(401).send();
+  try{
+    if (req.headers.authorization) {
+      const authToken = req.headers.authorization.split("Bearer ")[1];
+      const userInfo = await verify(authToken);
+      const data = await getUserByUid(userInfo.userID);
+  
+      const logo = await nasCtrl.getLogoFromFolder(`/${userInfo.userID}/`);
+      data.logo = logo;
+  
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(401).send();
+      }
     }
-  }
-};
+  
+  }catch(e){res.status(400).send(e)}
+  };
 
 const refresh = async (req, res) => {
   // access token과 refresh token의 존재 유무를 체크
